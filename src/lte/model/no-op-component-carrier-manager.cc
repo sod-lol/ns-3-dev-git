@@ -29,7 +29,7 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("NoOpComponentCarrierManager");
 NS_OBJECT_ENSURE_REGISTERED (NoOpComponentCarrierManager);
-  
+
 NoOpComponentCarrierManager::NoOpComponentCarrierManager ()
 {
   NS_LOG_FUNCTION (this);
@@ -83,7 +83,7 @@ NoOpComponentCarrierManager::DoTransmitPdu (LteMacSapProvider::TransmitPduParame
 {
   NS_LOG_FUNCTION (this);
   std::map <uint8_t, LteMacSapProvider*>::iterator it =  m_macSapProvidersMap.find (params.componentCarrierId);
-  NS_ASSERT_MSG (it != m_macSapProvidersMap.end (), "could not find Sap for ComponentCarrier " << params.componentCarrierId);
+  NS_ASSERT_MSG (it != m_macSapProvidersMap.end (), "could not find Sap for ComponentCarrier " << (uint32_t)params.componentCarrierId);
   // with this algorithm all traffic is on Primary Carrier
   it->second->TransmitPdu (params);
 }
@@ -99,28 +99,28 @@ NoOpComponentCarrierManager::DoReportBufferStatus (LteMacSapProvider::ReportBuff
 }
 
 void
-NoOpComponentCarrierManager::DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId, uint8_t componentCarrierId, uint16_t rnti, uint8_t lcid)
+NoOpComponentCarrierManager::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpParams)
 {
   NS_LOG_FUNCTION (this);
-  std::map <uint16_t, std::map<uint8_t, LteMacSapUser*> >::iterator rntiIt = m_ueAttached.find (rnti);
-  NS_ASSERT_MSG (rntiIt != m_ueAttached.end (), "could not find RNTI" << rnti);
-  std::map<uint8_t, LteMacSapUser*>::iterator lcidIt = rntiIt->second.find (lcid);
-  NS_ASSERT_MSG (lcidIt != rntiIt->second.end (), "could not find LCID " << (uint16_t) lcid);
-  NS_LOG_DEBUG (this << " rnti= " << rnti << " lcid= " << (uint32_t) lcid << " layer= " << (uint32_t)layer<<" ccId="<< (uint32_t)componentCarrierId);
-  (*lcidIt).second->NotifyTxOpportunity (bytes, layer, harqId, componentCarrierId, rnti, lcid);
+  std::map <uint16_t, std::map<uint8_t, LteMacSapUser*> >::iterator rntiIt = m_ueAttached.find (txOpParams.rnti);
+  NS_ASSERT_MSG (rntiIt != m_ueAttached.end (), "could not find RNTI" << txOpParams.rnti);
+  std::map<uint8_t, LteMacSapUser*>::iterator lcidIt = rntiIt->second.find (txOpParams.lcid);
+  NS_ASSERT_MSG (lcidIt != rntiIt->second.end (), "could not find LCID " << (uint16_t) txOpParams.lcid);
+  NS_LOG_DEBUG (this << " rnti= " << txOpParams.rnti << " lcid= " << (uint32_t) txOpParams.lcid << " layer= " << (uint32_t)txOpParams.layer<<" ccId="<< (uint32_t)txOpParams.componentCarrierId);
+  (*lcidIt).second->NotifyTxOpportunity (txOpParams);
 
 }
 
 void
-NoOpComponentCarrierManager::DoReceivePdu (Ptr<Packet> p, uint16_t rnti, uint8_t lcid)
+NoOpComponentCarrierManager::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
 {
   NS_LOG_FUNCTION (this);
-  std::map <uint16_t, std::map<uint8_t, LteMacSapUser*> >::iterator rntiIt = m_ueAttached.find (rnti);
-  NS_ASSERT_MSG (rntiIt != m_ueAttached.end (), "could not find RNTI" << rnti);
-  std::map<uint8_t, LteMacSapUser*>::iterator lcidIt = rntiIt->second.find (lcid);
+  std::map <uint16_t, std::map<uint8_t, LteMacSapUser*> >::iterator rntiIt = m_ueAttached.find (rxPduParams.rnti);
+  NS_ASSERT_MSG (rntiIt != m_ueAttached.end (), "could not find RNTI" << rxPduParams.rnti);
+  std::map<uint8_t, LteMacSapUser*>::iterator lcidIt = rntiIt->second.find (rxPduParams.lcid);
   if (lcidIt != rntiIt->second.end ())
     {
-      (*lcidIt).second->ReceivePdu (p, rnti, lcid);
+      (*lcidIt).second->ReceivePdu (rxPduParams);
     }
 }
 
@@ -460,7 +460,17 @@ RrComponentCarrierManager::DoReportBufferStatus (LteMacSapProvider::ReportBuffer
       for ( uint16_t i = 0;  i < numberOfCarriersForUe ; i++)
         {
           NS_ASSERT_MSG (m_macSapProvidersMap.find(i)!=m_macSapProvidersMap.end(), "Mac sap provider does not exist.");
-          m_macSapProvidersMap.find(i)->second->ReportBufferStatus(params);
+          if ( i==0 )
+          {
+            // only the PCC sends STATUS PDUs
+            m_macSapProvidersMap.find(i)->second->ReportBufferStatus(params);
+          }
+          else
+          {
+            LteMacSapProvider::ReportBufferStatusParameters newParams = params;
+            newParams.statusPduSize = 0;
+            m_macSapProvidersMap.find(i)->second->ReportBufferStatus(newParams);
+          }
         }
     }
 }

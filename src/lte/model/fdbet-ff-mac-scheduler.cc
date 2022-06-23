@@ -920,7 +920,7 @@ FdBetFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sc
           NS_LOG_INFO ("Skip this flow, CQI==0, rnti:"<<(*itFlow).first);
         }
     }
- 
+
   if (estAveThr.size () != 0)
     {
       // Find UE with largest priority metric
@@ -938,7 +938,7 @@ FdBetFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sc
 
       // The scheduler tries the best to achieve the equal throughput among all UEs
       int i = 0;
-      do 
+      do
         {
           NS_LOG_INFO (this << " ALLOCATION for RBG " << i << " of " << rbgNum);
           if (rbgMap.at (i) == false)
@@ -968,7 +968,7 @@ FdBetFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sc
                 }
               int nLayer = TransmissionModesLayers::TxMode2LayerNum ((*itTxMode).second);
               std::vector <uint8_t> mcs;
-              for (uint8_t j = 0; j < nLayer; j++) 
+              for (uint8_t j = 0; j < nLayer; j++)
                 {
                   if (itCqi == m_p10CqiRxed.end ())
                     {
@@ -1015,7 +1015,7 @@ FdBetFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sc
 
           i++;
 
-        } 
+        }
       while ( i < rbgNum ); // end for RBGs
 
     } // end if estAveThr
@@ -1545,6 +1545,7 @@ FdBetFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sc
       else
         {
           // take the lowest CQI value (worst RB)
+    	  NS_ABORT_MSG_IF ((*itCqi).second.size() == 0, "CQI of RNTI = " << (*it).first << " has expired");
           double minSinr = (*itCqi).second.at (uldci.m_rbStart);
           if (minSinr == NO_SINR)
             {
@@ -1576,7 +1577,7 @@ FdBetFfMacScheduler::DoSchedUlTriggerReq (const struct FfMacSchedSapProvider::Sc
                   // restart from the first
                   it = m_ceBsrRxed.begin ();
                 }
-              NS_LOG_DEBUG (this << " UE discared for CQI=0, RNTI " << uldci.m_rnti);
+              NS_LOG_DEBUG (this << " UE discarded for CQI = 0, RNTI " << uldci.m_rnti);
               // remove UE from allocation map
               for (uint16_t i = uldci.m_rbStart; i < uldci.m_rbStart + uldci.m_rbLen; i++)
                 {
@@ -1757,9 +1758,7 @@ FdBetFfMacScheduler::DoSchedUlCqiInfoReq (const struct FfMacSchedSapProvider::Sc
             return;
           }
       }
-    case FfMacScheduler::ALL_UL_CQI:
       break;
-
     default:
       NS_FATAL_ERROR ("Unknown UL CQI type");
     }
@@ -1991,7 +1990,7 @@ FdBetFfMacScheduler::UpdateDlRlcBufferInfo (uint16_t rnti, uint8_t lcid, uint16_
               // for SRB1 (using RLC AM) it's better to
               // overestimate RLC overhead rather than
               // underestimate it and risk unneeded
-              // segmentation which increases delay 
+              // segmentation which increases delay
               rlcOverhead = 4;
             }
           else

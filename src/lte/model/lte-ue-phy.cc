@@ -1,6 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2010 TELEMATICS LAB, DEE - Politecnico di Bari
+ * Copyright (c) 2016, University of Padova, Dep. of Information Engineering, SIGNET lab
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -18,6 +19,9 @@
  * Author: Giuseppe Piro  <g.piro@poliba.it>
  *         Marco Miozzo <marco.miozzo@cttc.es>
  *         Nicola Baldo <nbaldo@cttc.es>
+ *
+ * Modified by: Michele Polese <michele.polese@gmail.com>
+ *          Dual Connectivity functionalities
  */
 
 #include <ns3/object-factory.h>
@@ -55,13 +59,13 @@ NS_LOG_COMPONENT_DEFINE ("LteUePhy");
  * events. The duration of one symbol is TTI/14 (rounded). In other words,
  * duration of data portion of UL subframe = 1 ms * (13/14) - 1 ns.
  */
-static const Time UL_DATA_DURATION = NanoSeconds (1e6 - 71429 - 1); 
+static const Time UL_DATA_DURATION = NanoSeconds (1e6 - 71429 - 1);
 
 /**
  * Delay from subframe start to transmission of SRS.
  * Equals to "TTI length - 1 symbol for SRS".
  */
-static const Time UL_SRS_DELAY_FROM_SUBFRAME_START = NanoSeconds (1e6 - 71429); 
+static const Time UL_SRS_DELAY_FROM_SUBFRAME_START = NanoSeconds (1e6 - 71429);
 
 
 
@@ -146,8 +150,6 @@ LteUePhy::LteUePhy ()
 
 LteUePhy::LteUePhy (Ptr<LteSpectrumPhy> dlPhy, Ptr<LteSpectrumPhy> ulPhy)
   : LtePhy (dlPhy, ulPhy),
-    m_p10CqiPeriodicity (MilliSeconds (1)),  // ideal behavior
-    m_a30CqiPeriodicity (MilliSeconds (1)),  // ideal behavior
     m_uePhySapUser (0),
     m_ueCphySapUser (0),
     m_state (CELL_SEARCH),
@@ -200,7 +202,7 @@ LteUePhy::GetTypeId (void)
     .AddAttribute ("TxPower",
                    "Transmission power in dBm",
                    DoubleValue (10.0),
-                   MakeDoubleAccessor (&LteUePhy::SetTxPower, 
+                   MakeDoubleAccessor (&LteUePhy::SetTxPower,
                                        &LteUePhy::GetTxPower),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("NoiseFigure",
@@ -212,7 +214,7 @@ LteUePhy::GetTypeId (void)
                    " are connected to sources at the standard noise temperature T0.\" "
                    "In this model, we consider T0 = 290K.",
                    DoubleValue (9.0),
-                   MakeDoubleAccessor (&LteUePhy::SetNoiseFigure, 
+                   MakeDoubleAccessor (&LteUePhy::SetNoiseFigure,
                                        &LteUePhy::GetNoiseFigure),
                    MakeDoubleChecker<double> ())
     .AddAttribute ("TxMode1Gain",
@@ -286,6 +288,12 @@ LteUePhy::GetTypeId (void)
                    TimeValue (MilliSeconds (200)),
                    MakeTimeAccessor (&LteUePhy::m_ueMeasurementsFilterPeriod),
                    MakeTimeChecker ())
+    .AddAttribute ("DownlinkCqiPeriodicity",
+                   "Periodicity in milliseconds for reporting the"
+                   "wideband and subband downlink CQIs to the eNB",
+                   TimeValue (MilliSeconds (1)),
+                   MakeTimeAccessor (&LteUePhy::SetDownlinkCqiPeriodicity),
+                   MakeTimeChecker ())
     .AddTraceSource ("ReportUeMeasurements",
                      "Report UE measurements RSRP (dBm) and RSRQ (dB).",
                      MakeTraceSourceAccessor (&LteUePhy::m_reportUeMeasurements),
@@ -325,7 +333,7 @@ LteUePhy::DoInitialize ()
   else
     {
       Simulator::ScheduleNow (&LteUePhy::SubframeIndication, this, 1, 1);
-    }  
+    }
   LtePhy::DoInitialize ();
 }
 
@@ -468,7 +476,7 @@ LteUePhy::CreateTxPowerSpectralDensity ()
 {
   NS_LOG_FUNCTION (this);
   LteSpectrumValueHelper psdHelper;
-  Ptr<SpectrumValue> psd = psdHelper.CreateTxPowerSpectralDensity (m_ulEarfcn, m_ulBandwidth, m_txPower, GetSubChannelsForTransmission ());
+  Ptr<SpectrumValue> psd = psdHelper.CreateUlTxPowerSpectralDensity (m_ulEarfcn, m_ulBandwidth, m_txPower, GetSubChannelsForTransmission ());
 
   return psd;
 }
@@ -477,7 +485,7 @@ void
 LteUePhy::GenerateCtrlCqiReport (const SpectrumValue& sinr)
 {
   NS_LOG_FUNCTION (this);
-  
+
   GenerateCqiRsrpRsrq (sinr);
 }
 
@@ -494,7 +502,7 @@ LteUePhy::GenerateCqiRsrpRsrq (const SpectrumValue& sinr)
       // check periodic wideband CQI
       if (Simulator::Now () > m_p10CqiLast + m_p10CqiPeriodicity)
         {
-          Ptr<LteUeNetDevice> thisDevice = GetDevice ()->GetObject<LteUeNetDevice> ();
+          //Ptr<LteUeNetDevice> thisDevice = GetDevice ()->GetObject<LteUeNetDevice> ();
           Ptr<DlCqiLteControlMessage> msg = CreateDlCqiFeedbackMessage (sinr);
           if (msg)
             {
@@ -505,7 +513,7 @@ LteUePhy::GenerateCqiRsrpRsrq (const SpectrumValue& sinr)
       // check aperiodic high-layer configured subband CQI
       if  (Simulator::Now () > m_a30CqiLast + m_a30CqiPeriodicity)
         {
-          Ptr<LteUeNetDevice> thisDevice = GetDevice ()->GetObject<LteUeNetDevice> ();
+          //Ptr<LteUeNetDevice> thisDevice = GetDevice ()->GetObject<LteUeNetDevice> ();
           Ptr<DlCqiLteControlMessage> msg = CreateDlCqiFeedbackMessage (sinr);
           if (msg)
             {
@@ -527,8 +535,8 @@ LteUePhy::GenerateCqiRsrpRsrq (const SpectrumValue& sinr)
       for (it = m_rsReceivedPower.ConstValuesBegin (); it != m_rsReceivedPower.ConstValuesEnd (); it++)
         {
           // convert PSD [W/Hz] to linear power [W] for the single RE
-          // we consider only one RE for the RS since the channel is 
-          // flat within the same RB 
+          // we consider only one RE for the RS since the channel is
+          // flat within the same RB
           double powerTxW = ((*it) * 180000.0) / 12.0;
           sum += powerTxW;
           rbNum++;
@@ -644,13 +652,13 @@ LteUePhy::GenerateMixedCqiReport (const SpectrumValue& sinr)
   uint32_t modulo = m_dlBandwidth % rbgSize;
   double avgMixedSinr = 0;
   uint32_t usedRbgNum = 0;
-  for(uint32_t i = 0; i < (m_dlBandwidth-1-modulo); i++) 
+  for(uint32_t i = 0; i < (m_dlBandwidth-1-modulo); i++)
     {
       usedRbgNum++;
       avgMixedSinr+=mixedSinr[i];
     }
   avgMixedSinr = avgMixedSinr/usedRbgNum;
-  for(uint32_t i = 0; i < modulo; i++) 
+  for(uint32_t i = 0; i < modulo; i++)
     {
       mixedSinr[m_dlBandwidth-1-i] = avgMixedSinr;
     }
@@ -844,6 +852,14 @@ LteUePhy::ReportUeMeasurements ()
 }
 
 void
+LteUePhy::SetDownlinkCqiPeriodicity (Time cqiPeriodicity)
+{
+  NS_LOG_FUNCTION (this << cqiPeriodicity);
+  m_a30CqiPeriodicity = cqiPeriodicity;
+  m_p10CqiPeriodicity = cqiPeriodicity;
+}
+
+void
 LteUePhy::DoSendLteControlMessage (Ptr<LteControlMessage> msg)
 {
   NS_LOG_FUNCTION (this << msg);
@@ -851,7 +867,7 @@ LteUePhy::DoSendLteControlMessage (Ptr<LteControlMessage> msg)
   SetControlMessages (msg);
 }
 
-void 
+void
 LteUePhy::DoSendRachPreamble (uint32_t raPreambleId, uint32_t raRnti)
 {
   NS_LOG_FUNCTION (this << raPreambleId);
@@ -964,6 +980,7 @@ LteUePhy::ReceiveLteControlMessageList (std::list<Ptr<LteControlMessage> > msgLi
       else if (msg->GetMessageType () == LteControlMessage::RAR)
         {
           Ptr<RarLteControlMessage> rarMsg = DynamicCast<RarLteControlMessage> (msg);
+          NS_LOG_INFO("Rx rar in LteUePhy, rarMsg rnti " << rarMsg->GetRaRnti() << " m_raRnti " << m_raRnti);
           if (rarMsg->GetRaRnti () == m_raRnti)
             {
               for (std::list<RarLteControlMessage::Rar>::const_iterator it = rarMsg->RarListBegin (); it != rarMsg->RarListEnd (); ++it)
@@ -1086,6 +1103,8 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
   NS_LOG_FUNCTION (this << frameNo << subframeNo);
 
   NS_ASSERT_MSG (frameNo > 0, "the SRS index check code assumes that frameNo starts at 1");
+  NS_LOG_INFO ("Lte UE " << m_rnti << " frame " << frameNo << " subframe " << subframeNo);
+
 
   // refresh internal variables
   m_rsReceivedPowerUpdated = false;
@@ -1112,7 +1131,7 @@ LteUePhy::SubframeIndication (uint32_t frameNo, uint32_t subframeNo)
           if ((((frameNo-1)*10 + (subframeNo-1)) % m_srsPeriodicity) == m_srsSubframeOffset)
             {
               NS_LOG_INFO ("frame " << frameNo << " subframe " << subframeNo << " sending SRS (offset=" << m_srsSubframeOffset << ", period=" << m_srsPeriodicity << ")");
-              m_sendSrsEvent = Simulator::Schedule (UL_SRS_DELAY_FROM_SUBFRAME_START, 
+              m_sendSrsEvent = Simulator::Schedule (UL_SRS_DELAY_FROM_SUBFRAME_START,
                                                     &LteUePhy::SendSrs,
                                                     this);
             }
@@ -1301,7 +1320,7 @@ LteUePhy::DoSetDlBandwidth (uint8_t dlBandwidth)
 }
 
 
-void 
+void
 LteUePhy::DoConfigureUplink (uint32_t ulEarfcn, uint8_t ulBandwidth)
 {
   m_ulEarfcn = ulEarfcn;
@@ -1315,7 +1334,7 @@ LteUePhy::DoConfigureReferenceSignalPower (int8_t referenceSignalPower)
   NS_LOG_FUNCTION (this);
   m_powerControl->ConfigureReferenceSignalPower (referenceSignalPower);
 }
- 
+
 void
 LteUePhy::DoSetRnti (uint16_t rnti)
 {
@@ -1325,7 +1344,7 @@ LteUePhy::DoSetRnti (uint16_t rnti)
   m_powerControl->SetCellId (m_cellId);
   m_powerControl->SetRnti (m_rnti);
 }
- 
+
 void
 LteUePhy::DoSetTransmissionMode (uint8_t txMode)
 {
@@ -1355,43 +1374,50 @@ LteUePhy::DoSetPa (double pa)
   m_paLinear = pow (10,(pa/10));
 }
 
-void 
+void
+LteUePhy::DoSetRsrpFilterCoefficient (uint8_t rsrpFilterCoefficient)
+{
+  NS_LOG_FUNCTION (this << (uint16_t) (rsrpFilterCoefficient));
+  m_powerControl->SetRsrpFilterCoefficient (rsrpFilterCoefficient);
+}
+
+void
 LteUePhy::SetTxMode1Gain (double gain)
 {
   SetTxModeGain (1, gain);
 }
 
-void 
+void
 LteUePhy::SetTxMode2Gain (double gain)
 {
   SetTxModeGain (2, gain);
 }
 
-void 
+void
 LteUePhy::SetTxMode3Gain (double gain)
 {
   SetTxModeGain (3, gain);
 }
 
-void 
+void
 LteUePhy::SetTxMode4Gain (double gain)
 {
   SetTxModeGain (4, gain);
 }
 
-void 
+void
 LteUePhy::SetTxMode5Gain (double gain)
 {
   SetTxModeGain (5, gain);
 }
 
-void 
+void
 LteUePhy::SetTxMode6Gain (double gain)
 {
   SetTxModeGain (6, gain);
 }
 
-void 
+void
 LteUePhy::SetTxMode7Gain (double gain)
 {
   SetTxModeGain (7, gain);

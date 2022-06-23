@@ -1,6 +1,7 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2011,2012 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
+ * Copyright (c) 2016, University of Padova, Dep. of Information Engineering, SIGNET lab
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -15,8 +16,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Manuel Requena <manuel.requena@cttc.es> 
+ * Author: Manuel Requena <manuel.requena@cttc.es>
  *         Nicola Baldo <nbaldo@cttc.es>
+ *
+ * Modified by: Michele Polese <michele.polese@gmail.com>
+ *          Dual Connectivity functionalities
  */
 
 #ifndef LTE_RLC_TM_H
@@ -53,20 +57,17 @@ public:
 
   /**
    * MAC SAP
-   * 
-   * \param bytes number of bytes
-   * \param layer the layer
-   * \param harqId HARQ ID
-   * \param componentCarrierId component carrier ID
-   * \param rnti the RNTI
-   * \param lcid the LCID
+   *
+   * \param txOpParams the LteMacSapUser::TxOpportunityParameters
    */
-  virtual void DoNotifyTxOpportunity (uint32_t bytes, uint8_t layer, uint8_t harqId, uint8_t componentCarrierId, uint16_t rnti, uint8_t lcid);
+  virtual void DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpParams);
   /**
    * Notify HARQ deliver failure
    */
   virtual void DoNotifyHarqDeliveryFailure ();
-  virtual void DoReceivePdu (Ptr<Packet> p, uint16_t rnti, uint8_t lcid);
+  virtual void DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams);
+
+  virtual void DoSendMcPdcpSdu(EpcX2Sap::UeDataParams params);
 
 private:
   /// Expire RBS timer function

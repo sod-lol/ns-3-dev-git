@@ -33,6 +33,7 @@
 #include <ns3/ptr.h>
 #include "ns3/radio-bearer-stats-calculator.h"
 #include <ns3/constant-position-mobility-model.h>
+#include <ns3/ff-mac-scheduler.h>
 #include "lte-test-tdmt-ff-mac-scheduler.h"
 #include <ns3/eps-bearer.h>
 #include <ns3/node-container.h>
@@ -48,6 +49,9 @@
 #include <ns3/lte-ue-phy.h>
 #include <ns3/boolean.h>
 #include <ns3/enum.h>
+
+
+#include "lte-test-tdmt-ff-mac-scheduler.h"
 
 using namespace ns3;
 
@@ -79,7 +83,7 @@ LenaTestTdMtFfMacSchedulerSuite::LenaTestTdMtFfMacSchedulerSuite ()
   AddTestCase (new LenaTdMtFfMacSchedulerTestCase (3,0,2196000,749000,errorModel), TestCase::QUICK);
   AddTestCase (new LenaTdMtFfMacSchedulerTestCase (6,0,2196000,373000, errorModel), TestCase::EXTENSIVE);
   AddTestCase (new LenaTdMtFfMacSchedulerTestCase (12,0,2196000,184670, errorModel), TestCase::EXTENSIVE);
-  
+
   // DOWNLINK - DISTANCE 4800 -> MCS 22 -> Itbs 20 (from table 7.1.7.2.1-1 of 36.213)
   // 1 user -> 24 PRB at Itbs 20 -> 1383 -> 1383000 bytes/sec for one UE; 0 bytes/sec for other UEs
   // 3 users -> 1383000 among 3 users -> 1383000 bytes/sec for one UE; 0 bytes/sec for other UEs
@@ -127,7 +131,7 @@ LenaTestTdMtFfMacSchedulerSuite::LenaTestTdMtFfMacSchedulerSuite ()
   AddTestCase (new LenaTdMtFfMacSchedulerTestCase (3,10000,775000,137000,errorModel), TestCase::EXTENSIVE);
   AddTestCase (new LenaTdMtFfMacSchedulerTestCase (6,10000,775000,67000,errorModel), TestCase::EXTENSIVE);
   AddTestCase (new LenaTdMtFfMacSchedulerTestCase (12,10000,775000,32667,errorModel), TestCase::EXTENSIVE);
- 
+
   // DONWLINK - DISTANCE 20000 -> MCS 8 -> Itbs 8 (from table 7.1.7.2.1-1 of 36.213)
   // 1 user -> 24 PRB at Itbs 8 -> 421 -> 421000 bytes/sec for one UE; 0 bytes/sec for other UEs
   // 3 users -> 421000 among 3 users -> 421000 bytes/sec for one UE; 0 bytes/sec for other UEs
@@ -144,9 +148,6 @@ LenaTestTdMtFfMacSchedulerSuite::LenaTestTdMtFfMacSchedulerSuite ()
   AddTestCase (new LenaTdMtFfMacSchedulerTestCase (6,20000,421000,22000,errorModel), TestCase::EXTENSIVE);
   AddTestCase (new LenaTdMtFfMacSchedulerTestCase (12,20000,421000,12000,errorModel), TestCase::EXTENSIVE);
 
-  // DOWNLINK - DISTANCE 100000 -> CQI == 0 -> out of range -> 0 bytes/sec
-  // UPLINK - DISTANCE 100000 -> CQI == 0 -> out of range -> 0 bytes/sec
-  AddTestCase (new LenaTdMtFfMacSchedulerTestCase (1,100000,0,0,errorModel), TestCase::QUICK);
 }
 
 static LenaTestTdMtFfMacSchedulerSuite lenaTestTdMtFfMacSchedulerSuite;
@@ -154,15 +155,15 @@ static LenaTestTdMtFfMacSchedulerSuite lenaTestTdMtFfMacSchedulerSuite;
 
 // --------------- T E S T - C A S E ------------------------------
 
-std::string 
-LenaTdMtFfMacSchedulerTestCase::BuildNameString (uint16_t nUser, double dist)
+std::string
+LenaTdMtFfMacSchedulerTestCase::BuildNameString (uint16_t nUser, uint16_t dist)
 {
   std::ostringstream oss;
   oss << nUser << " UEs, distance " << dist << " m";
   return oss.str ();
 }
 
-LenaTdMtFfMacSchedulerTestCase::LenaTdMtFfMacSchedulerTestCase (uint16_t nUser, double dist, double thrRefDl, double thrRefUl, bool errorModelEnabled)
+LenaTdMtFfMacSchedulerTestCase::LenaTdMtFfMacSchedulerTestCase (uint16_t nUser, uint16_t dist, double thrRefDl, double thrRefUl, bool errorModelEnabled)
   : TestCase (BuildNameString (nUser, dist)),
     m_nUser (nUser),
     m_dist (dist),
@@ -201,6 +202,10 @@ LenaTdMtFfMacSchedulerTestCase::DoRun (void)
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
   lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
 
+  // set DL and UL bandwidth
+  lteHelper->SetEnbDeviceAttribute ("DlBandwidth", UintegerValue (25));
+  lteHelper->SetEnbDeviceAttribute ("UlBandwidth", UintegerValue (25));
+
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
   NodeContainer ueNodes;
@@ -218,6 +223,7 @@ LenaTdMtFfMacSchedulerTestCase::DoRun (void)
   NetDeviceContainer enbDevs;
   NetDeviceContainer ueDevs;
   lteHelper->SetSchedulerType ("ns3::TdMtFfMacScheduler");
+  lteHelper->SetSchedulerAttribute ("UlCqiFilter", EnumValue (FfMacScheduler::SRS_UL_CQI));
   enbDevs = lteHelper->InstallEnbDevice (enbNodes);
   ueDevs = lteHelper->InstallUeDevice (ueNodes);
 
@@ -228,8 +234,8 @@ LenaTdMtFfMacSchedulerTestCase::DoRun (void)
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
   lteHelper->ActivateDataRadioBearer (ueDevs, bearer);
-  
- 
+
+
   Ptr<LteEnbNetDevice> lteEnbDev = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ();
   Ptr<LteEnbPhy> enbPhy = lteEnbDev->GetPhy ();
   enbPhy->SetAttribute ("TxPower", DoubleValue (30.0));
@@ -313,8 +319,8 @@ LenaTdMtFfMacSchedulerTestCase::DoRun (void)
     }
   /**
   * Check that the assignation is done in a "proportional fair" manner among users
-  * with equal SINRs: the bandwidth should be distributed according to the 
-  * ratio of the estimated throughput per TTI of each user; therefore equally 
+  * with equal SINRs: the bandwidth should be distributed according to the
+  * ratio of the estimated throughput per TTI of each user; therefore equally
   * partitioning the whole bandwidth achievable from a single users in a TTI
   */
   for (int i = 0; i < m_nUser; i++)
@@ -324,4 +330,3 @@ LenaTdMtFfMacSchedulerTestCase::DoRun (void)
   Simulator::Destroy ();
 
 }
-

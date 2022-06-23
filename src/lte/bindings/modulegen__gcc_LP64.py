@@ -20,6 +20,10 @@ def module_init():
 def register_types(module):
     root_module = module.get_root()
     
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDiscSizePolicy [enumeration]
+    module.add_enum('QueueDiscSizePolicy', ['SINGLE_INTERNAL_QUEUE', 'SINGLE_CHILD_QUEUE_DISC', 'MULTIPLE_QUEUES', 'NO_LIMITS'], import_from_module='ns.traffic-control')
+    ## queue-size.h (module 'network'): ns3::QueueSizeUnit [enumeration]
+    module.add_enum('QueueSizeUnit', ['PACKETS', 'BYTES'], import_from_module='ns.network')
     ## log.h (module 'core'): ns3::LogLevel [enumeration]
     module.add_enum('LogLevel', ['LOG_NONE', 'LOG_ERROR', 'LOG_LEVEL_ERROR', 'LOG_WARN', 'LOG_LEVEL_WARN', 'LOG_DEBUG', 'LOG_LEVEL_DEBUG', 'LOG_INFO', 'LOG_LEVEL_INFO', 'LOG_FUNCTION', 'LOG_LEVEL_FUNCTION', 'LOG_LOGIC', 'LOG_LEVEL_LOGIC', 'LOG_ALL', 'LOG_LEVEL_ALL', 'LOG_PREFIX_FUNC', 'LOG_PREFIX_TIME', 'LOG_PREFIX_NODE', 'LOG_PREFIX_LEVEL', 'LOG_PREFIX_ALL'], import_from_module='ns.core')
     ## ff-mac-common.h (module 'lte'): ns3::Result_e [enumeration]
@@ -40,6 +44,9 @@ def register_types(module):
     module.add_class('AttributeConstructionList', import_from_module='ns.core')
     ## attribute-construction-list.h (module 'core'): ns3::AttributeConstructionList::Item [struct]
     module.add_class('Item', import_from_module='ns.core', outer_class=root_module['ns3::AttributeConstructionList'])
+    typehandlers.add_type_alias(u'std::list< ns3::AttributeConstructionList::Item > const_iterator', u'ns3::AttributeConstructionList::CIterator')
+    typehandlers.add_type_alias(u'std::list< ns3::AttributeConstructionList::Item > const_iterator*', u'ns3::AttributeConstructionList::CIterator*')
+    typehandlers.add_type_alias(u'std::list< ns3::AttributeConstructionList::Item > const_iterator&', u'ns3::AttributeConstructionList::CIterator&')
     ## spectrum-model.h (module 'spectrum'): ns3::BandInfo [struct]
     module.add_class('BandInfo', import_from_module='ns.spectrum')
     ## buffer.h (module 'network'): ns3::Buffer [class]
@@ -106,6 +113,12 @@ def register_types(module):
     module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::NixVector'])
     ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::Packet> [struct]
     module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::Packet'])
+    ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::QueueItem> [struct]
+    module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::QueueItem'])
+    ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::S1apConnectionInfo> [struct]
+    module.add_class('DefaultDeleter', template_parameters=['ns3::S1apConnectionInfo'])
+    ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::S1apIfaceInfo> [struct]
+    module.add_class('DefaultDeleter', template_parameters=['ns3::S1apIfaceInfo'])
     ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::SpectrumModel> [struct]
     module.add_class('DefaultDeleter', import_from_module='ns.core', template_parameters=['ns3::SpectrumModel'])
     ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::SpectrumSignalParameters> [struct]
@@ -188,20 +201,24 @@ def register_types(module):
     module.add_class('ModifyBearerRequestMessage', parent=root_module['ns3::EpcS11Sap::GtpcMessage'], outer_class=root_module['ns3::EpcS11SapSgw'])
     ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSap [class]
     module.add_class('EpcS1apSap')
+    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSap::ErabSetupItem [struct]
+    module.add_class('ErabSetupItem', outer_class=root_module['ns3::EpcS1apSap'])
+    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSap::ErabSwitchedInDownlinkItem [struct]
+    module.add_class('ErabSwitchedInDownlinkItem', outer_class=root_module['ns3::EpcS1apSap'])
+    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSap::ErabSwitchedInUplinkItem [struct]
+    module.add_class('ErabSwitchedInUplinkItem', outer_class=root_module['ns3::EpcS1apSap'])
+    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSap::ErabToBeReleasedIndication [struct]
+    module.add_class('ErabToBeReleasedIndication', outer_class=root_module['ns3::EpcS1apSap'])
+    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSap::ErabToBeSetupItem [struct]
+    module.add_class('ErabToBeSetupItem', outer_class=root_module['ns3::EpcS1apSap'])
     ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSapEnb [class]
     module.add_class('EpcS1apSapEnb', parent=root_module['ns3::EpcS1apSap'])
-    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSapEnb::ErabSwitchedInUplinkItem [struct]
-    module.add_class('ErabSwitchedInUplinkItem', outer_class=root_module['ns3::EpcS1apSapEnb'])
-    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSapEnb::ErabToBeSetupItem [struct]
-    module.add_class('ErabToBeSetupItem', outer_class=root_module['ns3::EpcS1apSapEnb'])
+    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSapEnbProvider [class]
+    module.add_class('EpcS1apSapEnbProvider', parent=root_module['ns3::EpcS1apSap'])
     ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSapMme [class]
     module.add_class('EpcS1apSapMme', parent=root_module['ns3::EpcS1apSap'])
-    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSapMme::ErabSetupItem [struct]
-    module.add_class('ErabSetupItem', outer_class=root_module['ns3::EpcS1apSapMme'])
-    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSapMme::ErabSwitchedInDownlinkItem [struct]
-    module.add_class('ErabSwitchedInDownlinkItem', outer_class=root_module['ns3::EpcS1apSapMme'])
-    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSapMme::ErabToBeReleasedIndication [struct]
-    module.add_class('ErabToBeReleasedIndication', outer_class=root_module['ns3::EpcS1apSapMme'])
+    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSapMmeProvider [class]
+    module.add_class('EpcS1apSapMmeProvider', parent=root_module['ns3::EpcS1apSap'])
     ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap [class]
     module.add_class('EpcX2Sap')
     ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::UlInterferenceOverloadIndicationItem [enumeration]
@@ -224,6 +241,8 @@ def register_types(module):
     module.add_class('ErabToBeSetupItem', outer_class=root_module['ns3::EpcX2Sap'])
     ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::ErabsSubjectToStatusTransferItem [struct]
     module.add_class('ErabsSubjectToStatusTransferItem', outer_class=root_module['ns3::EpcX2Sap'])
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::HandoverFailedParams [struct]
+    module.add_class('HandoverFailedParams', outer_class=root_module['ns3::EpcX2Sap'])
     ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::HandoverPreparationFailureParams [struct]
     module.add_class('HandoverPreparationFailureParams', outer_class=root_module['ns3::EpcX2Sap'])
     ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::HandoverRequestAckParams [struct]
@@ -236,12 +255,22 @@ def register_types(module):
     module.add_class('RelativeNarrowbandTxBand', outer_class=root_module['ns3::EpcX2Sap'])
     ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::ResourceStatusUpdateParams [struct]
     module.add_class('ResourceStatusUpdateParams', outer_class=root_module['ns3::EpcX2Sap'])
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::RlcSetupRequest [struct]
+    module.add_class('RlcSetupRequest', outer_class=root_module['ns3::EpcX2Sap'])
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::SecondaryHandoverCompletedParams [struct]
+    module.add_class('SecondaryHandoverCompletedParams', outer_class=root_module['ns3::EpcX2Sap'])
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::SecondaryHandoverParams [struct]
+    module.add_class('SecondaryHandoverParams', outer_class=root_module['ns3::EpcX2Sap'])
     ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::SnStatusTransferParams [struct]
     module.add_class('SnStatusTransferParams', outer_class=root_module['ns3::EpcX2Sap'])
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::SwitchConnectionParams [struct]
+    module.add_class('SwitchConnectionParams', outer_class=root_module['ns3::EpcX2Sap'])
     ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::UeContextReleaseParams [struct]
     module.add_class('UeContextReleaseParams', outer_class=root_module['ns3::EpcX2Sap'])
     ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::UeDataParams [struct]
     module.add_class('UeDataParams', outer_class=root_module['ns3::EpcX2Sap'])
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::UeImsiSinrParams [struct]
+    module.add_class('UeImsiSinrParams', outer_class=root_module['ns3::EpcX2Sap'])
     ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::UlHighInterferenceInformationItem [struct]
     module.add_class('UlHighInterferenceInformationItem', outer_class=root_module['ns3::EpcX2Sap'])
     ## epc-x2-sap.h (module 'lte'): ns3::EpcX2SapProvider [class]
@@ -251,7 +280,7 @@ def register_types(module):
     ## eps-bearer.h (module 'lte'): ns3::EpsBearer [struct]
     module.add_class('EpsBearer')
     ## eps-bearer.h (module 'lte'): ns3::EpsBearer::Qci [enumeration]
-    module.add_enum('Qci', ['GBR_CONV_VOICE', 'GBR_CONV_VIDEO', 'GBR_GAMING', 'GBR_NON_CONV_VIDEO', 'NGBR_IMS', 'NGBR_VIDEO_TCP_OPERATOR', 'NGBR_VOICE_VIDEO_GAMING', 'NGBR_VIDEO_TCP_PREMIUM', 'NGBR_VIDEO_TCP_DEFAULT'], outer_class=root_module['ns3::EpsBearer'])
+    module.add_enum('Qci', ['GBR_CONV_VOICE', 'GBR_CONV_VIDEO', 'GBR_GAMING', 'GBR_NON_CONV_VIDEO', 'GBR_MCPTT', 'GBR_NON_MCPTT', 'GBR_MC_VIDEO', 'GBR_V2X_MESSAGES', 'NGBR_IMS', 'NGBR_VIDEO_TCP_OPERATOR', 'NGBR_VOICE_VIDEO_GAMING', 'NGBR_VIDEO_TCP_PREMIUM', 'NGBR_VIDEO_TCP_DEFAULT', 'NGBR_MC_DELAY_SENSI_SIG', 'NGBR_MC_DATA', 'NGBR_V2X_MESSAGES', 'NGBR_LOW_LAT_EMBB_AR', 'GBR_DISC_AUTO_S_PACKETS', 'GBR_DISC_AUTO_B_PACKETS', 'GBR_INTEL_TRANSPORT_SYS', 'GBR_ELECTRIC_DIST_HV'], outer_class=root_module['ns3::EpsBearer'])
     ## lte-common.h (module 'lte'): ns3::EutranMeasurementMapping [class]
     module.add_class('EutranMeasurementMapping')
     ## event-id.h (module 'core'): ns3::EventId [class]
@@ -360,6 +389,9 @@ def register_types(module):
     module.add_enum('InterfaceAddressScope_e', ['HOST', 'LINK', 'GLOBAL'], outer_class=root_module['ns3::Ipv4InterfaceAddress'], import_from_module='ns.internet')
     ## ipv4-interface-container.h (module 'internet'): ns3::Ipv4InterfaceContainer [class]
     module.add_class('Ipv4InterfaceContainer', import_from_module='ns.internet')
+    typehandlers.add_type_alias(u'std::vector< std::pair< ns3::Ptr< ns3::Ipv4 >, unsigned int > > const_iterator', u'ns3::Ipv4InterfaceContainer::Iterator')
+    typehandlers.add_type_alias(u'std::vector< std::pair< ns3::Ptr< ns3::Ipv4 >, unsigned int > > const_iterator*', u'ns3::Ipv4InterfaceContainer::Iterator*')
+    typehandlers.add_type_alias(u'std::vector< std::pair< ns3::Ptr< ns3::Ipv4 >, unsigned int > > const_iterator&', u'ns3::Ipv4InterfaceContainer::Iterator&')
     ## ipv4-address.h (module 'network'): ns3::Ipv4Mask [class]
     module.add_class('Ipv4Mask', import_from_module='ns.network')
     ## ipv6-address.h (module 'network'): ns3::Ipv6Address [class]
@@ -376,10 +408,16 @@ def register_types(module):
     module.add_enum('Scope_e', ['HOST', 'LINKLOCAL', 'GLOBAL'], outer_class=root_module['ns3::Ipv6InterfaceAddress'], import_from_module='ns.internet')
     ## ipv6-interface-container.h (module 'internet'): ns3::Ipv6InterfaceContainer [class]
     module.add_class('Ipv6InterfaceContainer', import_from_module='ns.internet')
+    typehandlers.add_type_alias(u'std::vector< std::pair< ns3::Ptr< ns3::Ipv6 >, unsigned int > > const_iterator', u'ns3::Ipv6InterfaceContainer::Iterator')
+    typehandlers.add_type_alias(u'std::vector< std::pair< ns3::Ptr< ns3::Ipv6 >, unsigned int > > const_iterator*', u'ns3::Ipv6InterfaceContainer::Iterator*')
+    typehandlers.add_type_alias(u'std::vector< std::pair< ns3::Ptr< ns3::Ipv6 >, unsigned int > > const_iterator&', u'ns3::Ipv6InterfaceContainer::Iterator&')
     ## ipv6-address.h (module 'network'): ns3::Ipv6Prefix [class]
     module.add_class('Ipv6Prefix', import_from_module='ns.network')
     ## log.h (module 'core'): ns3::LogComponent [class]
     module.add_class('LogComponent', import_from_module='ns.core')
+    typehandlers.add_type_alias(u'std::map< std::string, ns3::LogComponent * >', u'ns3::LogComponent::ComponentList')
+    typehandlers.add_type_alias(u'std::map< std::string, ns3::LogComponent * >*', u'ns3::LogComponent::ComponentList*')
+    typehandlers.add_type_alias(u'std::map< std::string, ns3::LogComponent * >&', u'ns3::LogComponent::ComponentList&')
     ## ff-mac-common.h (module 'lte'): ns3::LogicalChannelConfigListElement_s [struct]
     module.add_class('LogicalChannelConfigListElement_s')
     ## ff-mac-common.h (module 'lte'): ns3::LogicalChannelConfigListElement_s::Direction_e [enumeration]
@@ -419,7 +457,9 @@ def register_types(module):
     ## lte-enb-cphy-sap.h (module 'lte'): ns3::LteEnbCphySapProvider [class]
     module.add_class('LteEnbCphySapProvider', allow_subclassing=True)
     ## lte-enb-cphy-sap.h (module 'lte'): ns3::LteEnbCphySapUser [class]
-    module.add_class('LteEnbCphySapUser')
+    module.add_class('LteEnbCphySapUser', allow_subclassing=True)
+    ## lte-enb-cphy-sap.h (module 'lte'): ns3::LteEnbCphySapUser::UeAssociatedSinrInfo [struct]
+    module.add_class('UeAssociatedSinrInfo', outer_class=root_module['ns3::LteEnbCphySapUser'])
     ## lte-enb-phy-sap.h (module 'lte'): ns3::LteEnbPhySapProvider [class]
     module.add_class('LteEnbPhySapProvider', allow_subclassing=True)
     ## lte-enb-phy-sap.h (module 'lte'): ns3::LteEnbPhySapUser [class]
@@ -450,6 +490,10 @@ def register_types(module):
     module.add_class('TransmitPduParameters', outer_class=root_module['ns3::LteMacSapProvider'])
     ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapUser [class]
     module.add_class('LteMacSapUser', allow_subclassing=True)
+    ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapUser::ReceivePduParameters [struct]
+    module.add_class('ReceivePduParameters', outer_class=root_module['ns3::LteMacSapUser'])
+    ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapUser::TxOpportunityParameters [struct]
+    module.add_class('TxOpportunityParameters', outer_class=root_module['ns3::LteMacSapUser'])
     ## lte-mi-error-model.h (module 'lte'): ns3::LteMiErrorModel [class]
     module.add_class('LteMiErrorModel')
     ## lte-pdcp-sap.h (module 'lte'): ns3::LtePdcpSapProvider [class]
@@ -466,6 +510,8 @@ def register_types(module):
     module.add_class('TransmitPdcpPduParameters', outer_class=root_module['ns3::LteRlcSapProvider'])
     ## lte-rlc-sap.h (module 'lte'): ns3::LteRlcSapUser [class]
     module.add_class('LteRlcSapUser', allow_subclassing=True)
+    ## lte-rlc.h (module 'lte'): ns3::LteRlcSpecificLteMacSapUser [class]
+    module.add_class('LteRlcSpecificLteMacSapUser', parent=root_module['ns3::LteMacSapUser'])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap [class]
     module.add_class('LteRrcSap')
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::ReestablishmentCause [enumeration]
@@ -597,7 +643,7 @@ def register_types(module):
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RlcConfig [struct]
     module.add_class('RlcConfig', outer_class=root_module['ns3::LteRrcSap'])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RlcConfig::direction [enumeration]
-    module.add_enum('direction', ['AM', 'UM_BI_DIRECTIONAL', 'UM_UNI_DIRECTIONAL_UL', 'UM_UNI_DIRECTIONAL_DL'], outer_class=root_module['ns3::LteRrcSap::RlcConfig'])
+    module.add_enum('direction', ['AM', 'UM_BI_DIRECTIONAL', 'UM_UNI_DIRECTIONAL_UL', 'UM_UNI_DIRECTIONAL_DL', 'UM_BI_DIRECTIONAL_LOWLAT'], outer_class=root_module['ns3::LteRrcSap::RlcConfig'])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RrcConnectionReconfiguration [struct]
     module.add_class('RrcConnectionReconfiguration', outer_class=root_module['ns3::LteRrcSap'])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RrcConnectionReconfigurationCompleted [struct]
@@ -620,6 +666,8 @@ def register_types(module):
     module.add_class('RrcConnectionSetup', outer_class=root_module['ns3::LteRrcSap'])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RrcConnectionSetupCompleted [struct]
     module.add_class('RrcConnectionSetupCompleted', outer_class=root_module['ns3::LteRrcSap'])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RrcConnectionSwitch [struct]
+    module.add_class('RrcConnectionSwitch', outer_class=root_module['ns3::LteRrcSap'])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SCellToAddMod [struct]
     module.add_class('SCellToAddMod', outer_class=root_module['ns3::LteRrcSap'])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::SoundingRsUlConfigCommon [struct]
@@ -696,6 +744,9 @@ def register_types(module):
     module.add_class('SetupParameters', outer_class=root_module['ns3::LteUeRrcSapUser'])
     ## mac48-address.h (module 'network'): ns3::Mac48Address [class]
     module.add_class('Mac48Address', import_from_module='ns.network')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Mac48Address )', u'ns3::Mac48Address::TracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Mac48Address )*', u'ns3::Mac48Address::TracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Mac48Address )&', u'ns3::Mac48Address::TracedCallback&')
     ## mac48-address.h (module 'network'): ns3::Mac48Address [class]
     root_module['ns3::Mac48Address'].implicitly_converts_to(root_module['ns3::Address'])
     ## mac64-address.h (module 'network'): ns3::Mac64Address [class]
@@ -716,8 +767,14 @@ def register_types(module):
     module.add_class('Names', import_from_module='ns.core')
     ## net-device-container.h (module 'network'): ns3::NetDeviceContainer [class]
     module.add_class('NetDeviceContainer', import_from_module='ns.network')
+    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::NetDevice > > const_iterator', u'ns3::NetDeviceContainer::Iterator')
+    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::NetDevice > > const_iterator*', u'ns3::NetDeviceContainer::Iterator*')
+    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::NetDevice > > const_iterator&', u'ns3::NetDeviceContainer::Iterator&')
     ## node-container.h (module 'network'): ns3::NodeContainer [class]
     module.add_class('NodeContainer', import_from_module='ns.network')
+    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::Node > > const_iterator', u'ns3::NodeContainer::Iterator')
+    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::Node > > const_iterator*', u'ns3::NodeContainer::Iterator*')
+    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::Node > > const_iterator&', u'ns3::NodeContainer::Iterator&')
     ## object-base.h (module 'core'): ns3::ObjectBase [class]
     module.add_class('ObjectBase', allow_subclassing=True, import_from_module='ns.core')
     ## object.h (module 'core'): ns3::ObjectDeleter [struct]
@@ -750,8 +807,16 @@ def register_types(module):
     module.add_enum('Phich_e', ['ACK', 'NACK'], outer_class=root_module['ns3::PhichListElement_s'])
     ## lte-common.h (module 'lte'): ns3::PhyReceptionStatParameters [struct]
     module.add_class('PhyReceptionStatParameters')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::PhyReceptionStatParameters const )', u'ns3::PhyReceptionStatParameters::TracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::PhyReceptionStatParameters const )*', u'ns3::PhyReceptionStatParameters::TracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::PhyReceptionStatParameters const )&', u'ns3::PhyReceptionStatParameters::TracedCallback&')
     ## lte-common.h (module 'lte'): ns3::PhyTransmissionStatParameters [struct]
     module.add_class('PhyTransmissionStatParameters')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::PhyTransmissionStatParameters const )', u'ns3::PhyTransmissionStatParameters::TracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::PhyTransmissionStatParameters const )*', u'ns3::PhyTransmissionStatParameters::TracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::PhyTransmissionStatParameters const )&', u'ns3::PhyTransmissionStatParameters::TracedCallback&')
+    ## queue-size.h (module 'network'): ns3::QueueSize [class]
+    module.add_class('QueueSize', import_from_module='ns.network')
     ## ff-mac-common.h (module 'lte'): ns3::RachListElement_s [struct]
     module.add_class('RachListElement_s')
     ## radio-bearer-stats-connector.h (module 'lte'): ns3::RadioBearerStatsConnector [class]
@@ -792,6 +857,10 @@ def register_types(module):
     module.add_class('TbStats_t')
     ## nstime.h (module 'core'): ns3::TimeWithUnit [class]
     module.add_class('TimeWithUnit', import_from_module='ns.core')
+    ## traced-value.h (module 'core'): ns3::TracedValue<bool> [class]
+    module.add_class('TracedValue', import_from_module='ns.core', template_parameters=['bool'])
+    ## traced-value.h (module 'core'): ns3::TracedValue<unsigned int> [class]
+    module.add_class('TracedValue', import_from_module='ns.core', template_parameters=['unsigned int'])
     ## lte-common.h (module 'lte'): ns3::TransmissionModesLayers [class]
     module.add_class('TransmissionModesLayers')
     ## type-id.h (module 'core'): ns3::TypeId [class]
@@ -804,6 +873,9 @@ def register_types(module):
     module.add_class('AttributeInformation', import_from_module='ns.core', outer_class=root_module['ns3::TypeId'])
     ## type-id.h (module 'core'): ns3::TypeId::TraceSourceInformation [struct]
     module.add_class('TraceSourceInformation', import_from_module='ns.core', outer_class=root_module['ns3::TypeId'])
+    typehandlers.add_type_alias(u'uint32_t', u'ns3::TypeId::hash_t')
+    typehandlers.add_type_alias(u'uint32_t*', u'ns3::TypeId::hash_t*')
+    typehandlers.add_type_alias(u'uint32_t&', u'ns3::TypeId::hash_t&')
     ## ff-mac-common.h (module 'lte'): ns3::UeCapabilities_s [struct]
     module.add_class('UeCapabilities_s')
     ## ff-mac-common.h (module 'lte'): ns3::UeSelected_s [struct]
@@ -852,6 +924,16 @@ def register_types(module):
     module.add_class('Chunk', import_from_module='ns.network', parent=root_module['ns3::ObjectBase'])
     ## lte-global-pathloss-database.h (module 'lte'): ns3::DownlinkLteGlobalPathlossDatabase [class]
     module.add_class('DownlinkLteGlobalPathlossDatabase', parent=root_module['ns3::LteGlobalPathlossDatabase'])
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2PdcpProvider [class]
+    module.add_class('EpcX2PdcpProvider', parent=root_module['ns3::EpcX2Sap'])
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2PdcpUser [class]
+    module.add_class('EpcX2PdcpUser', parent=root_module['ns3::EpcX2Sap'])
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2RlcProvider [class]
+    module.add_class('EpcX2RlcProvider', parent=root_module['ns3::EpcX2Sap'])
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2RlcUser [class]
+    module.add_class('EpcX2RlcUser', parent=root_module['ns3::EpcX2Sap'])
+    ## epc-x2-tag.h (module 'lte'): ns3::EpcX2Tag [class]
+    module.add_class('EpcX2Tag', parent=root_module['ns3::Tag'])
     ## eps-bearer-tag.h (module 'lte'): ns3::EpsBearerTag [class]
     module.add_class('EpsBearerTag', parent=root_module['ns3::Tag'])
     ## header.h (module 'network'): ns3::Header [class]
@@ -898,6 +980,30 @@ def register_types(module):
     module.add_enum('PollingBit_t', ['STATUS_REPORT_NOT_REQUESTED', 'STATUS_REPORT_IS_REQUESTED'], outer_class=root_module['ns3::LteRlcAmHeader'])
     ## lte-rlc-am-header.h (module 'lte'): ns3::LteRlcAmHeader::LastSegmentFlag_t [enumeration]
     module.add_enum('LastSegmentFlag_t', ['NO_LAST_PDU_SEGMENT', 'LAST_PDU_SEGMENT'], outer_class=root_module['ns3::LteRlcAmHeader'])
+    typehandlers.add_type_alias(u'ns3::LteRlcAmHeader::DataControlPdu_t', u'ns3::LteRlcAmHeader::DataControlPdu_t')
+    typehandlers.add_type_alias(u'ns3::LteRlcAmHeader::DataControlPdu_t*', u'ns3::LteRlcAmHeader::DataControlPdu_t*')
+    typehandlers.add_type_alias(u'ns3::LteRlcAmHeader::DataControlPdu_t&', u'ns3::LteRlcAmHeader::DataControlPdu_t&')
+    typehandlers.add_type_alias(u'ns3::LteRlcAmHeader::ControPduType_t', u'ns3::LteRlcAmHeader::ControPduType_t')
+    typehandlers.add_type_alias(u'ns3::LteRlcAmHeader::ControPduType_t*', u'ns3::LteRlcAmHeader::ControPduType_t*')
+    typehandlers.add_type_alias(u'ns3::LteRlcAmHeader::ControPduType_t&', u'ns3::LteRlcAmHeader::ControPduType_t&')
+    typehandlers.add_type_alias(u'ns3::LteRlcAmHeader::FramingInfoFirstByte_t', u'ns3::LteRlcAmHeader::FramingInfoFirstByte_t')
+    typehandlers.add_type_alias(u'ns3::LteRlcAmHeader::FramingInfoFirstByte_t*', u'ns3::LteRlcAmHeader::FramingInfoFirstByte_t*')
+    typehandlers.add_type_alias(u'ns3::LteRlcAmHeader::FramingInfoFirstByte_t&', u'ns3::LteRlcAmHeader::FramingInfoFirstByte_t&')
+    typehandlers.add_type_alias(u'ns3::LteRlcAmHeader::FramingInfoLastByte_t', u'ns3::LteRlcAmHeader::FramingInfoLastByte_t')
+    typehandlers.add_type_alias(u'ns3::LteRlcAmHeader::FramingInfoLastByte_t*', u'ns3::LteRlcAmHeader::FramingInfoLastByte_t*')
+    typehandlers.add_type_alias(u'ns3::LteRlcAmHeader::FramingInfoLastByte_t&', u'ns3::LteRlcAmHeader::FramingInfoLastByte_t&')
+    typehandlers.add_type_alias(u'ns3::LteRlcAmHeader::ExtensionBit_t', u'ns3::LteRlcAmHeader::ExtensionBit_t')
+    typehandlers.add_type_alias(u'ns3::LteRlcAmHeader::ExtensionBit_t*', u'ns3::LteRlcAmHeader::ExtensionBit_t*')
+    typehandlers.add_type_alias(u'ns3::LteRlcAmHeader::ExtensionBit_t&', u'ns3::LteRlcAmHeader::ExtensionBit_t&')
+    typehandlers.add_type_alias(u'ns3::LteRlcAmHeader::ResegmentationFlag_t', u'ns3::LteRlcAmHeader::ResegmentationFlag_t')
+    typehandlers.add_type_alias(u'ns3::LteRlcAmHeader::ResegmentationFlag_t*', u'ns3::LteRlcAmHeader::ResegmentationFlag_t*')
+    typehandlers.add_type_alias(u'ns3::LteRlcAmHeader::ResegmentationFlag_t&', u'ns3::LteRlcAmHeader::ResegmentationFlag_t&')
+    typehandlers.add_type_alias(u'ns3::LteRlcAmHeader::PollingBit_t', u'ns3::LteRlcAmHeader::PollingBit_t')
+    typehandlers.add_type_alias(u'ns3::LteRlcAmHeader::PollingBit_t*', u'ns3::LteRlcAmHeader::PollingBit_t*')
+    typehandlers.add_type_alias(u'ns3::LteRlcAmHeader::PollingBit_t&', u'ns3::LteRlcAmHeader::PollingBit_t&')
+    typehandlers.add_type_alias(u'ns3::LteRlcAmHeader::LastSegmentFlag_t', u'ns3::LteRlcAmHeader::LastSegmentFlag_t')
+    typehandlers.add_type_alias(u'ns3::LteRlcAmHeader::LastSegmentFlag_t*', u'ns3::LteRlcAmHeader::LastSegmentFlag_t*')
+    typehandlers.add_type_alias(u'ns3::LteRlcAmHeader::LastSegmentFlag_t&', u'ns3::LteRlcAmHeader::LastSegmentFlag_t&')
     ## lte-rlc-header.h (module 'lte'): ns3::LteRlcHeader [class]
     module.add_class('LteRlcHeader', parent=root_module['ns3::Header'])
     ## lte-rlc-header.h (module 'lte'): ns3::LteRlcHeader::ExtensionBit_t [enumeration]
@@ -906,22 +1012,53 @@ def register_types(module):
     module.add_enum('FramingInfoFirstByte_t', ['FIRST_BYTE', 'NO_FIRST_BYTE'], outer_class=root_module['ns3::LteRlcHeader'])
     ## lte-rlc-header.h (module 'lte'): ns3::LteRlcHeader::FramingInfoLastByte_t [enumeration]
     module.add_enum('FramingInfoLastByte_t', ['LAST_BYTE', 'NO_LAST_BYTE'], outer_class=root_module['ns3::LteRlcHeader'])
+    typehandlers.add_type_alias(u'ns3::LteRlcHeader::ExtensionBit_t', u'ns3::LteRlcHeader::ExtensionBit_t')
+    typehandlers.add_type_alias(u'ns3::LteRlcHeader::ExtensionBit_t*', u'ns3::LteRlcHeader::ExtensionBit_t*')
+    typehandlers.add_type_alias(u'ns3::LteRlcHeader::ExtensionBit_t&', u'ns3::LteRlcHeader::ExtensionBit_t&')
+    typehandlers.add_type_alias(u'ns3::LteRlcHeader::FramingInfoFirstByte_t', u'ns3::LteRlcHeader::FramingInfoFirstByte_t')
+    typehandlers.add_type_alias(u'ns3::LteRlcHeader::FramingInfoFirstByte_t*', u'ns3::LteRlcHeader::FramingInfoFirstByte_t*')
+    typehandlers.add_type_alias(u'ns3::LteRlcHeader::FramingInfoFirstByte_t&', u'ns3::LteRlcHeader::FramingInfoFirstByte_t&')
+    typehandlers.add_type_alias(u'ns3::LteRlcHeader::FramingInfoLastByte_t', u'ns3::LteRlcHeader::FramingInfoLastByte_t')
+    typehandlers.add_type_alias(u'ns3::LteRlcHeader::FramingInfoLastByte_t*', u'ns3::LteRlcHeader::FramingInfoLastByte_t*')
+    typehandlers.add_type_alias(u'ns3::LteRlcHeader::FramingInfoLastByte_t&', u'ns3::LteRlcHeader::FramingInfoLastByte_t&')
     ## lte-rlc-sdu-status-tag.h (module 'lte'): ns3::LteRlcSduStatusTag [class]
     module.add_class('LteRlcSduStatusTag', parent=root_module['ns3::Tag'])
     ## lte-rlc-sdu-status-tag.h (module 'lte'): ns3::LteRlcSduStatusTag::SduStatus_t [enumeration]
     module.add_enum('SduStatus_t', ['FULL_SDU', 'FIRST_SEGMENT', 'MIDDLE_SEGMENT', 'LAST_SEGMENT', 'ANY_SEGMENT'], outer_class=root_module['ns3::LteRlcSduStatusTag'])
+    typehandlers.add_type_alias(u'ns3::LteRlcSduStatusTag::SduStatus_t', u'ns3::LteRlcSduStatusTag::SduStatus_t')
+    typehandlers.add_type_alias(u'ns3::LteRlcSduStatusTag::SduStatus_t*', u'ns3::LteRlcSduStatusTag::SduStatus_t*')
+    typehandlers.add_type_alias(u'ns3::LteRlcSduStatusTag::SduStatus_t&', u'ns3::LteRlcSduStatusTag::SduStatus_t&')
     ## object.h (module 'core'): ns3::Object [class]
     module.add_class('Object', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::Object, ns3::ObjectBase, ns3::ObjectDeleter >'])
     ## object.h (module 'core'): ns3::Object::AggregateIterator [class]
     module.add_class('AggregateIterator', import_from_module='ns.core', outer_class=root_module['ns3::Object'])
     ## packet-burst.h (module 'network'): ns3::PacketBurst [class]
     module.add_class('PacketBurst', import_from_module='ns.network', parent=root_module['ns3::Object'])
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::PacketBurst const > )', u'ns3::PacketBurst::TracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::PacketBurst const > )*', u'ns3::PacketBurst::TracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::PacketBurst const > )&', u'ns3::PacketBurst::TracedCallback&')
+    ## packet-filter.h (module 'traffic-control'): ns3::PacketFilter [class]
+    module.add_class('PacketFilter', import_from_module='ns.traffic_control', parent=root_module['ns3::Object'])
     ## lte-pdcp-tag.h (module 'lte'): ns3::PdcpTag [class]
     module.add_class('PdcpTag', parent=root_module['ns3::Tag'])
     ## propagation-delay-model.h (module 'propagation'): ns3::PropagationDelayModel [class]
     module.add_class('PropagationDelayModel', import_from_module='ns.propagation', parent=root_module['ns3::Object'])
     ## propagation-loss-model.h (module 'propagation'): ns3::PropagationLossModel [class]
     module.add_class('PropagationLossModel', import_from_module='ns.propagation', parent=root_module['ns3::Object'])
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc [class]
+    module.add_class('QueueDisc', import_from_module='ns.traffic_control', parent=root_module['ns3::Object'])
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::WakeMode [enumeration]
+    module.add_enum('WakeMode', ['WAKE_ROOT', 'WAKE_CHILD'], outer_class=root_module['ns3::QueueDisc'], import_from_module='ns.traffic-control')
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::Stats [struct]
+    module.add_class('Stats', import_from_module='ns.traffic_control', outer_class=root_module['ns3::QueueDisc'])
+    typehandlers.add_type_alias(u'std::function< void ( ns3::Ptr< ns3::QueueDiscItem > ) >', u'ns3::QueueDisc::SendCallback')
+    typehandlers.add_type_alias(u'std::function< void ( ns3::Ptr< ns3::QueueDiscItem > ) >*', u'ns3::QueueDisc::SendCallback*')
+    typehandlers.add_type_alias(u'std::function< void ( ns3::Ptr< ns3::QueueDiscItem > ) >&', u'ns3::QueueDisc::SendCallback&')
+    typehandlers.add_type_alias(u'ns3::Queue< ns3::QueueDiscItem >', u'ns3::QueueDisc::InternalQueue')
+    typehandlers.add_type_alias(u'ns3::Queue< ns3::QueueDiscItem >*', u'ns3::QueueDisc::InternalQueue*')
+    typehandlers.add_type_alias(u'ns3::Queue< ns3::QueueDiscItem >&', u'ns3::QueueDisc::InternalQueue&')
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDiscClass [class]
+    module.add_class('QueueDiscClass', import_from_module='ns.traffic_control', parent=root_module['ns3::Object'])
     ## radio-environment-map-helper.h (module 'lte'): ns3::RadioEnvironmentMapHelper [class]
     module.add_class('RadioEnvironmentMapHelper', parent=root_module['ns3::Object'])
     ## propagation-delay-model.h (module 'propagation'): ns3::RandomPropagationDelayModel [class]
@@ -932,6 +1069,10 @@ def register_types(module):
     module.add_class('RandomVariableStream', import_from_module='ns.core', parent=root_module['ns3::Object'])
     ## propagation-loss-model.h (module 'propagation'): ns3::RangePropagationLossModel [class]
     module.add_class('RangePropagationLossModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationLossModel'])
+    ## retx-stats-calculator.h (module 'lte'): ns3::RetxStatsCalculator [class]
+    module.add_class('RetxStatsCalculator', parent=root_module['ns3::Object'])
+    ## lte-radio-bearer-info.h (module 'lte'): ns3::RlcBearerInfo [class]
+    module.add_class('RlcBearerInfo', parent=root_module['ns3::Object'])
     ## lte-rlc-tag.h (module 'lte'): ns3::RlcTag [class]
     module.add_class('RlcTag', parent=root_module['ns3::Tag'])
     ## random-variable-stream.h (module 'core'): ns3::SequentialRandomVariable [class]
@@ -966,6 +1107,12 @@ def register_types(module):
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::NixVector', 'ns3::empty', 'ns3::DefaultDeleter<ns3::NixVector>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> > [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::Packet', 'ns3::empty', 'ns3::DefaultDeleter<ns3::Packet>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::QueueItem, ns3::empty, ns3::DefaultDeleter<ns3::QueueItem> > [class]
+    module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::QueueItem', 'ns3::empty', 'ns3::DefaultDeleter<ns3::QueueItem>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::S1apConnectionInfo, ns3::empty, ns3::DefaultDeleter<ns3::S1apConnectionInfo> > [class]
+    module.add_class('SimpleRefCount', automatic_type_narrowing=True, template_parameters=['ns3::S1apConnectionInfo', 'ns3::empty', 'ns3::DefaultDeleter<ns3::S1apConnectionInfo>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::S1apIfaceInfo, ns3::empty, ns3::DefaultDeleter<ns3::S1apIfaceInfo> > [class]
+    module.add_class('SimpleRefCount', automatic_type_narrowing=True, template_parameters=['ns3::S1apIfaceInfo', 'ns3::empty', 'ns3::DefaultDeleter<ns3::S1apIfaceInfo>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::SpectrumModel, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumModel> > [class]
     module.add_class('SimpleRefCount', automatic_type_narrowing=True, import_from_module='ns.core', template_parameters=['ns3::SpectrumModel', 'ns3::empty', 'ns3::DefaultDeleter<ns3::SpectrumModel>'], parent=root_module['ns3::empty'], memory_policy=cppclass.ReferenceCountingMethodsPolicy(incref_method='Ref', decref_method='Unref', peekref_method='GetReferenceCount'))
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::SpectrumSignalParameters, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumSignalParameters> > [class]
@@ -1014,16 +1161,25 @@ def register_types(module):
     module.add_class('SpectrumSignalParameters', import_from_module='ns.spectrum', parent=root_module['ns3::SimpleRefCount< ns3::SpectrumSignalParameters, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumSignalParameters> >'])
     ## spectrum-value.h (module 'spectrum'): ns3::SpectrumValue [class]
     module.add_class('SpectrumValue', import_from_module='ns.spectrum', parent=root_module['ns3::SimpleRefCount< ns3::SpectrumValue, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumValue> >'])
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::SpectrumValue > )', u'ns3::SpectrumValue::TracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::SpectrumValue > )*', u'ns3::SpectrumValue::TracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::SpectrumValue > )&', u'ns3::SpectrumValue::TracedCallback&')
     ## propagation-loss-model.h (module 'propagation'): ns3::ThreeLogDistancePropagationLossModel [class]
     module.add_class('ThreeLogDistancePropagationLossModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationLossModel'])
     ## nstime.h (module 'core'): ns3::Time [class]
     module.add_class('Time', import_from_module='ns.core')
     ## nstime.h (module 'core'): ns3::Time::Unit [enumeration]
     module.add_enum('Unit', ['Y', 'D', 'H', 'MIN', 'S', 'MS', 'US', 'NS', 'PS', 'FS', 'LAST'], outer_class=root_module['ns3::Time'], import_from_module='ns.core')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Time )', u'ns3::Time::TracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Time )*', u'ns3::Time::TracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Time )&', u'ns3::Time::TracedCallback&')
     ## nstime.h (module 'core'): ns3::Time [class]
     root_module['ns3::Time'].implicitly_converts_to(root_module['ns3::int64x64_t'])
     ## trace-fading-loss-model.h (module 'lte'): ns3::TraceFadingLossModel [class]
     module.add_class('TraceFadingLossModel', parent=root_module['ns3::SpectrumPropagationLossModel'])
+    typehandlers.add_type_alias(u'std::pair< ns3::Ptr< ns3::MobilityModel const >, ns3::Ptr< ns3::MobilityModel const > >', u'ns3::TraceFadingLossModel::ChannelRealizationId_t')
+    typehandlers.add_type_alias(u'std::pair< ns3::Ptr< ns3::MobilityModel const >, ns3::Ptr< ns3::MobilityModel const > >*', u'ns3::TraceFadingLossModel::ChannelRealizationId_t*')
+    typehandlers.add_type_alias(u'std::pair< ns3::Ptr< ns3::MobilityModel const >, ns3::Ptr< ns3::MobilityModel const > >&', u'ns3::TraceFadingLossModel::ChannelRealizationId_t&')
     ## trace-source-accessor.h (module 'core'): ns3::TraceSourceAccessor [class]
     module.add_class('TraceSourceAccessor', import_from_module='ns.core', parent=root_module['ns3::SimpleRefCount< ns3::TraceSourceAccessor, ns3::empty, ns3::DefaultDeleter<ns3::TraceSourceAccessor> >'])
     ## trailer.h (module 'network'): ns3::Trailer [class]
@@ -1035,7 +1191,13 @@ def register_types(module):
     ## lte-enb-rrc.h (module 'lte'): ns3::UeManager [class]
     module.add_class('UeManager', parent=root_module['ns3::Object'])
     ## lte-enb-rrc.h (module 'lte'): ns3::UeManager::State [enumeration]
-    module.add_enum('State', ['INITIAL_RANDOM_ACCESS', 'CONNECTION_SETUP', 'CONNECTION_REJECTED', 'CONNECTED_NORMALLY', 'CONNECTION_RECONFIGURATION', 'CONNECTION_REESTABLISHMENT', 'HANDOVER_PREPARATION', 'HANDOVER_JOINING', 'HANDOVER_PATH_SWITCH', 'HANDOVER_LEAVING', 'NUM_STATES'], outer_class=root_module['ns3::UeManager'])
+    module.add_enum('State', ['INITIAL_RANDOM_ACCESS', 'CONNECTION_SETUP', 'CONNECTION_REJECTED', 'CONNECTED_NORMALLY', 'CONNECTION_RECONFIGURATION', 'CONNECTION_REESTABLISHMENT', 'HANDOVER_PREPARATION', 'HANDOVER_JOINING', 'HANDOVER_PATH_SWITCH', 'HANDOVER_LEAVING', 'PREPARE_MC_CONNECTION_RECONFIGURATION', 'MC_CONNECTION_RECONFIGURATION', 'NUM_STATES'], outer_class=root_module['ns3::UeManager'])
+    typehandlers.add_type_alias(u'void ( * ) ( uint64_t const, uint16_t const, uint16_t const, ns3::UeManager::State const, ns3::UeManager::State const )', u'ns3::UeManager::StateTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( uint64_t const, uint16_t const, uint16_t const, ns3::UeManager::State const, ns3::UeManager::State const )*', u'ns3::UeManager::StateTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( uint64_t const, uint16_t const, uint16_t const, ns3::UeManager::State const, ns3::UeManager::State const )&', u'ns3::UeManager::StateTracedCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( uint64_t, uint16_t, uint16_t )', u'ns3::UeManager::ImsiCidRntiTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( uint64_t, uint16_t, uint16_t )*', u'ns3::UeManager::ImsiCidRntiTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( uint64_t, uint16_t, uint16_t )&', u'ns3::UeManager::ImsiCidRntiTracedCallback&')
     ## random-variable-stream.h (module 'core'): ns3::UniformRandomVariable [class]
     module.add_class('UniformRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
     ## ff-mac-common.h (module 'lte'): ns3::VendorSpecificValue [struct]
@@ -1052,6 +1214,12 @@ def register_types(module):
     module.add_class('ZipfRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
     ## application.h (module 'network'): ns3::Application [class]
     module.add_class('Application', import_from_module='ns.network', parent=root_module['ns3::Object'])
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Time const &, ns3::Address const & )', u'ns3::Application::DelayAddressCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Time const &, ns3::Address const & )*', u'ns3::Application::DelayAddressCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Time const &, ns3::Address const & )&', u'ns3::Application::DelayAddressCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( std::string const &, std::string const & )', u'ns3::Application::StateTransitionCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( std::string const &, std::string const & )*', u'ns3::Application::StateTransitionCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( std::string const &, std::string const & )&', u'ns3::Application::StateTransitionCallback&')
     ## lte-asn1-header.h (module 'lte'): ns3::Asn1Header [class]
     module.add_class('Asn1Header', parent=root_module['ns3::Header'])
     ## attribute.h (module 'core'): ns3::AttributeAccessor [class]
@@ -1074,6 +1242,8 @@ def register_types(module):
     module.add_class('CcHelper', parent=root_module['ns3::Object'])
     ## channel.h (module 'network'): ns3::Channel [class]
     module.add_class('Channel', import_from_module='ns.network', parent=root_module['ns3::Object'])
+    ## codel-queue-disc.h (module 'traffic-control'): ns3::CoDelQueueDisc [class]
+    module.add_class('CoDelQueueDisc', import_from_module='ns.traffic_control', parent=root_module['ns3::QueueDisc'])
     ## component-carrier.h (module 'lte'): ns3::ComponentCarrier [class]
     module.add_class('ComponentCarrier', parent=root_module['ns3::Object'])
     ## component-carrier-enb.h (module 'lte'): ns3::ComponentCarrierEnb [class]
@@ -1112,12 +1282,40 @@ def register_types(module):
     module.add_class('EpcEnbApplication', parent=root_module['ns3::Application'])
     ## epc-enb-application.h (module 'lte'): ns3::EpcEnbApplication::EpsFlowId_t [struct]
     module.add_class('EpsFlowId_t', outer_class=root_module['ns3::EpcEnbApplication'])
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet > )', u'ns3::EpcEnbApplication::RxTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet > )*', u'ns3::EpcEnbApplication::RxTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet > )&', u'ns3::EpcEnbApplication::RxTracedCallback&')
     ## epc-helper.h (module 'lte'): ns3::EpcHelper [class]
     module.add_class('EpcHelper', parent=root_module['ns3::Object'])
     ## epc-mme.h (module 'lte'): ns3::EpcMme [class]
     module.add_class('EpcMme', parent=root_module['ns3::Object'])
+    ## epc-mme-application.h (module 'lte'): ns3::EpcMmeApplication [class]
+    module.add_class('EpcMmeApplication', parent=root_module['ns3::Application'])
+    ## epc-s1ap-header.h (module 'lte'): ns3::EpcS1APErabReleaseIndicationHeader [class]
+    module.add_class('EpcS1APErabReleaseIndicationHeader', parent=root_module['ns3::Header'])
+    ## epc-s1ap-header.h (module 'lte'): ns3::EpcS1APHeader [class]
+    module.add_class('EpcS1APHeader', parent=root_module['ns3::Header'])
+    ## epc-s1ap-header.h (module 'lte'): ns3::EpcS1APHeader::ProcedureCode_t [enumeration]
+    module.add_enum('ProcedureCode_t', ['InitialUeMessage', 'PathSwitchRequest', 'ErabReleaseIndication', 'InitialContextSetupResponse', 'InitialContextSetupRequest', 'PathSwitchRequestAck'], outer_class=root_module['ns3::EpcS1APHeader'])
+    ## epc-s1ap-header.h (module 'lte'): ns3::EpcS1APInitialContextSetupRequestHeader [class]
+    module.add_class('EpcS1APInitialContextSetupRequestHeader', parent=root_module['ns3::Header'])
+    ## epc-s1ap-header.h (module 'lte'): ns3::EpcS1APInitialContextSetupResponseHeader [class]
+    module.add_class('EpcS1APInitialContextSetupResponseHeader', parent=root_module['ns3::Header'])
+    ## epc-s1ap-header.h (module 'lte'): ns3::EpcS1APInitialUeMessageHeader [class]
+    module.add_class('EpcS1APInitialUeMessageHeader', parent=root_module['ns3::Header'])
+    ## epc-s1ap-header.h (module 'lte'): ns3::EpcS1APPathSwitchRequestAcknowledgeHeader [class]
+    module.add_class('EpcS1APPathSwitchRequestAcknowledgeHeader', parent=root_module['ns3::Header'])
+    ## epc-s1ap-header.h (module 'lte'): ns3::EpcS1APPathSwitchRequestHeader [class]
+    module.add_class('EpcS1APPathSwitchRequestHeader', parent=root_module['ns3::Header'])
+    ## epc-s1ap.h (module 'lte'): ns3::EpcS1apEnb [class]
+    module.add_class('EpcS1apEnb', parent=root_module['ns3::Object'])
+    ## epc-s1ap.h (module 'lte'): ns3::EpcS1apMme [class]
+    module.add_class('EpcS1apMme', parent=root_module['ns3::Object'])
     ## epc-sgw-pgw-application.h (module 'lte'): ns3::EpcSgwPgwApplication [class]
     module.add_class('EpcSgwPgwApplication', parent=root_module['ns3::Application'])
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet > )', u'ns3::EpcSgwPgwApplication::RxTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet > )*', u'ns3::EpcSgwPgwApplication::RxTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet > )&', u'ns3::EpcSgwPgwApplication::RxTracedCallback&')
     ## epc-tft.h (module 'lte'): ns3::EpcTft [class]
     module.add_class('EpcTft', parent=root_module['ns3::SimpleRefCount< ns3::EpcTft, ns3::empty, ns3::DefaultDeleter<ns3::EpcTft> >'])
     ## epc-tft.h (module 'lte'): ns3::EpcTft::Direction [enumeration]
@@ -1130,8 +1328,16 @@ def register_types(module):
     module.add_class('EpcUeNas', parent=root_module['ns3::Object'])
     ## epc-ue-nas.h (module 'lte'): ns3::EpcUeNas::State [enumeration]
     module.add_enum('State', ['OFF', 'ATTACHING', 'IDLE_REGISTERED', 'CONNECTING_TO_EPC', 'ACTIVE', 'NUM_STATES'], outer_class=root_module['ns3::EpcUeNas'])
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::EpcUeNas::State const, ns3::EpcUeNas::State const )', u'ns3::EpcUeNas::StateTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::EpcUeNas::State const, ns3::EpcUeNas::State const )*', u'ns3::EpcUeNas::StateTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::EpcUeNas::State const, ns3::EpcUeNas::State const )&', u'ns3::EpcUeNas::StateTracedCallback&')
     ## epc-x2.h (module 'lte'): ns3::EpcX2 [class]
     module.add_class('EpcX2', parent=root_module['ns3::Object'])
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, uint16_t, uint32_t, uint64_t, bool )', u'ns3::EpcX2::ReceiveTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, uint16_t, uint32_t, uint64_t, bool )*', u'ns3::EpcX2::ReceiveTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, uint16_t, uint32_t, uint64_t, bool )&', u'ns3::EpcX2::ReceiveTracedCallback&')
+    ## epc-x2-header.h (module 'lte'): ns3::EpcX2ConnectionSwitchHeader [class]
+    module.add_class('EpcX2ConnectionSwitchHeader', parent=root_module['ns3::Header'])
     ## epc-x2-header.h (module 'lte'): ns3::EpcX2HandoverPreparationFailureHeader [class]
     module.add_class('EpcX2HandoverPreparationFailureHeader', parent=root_module['ns3::Header'])
     ## epc-x2-header.h (module 'lte'): ns3::EpcX2HandoverRequestAckHeader [class]
@@ -1141,17 +1347,29 @@ def register_types(module):
     ## epc-x2-header.h (module 'lte'): ns3::EpcX2Header [class]
     module.add_class('EpcX2Header', parent=root_module['ns3::Header'])
     ## epc-x2-header.h (module 'lte'): ns3::EpcX2Header::ProcedureCode_t [enumeration]
-    module.add_enum('ProcedureCode_t', ['HandoverPreparation', 'LoadIndication', 'SnStatusTransfer', 'UeContextRelease', 'ResourceStatusReporting'], outer_class=root_module['ns3::EpcX2Header'])
+    module.add_enum('ProcedureCode_t', ['HandoverPreparation', 'LoadIndication', 'SnStatusTransfer', 'UeContextRelease', 'ResourceStatusReporting', 'RlcSetupRequest', 'RlcSetupCompleted', 'NotifyMcConnection', 'UpdateUeSinr', 'RequestMcHandover', 'NotifyMmWaveLteHandover', 'NotifyCoordinatorHandoverFailed', 'SwitchConnection', 'SecondaryCellHandoverCompleted'], outer_class=root_module['ns3::EpcX2Header'])
     ## epc-x2-header.h (module 'lte'): ns3::EpcX2Header::TypeOfMessage_t [enumeration]
-    module.add_enum('TypeOfMessage_t', ['InitiatingMessage', 'SuccessfulOutcome', 'UnsuccessfulOutcome'], outer_class=root_module['ns3::EpcX2Header'])
+    module.add_enum('TypeOfMessage_t', ['InitiatingMessage', 'SuccessfulOutcome', 'UnsuccessfulOutcome', 'McForwardDownlinkData', 'McForwardUplinkData'], outer_class=root_module['ns3::EpcX2Header'])
     ## epc-x2-header.h (module 'lte'): ns3::EpcX2LoadInformationHeader [class]
     module.add_class('EpcX2LoadInformationHeader', parent=root_module['ns3::Header'])
+    ## epc-x2-header.h (module 'lte'): ns3::EpcX2McHandoverHeader [class]
+    module.add_class('EpcX2McHandoverHeader', parent=root_module['ns3::Header'])
+    ## epc-x2-header.h (module 'lte'): ns3::EpcX2NotifyCoordinatorHandoverFailedHeader [class]
+    module.add_class('EpcX2NotifyCoordinatorHandoverFailedHeader', parent=root_module['ns3::Header'])
     ## epc-x2-header.h (module 'lte'): ns3::EpcX2ResourceStatusUpdateHeader [class]
     module.add_class('EpcX2ResourceStatusUpdateHeader', parent=root_module['ns3::Header'])
+    ## epc-x2-header.h (module 'lte'): ns3::EpcX2RlcSetupCompletedHeader [class]
+    module.add_class('EpcX2RlcSetupCompletedHeader', parent=root_module['ns3::Header'])
+    ## epc-x2-header.h (module 'lte'): ns3::EpcX2RlcSetupRequestHeader [class]
+    module.add_class('EpcX2RlcSetupRequestHeader', parent=root_module['ns3::Header'])
+    ## epc-x2-header.h (module 'lte'): ns3::EpcX2SecondaryCellHandoverCompletedHeader [class]
+    module.add_class('EpcX2SecondaryCellHandoverCompletedHeader', parent=root_module['ns3::Header'])
     ## epc-x2-header.h (module 'lte'): ns3::EpcX2SnStatusTransferHeader [class]
     module.add_class('EpcX2SnStatusTransferHeader', parent=root_module['ns3::Header'])
     ## epc-x2-header.h (module 'lte'): ns3::EpcX2UeContextReleaseHeader [class]
     module.add_class('EpcX2UeContextReleaseHeader', parent=root_module['ns3::Header'])
+    ## epc-x2-header.h (module 'lte'): ns3::EpcX2UeImsiSinrUpdateHeader [class]
+    module.add_class('EpcX2UeImsiSinrUpdateHeader', parent=root_module['ns3::Header'])
     ## random-variable-stream.h (module 'core'): ns3::ErlangRandomVariable [class]
     module.add_class('ErlangRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
     ## event-impl.h (module 'core'): ns3::EventImpl [class]
@@ -1161,7 +1379,7 @@ def register_types(module):
     ## ff-mac-scheduler.h (module 'lte'): ns3::FfMacScheduler [class]
     module.add_class('FfMacScheduler', parent=root_module['ns3::Object'])
     ## ff-mac-scheduler.h (module 'lte'): ns3::FfMacScheduler::UlCqiFilter_t [enumeration]
-    module.add_enum('UlCqiFilter_t', ['SRS_UL_CQI', 'PUSCH_UL_CQI', 'ALL_UL_CQI'], outer_class=root_module['ns3::FfMacScheduler'])
+    module.add_enum('UlCqiFilter_t', ['SRS_UL_CQI', 'PUSCH_UL_CQI'], outer_class=root_module['ns3::FfMacScheduler'])
     ## propagation-loss-model.h (module 'propagation'): ns3::FixedRssLossModel [class]
     module.add_class('FixedRssLossModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationLossModel'])
     ## propagation-loss-model.h (module 'propagation'): ns3::FriisPropagationLossModel [class]
@@ -1216,10 +1434,40 @@ def register_types(module):
     module.add_class('LteEnbComponentCarrierManager', parent=root_module['ns3::Object'])
     ## lte-enb-mac.h (module 'lte'): ns3::LteEnbMac [class]
     module.add_class('LteEnbMac', parent=root_module['ns3::Object'])
+    typehandlers.add_type_alias(u'void ( * ) ( uint32_t const, uint32_t const, uint16_t const, uint8_t const, uint16_t const, uint8_t const, uint16_t const, uint8_t const )', u'ns3::LteEnbMac::DlSchedulingTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( uint32_t const, uint32_t const, uint16_t const, uint8_t const, uint16_t const, uint8_t const, uint16_t const, uint8_t const )*', u'ns3::LteEnbMac::DlSchedulingTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( uint32_t const, uint32_t const, uint16_t const, uint8_t const, uint16_t const, uint8_t const, uint16_t const, uint8_t const )&', u'ns3::LteEnbMac::DlSchedulingTracedCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( uint32_t const, uint32_t const, uint16_t const, uint8_t const, uint16_t const )', u'ns3::LteEnbMac::UlSchedulingTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( uint32_t const, uint32_t const, uint16_t const, uint8_t const, uint16_t const )*', u'ns3::LteEnbMac::UlSchedulingTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( uint32_t const, uint32_t const, uint16_t const, uint8_t const, uint16_t const )&', u'ns3::LteEnbMac::UlSchedulingTracedCallback&')
     ## lte-enb-rrc.h (module 'lte'): ns3::LteEnbRrc [class]
     module.add_class('LteEnbRrc', parent=root_module['ns3::Object'])
     ## lte-enb-rrc.h (module 'lte'): ns3::LteEnbRrc::LteEpsBearerToRlcMapping_t [enumeration]
-    module.add_enum('LteEpsBearerToRlcMapping_t', ['RLC_SM_ALWAYS', 'RLC_UM_ALWAYS', 'RLC_AM_ALWAYS', 'PER_BASED'], outer_class=root_module['ns3::LteEnbRrc'])
+    module.add_enum('LteEpsBearerToRlcMapping_t', ['RLC_SM_ALWAYS', 'RLC_UM_ALWAYS', 'RLC_AM_ALWAYS', 'PER_BASED', 'RLC_UM_LOWLAT_ALWAYS'], outer_class=root_module['ns3::LteEnbRrc'])
+    ## lte-enb-rrc.h (module 'lte'): ns3::LteEnbRrc::HandoverMode [enumeration]
+    module.add_enum('HandoverMode', ['FIXED_TTT', 'DYNAMIC_TTT', 'THRESHOLD'], outer_class=root_module['ns3::LteEnbRrc'])
+    ## lte-enb-rrc.h (module 'lte'): ns3::LteEnbRrc::HandoverEventInfo [struct]
+    module.add_class('HandoverEventInfo', outer_class=root_module['ns3::LteEnbRrc'])
+    ## lte-enb-rrc.h (module 'lte'): ns3::LteEnbRrc::MmWaveComponentCarrierConf [struct]
+    module.add_class('MmWaveComponentCarrierConf', outer_class=root_module['ns3::LteEnbRrc'])
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t const, uint16_t const )', u'ns3::LteEnbRrc::NewUeContextTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t const, uint16_t const )*', u'ns3::LteEnbRrc::NewUeContextTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t const, uint16_t const )&', u'ns3::LteEnbRrc::NewUeContextTracedCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( uint64_t const, uint16_t const, uint16_t const )', u'ns3::LteEnbRrc::ConnectionHandoverTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( uint64_t const, uint16_t const, uint16_t const )*', u'ns3::LteEnbRrc::ConnectionHandoverTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( uint64_t const, uint16_t const, uint16_t const )&', u'ns3::LteEnbRrc::ConnectionHandoverTracedCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( uint64_t const, uint16_t const, uint16_t const, uint16_t const )', u'ns3::LteEnbRrc::HandoverStartTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( uint64_t const, uint16_t const, uint16_t const, uint16_t const )*', u'ns3::LteEnbRrc::HandoverStartTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( uint64_t const, uint16_t const, uint16_t const, uint16_t const )&', u'ns3::LteEnbRrc::HandoverStartTracedCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( uint64_t const, uint16_t const, uint16_t const, ns3::LteRrcSap::MeasurementReport const )', u'ns3::LteEnbRrc::ReceiveReportTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( uint64_t const, uint16_t const, uint16_t const, ns3::LteRrcSap::MeasurementReport const )*', u'ns3::LteEnbRrc::ReceiveReportTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( uint64_t const, uint16_t const, uint16_t const, ns3::LteRrcSap::MeasurementReport const )&', u'ns3::LteEnbRrc::ReceiveReportTracedCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( uint64_t, uint16_t, long double )', u'ns3::LteEnbRrc::NotifyMmWaveSinrTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( uint64_t, uint16_t, long double )*', u'ns3::LteEnbRrc::NotifyMmWaveSinrTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( uint64_t, uint16_t, long double )&', u'ns3::LteEnbRrc::NotifyMmWaveSinrTracedCallback&')
+    typehandlers.add_type_alias(u'std::map< unsigned long, ns3::LteEnbRrc::HandoverEventInfo >', u'ns3::LteEnbRrc::HandoverEventMap')
+    typehandlers.add_type_alias(u'std::map< unsigned long, ns3::LteEnbRrc::HandoverEventInfo >*', u'ns3::LteEnbRrc::HandoverEventMap*')
+    typehandlers.add_type_alias(u'std::map< unsigned long, ns3::LteEnbRrc::HandoverEventInfo >&', u'ns3::LteEnbRrc::HandoverEventMap&')
     ## lte-rrc-protocol-ideal.h (module 'lte'): ns3::LteEnbRrcProtocolIdeal [class]
     module.add_class('LteEnbRrcProtocolIdeal', parent=root_module['ns3::Object'])
     ## lte-rrc-protocol-real.h (module 'lte'): ns3::LteEnbRrcProtocolReal [class]
@@ -1254,20 +1502,39 @@ def register_types(module):
     module.add_class('LtePdcp', parent=root_module['ns3::Object'])
     ## lte-pdcp.h (module 'lte'): ns3::LtePdcp::Status [struct]
     module.add_class('Status', outer_class=root_module['ns3::LtePdcp'])
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, uint8_t, uint32_t )', u'ns3::LtePdcp::PduTxTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, uint8_t, uint32_t )*', u'ns3::LtePdcp::PduTxTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, uint8_t, uint32_t )&', u'ns3::LtePdcp::PduTxTracedCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t const, uint8_t const, uint32_t const, uint64_t const )', u'ns3::LtePdcp::PduRxTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t const, uint8_t const, uint32_t const, uint64_t const )*', u'ns3::LtePdcp::PduRxTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t const, uint8_t const, uint32_t const, uint64_t const )&', u'ns3::LtePdcp::PduRxTracedCallback&')
     ## lte-phy.h (module 'lte'): ns3::LtePhy [class]
     module.add_class('LtePhy', parent=root_module['ns3::Object'])
     ## lte-radio-bearer-info.h (module 'lte'): ns3::LteRadioBearerInfo [class]
     module.add_class('LteRadioBearerInfo', parent=root_module['ns3::Object'])
     ## lte-rlc.h (module 'lte'): ns3::LteRlc [class]
     module.add_class('LteRlc', parent=root_module['ns3::Object'])
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, uint8_t, uint32_t )', u'ns3::LteRlc::NotifyTxTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, uint8_t, uint32_t )*', u'ns3::LteRlc::NotifyTxTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, uint8_t, uint32_t )&', u'ns3::LteRlc::NotifyTxTracedCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, uint8_t, uint32_t, uint64_t )', u'ns3::LteRlc::ReceiveTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, uint8_t, uint32_t, uint64_t )*', u'ns3::LteRlc::ReceiveTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, uint8_t, uint32_t, uint64_t )&', u'ns3::LteRlc::ReceiveTracedCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, uint8_t, uint32_t, uint32_t )', u'ns3::LteRlc::RetransmissionCountCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, uint8_t, uint32_t, uint32_t )*', u'ns3::LteRlc::RetransmissionCountCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, uint8_t, uint32_t, uint32_t )&', u'ns3::LteRlc::RetransmissionCountCallback&')
     ## lte-rlc-am.h (module 'lte'): ns3::LteRlcAm [class]
     module.add_class('LteRlcAm', parent=root_module['ns3::LteRlc'])
+    ## lte-rlc-am.h (module 'lte'): ns3::LteRlcAm::RetxPdu [struct]
+    module.add_class('RetxPdu', outer_class=root_module['ns3::LteRlcAm'])
     ## lte-rlc.h (module 'lte'): ns3::LteRlcSm [class]
     module.add_class('LteRlcSm', parent=root_module['ns3::LteRlc'])
     ## lte-rlc-tm.h (module 'lte'): ns3::LteRlcTm [class]
     module.add_class('LteRlcTm', parent=root_module['ns3::LteRlc'])
     ## lte-rlc-um.h (module 'lte'): ns3::LteRlcUm [class]
     module.add_class('LteRlcUm', parent=root_module['ns3::LteRlc'])
+    ## lte-rlc-um-lowlat.h (module 'lte'): ns3::LteRlcUmLowLat [class]
+    module.add_class('LteRlcUmLowLat', parent=root_module['ns3::LteRlc'])
     ## lte-radio-bearer-info.h (module 'lte'): ns3::LteSignalingRadioBearerInfo [class]
     module.add_class('LteSignalingRadioBearerInfo', parent=root_module['ns3::LteRadioBearerInfo'])
     ## lte-spectrum-phy.h (module 'lte'): ns3::LteSpectrumPhy [class]
@@ -1292,12 +1559,39 @@ def register_types(module):
     module.add_class('LteUePhy', parent=root_module['ns3::LtePhy'])
     ## lte-ue-phy.h (module 'lte'): ns3::LteUePhy::State [enumeration]
     module.add_enum('State', ['CELL_SEARCH', 'SYNCHRONIZED', 'NUM_STATES'], outer_class=root_module['ns3::LteUePhy'])
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, uint16_t, ns3::LteUePhy::State, ns3::LteUePhy::State )', u'ns3::LteUePhy::StateTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, uint16_t, ns3::LteUePhy::State, ns3::LteUePhy::State )*', u'ns3::LteUePhy::StateTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, uint16_t, ns3::LteUePhy::State, ns3::LteUePhy::State )&', u'ns3::LteUePhy::StateTracedCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, uint16_t, double, double, uint8_t )', u'ns3::LteUePhy::RsrpSinrTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, uint16_t, double, double, uint8_t )*', u'ns3::LteUePhy::RsrpSinrTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, uint16_t, double, double, uint8_t )&', u'ns3::LteUePhy::RsrpSinrTracedCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, uint16_t, double, double, bool, uint8_t )', u'ns3::LteUePhy::RsrpRsrqTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, uint16_t, double, double, bool, uint8_t )*', u'ns3::LteUePhy::RsrpRsrqTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, uint16_t, double, double, bool, uint8_t )&', u'ns3::LteUePhy::RsrpRsrqTracedCallback&')
     ## lte-ue-power-control.h (module 'lte'): ns3::LteUePowerControl [class]
     module.add_class('LteUePowerControl', parent=root_module['ns3::Object'])
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, uint16_t, double )', u'ns3::LteUePowerControl::TxPowerTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, uint16_t, double )*', u'ns3::LteUePowerControl::TxPowerTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, uint16_t, double )&', u'ns3::LteUePowerControl::TxPowerTracedCallback&')
     ## lte-ue-rrc.h (module 'lte'): ns3::LteUeRrc [class]
     module.add_class('LteUeRrc', parent=root_module['ns3::Object'])
     ## lte-ue-rrc.h (module 'lte'): ns3::LteUeRrc::State [enumeration]
     module.add_enum('State', ['IDLE_START', 'IDLE_CELL_SEARCH', 'IDLE_WAIT_MIB_SIB1', 'IDLE_WAIT_MIB', 'IDLE_WAIT_SIB1', 'IDLE_CAMPED_NORMALLY', 'IDLE_WAIT_SIB2', 'IDLE_RANDOM_ACCESS', 'IDLE_CONNECTING', 'CONNECTED_NORMALLY', 'CONNECTED_HANDOVER', 'CONNECTED_PHY_PROBLEM', 'CONNECTED_REESTABLISHING', 'NUM_STATES'], outer_class=root_module['ns3::LteUeRrc'])
+    typehandlers.add_type_alias(u'void ( * ) ( uint64_t, uint16_t )', u'ns3::LteUeRrc::CellSelectionTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( uint64_t, uint16_t )*', u'ns3::LteUeRrc::CellSelectionTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( uint64_t, uint16_t )&', u'ns3::LteUeRrc::CellSelectionTracedCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( uint64_t, uint16_t, uint16_t )', u'ns3::LteUeRrc::ImsiCidRntiTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( uint64_t, uint16_t, uint16_t )*', u'ns3::LteUeRrc::ImsiCidRntiTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( uint64_t, uint16_t, uint16_t )&', u'ns3::LteUeRrc::ImsiCidRntiTracedCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( uint64_t, uint16_t, uint16_t, uint16_t )', u'ns3::LteUeRrc::MibSibHandoverTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( uint64_t, uint16_t, uint16_t, uint16_t )*', u'ns3::LteUeRrc::MibSibHandoverTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( uint64_t, uint16_t, uint16_t, uint16_t )&', u'ns3::LteUeRrc::MibSibHandoverTracedCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( uint64_t, uint16_t, uint16_t, ns3::LteUeRrc::State, ns3::LteUeRrc::State )', u'ns3::LteUeRrc::StateTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( uint64_t, uint16_t, uint16_t, ns3::LteUeRrc::State, ns3::LteUeRrc::State )*', u'ns3::LteUeRrc::StateTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( uint64_t, uint16_t, uint16_t, ns3::LteUeRrc::State, ns3::LteUeRrc::State )&', u'ns3::LteUeRrc::StateTracedCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::LteUeRrc >, std::list< ns3::LteRrcSap::SCellToAddMod > )', u'ns3::LteUeRrc::SCarrierConfiguredTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::LteUeRrc >, std::list< ns3::LteRrcSap::SCellToAddMod > )*', u'ns3::LteUeRrc::SCarrierConfiguredTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::LteUeRrc >, std::list< ns3::LteRrcSap::SCellToAddMod > )&', u'ns3::LteUeRrc::SCarrierConfiguredTracedCallback&')
     ## lte-rrc-protocol-ideal.h (module 'lte'): ns3::LteUeRrcProtocolIdeal [class]
     module.add_class('LteUeRrcProtocolIdeal', parent=root_module['ns3::Object'])
     ## lte-rrc-protocol-real.h (module 'lte'): ns3::LteUeRrcProtocolReal [class]
@@ -1312,8 +1606,30 @@ def register_types(module):
     module.add_class('Mac64AddressValue', import_from_module='ns.network', parent=root_module['ns3::AttributeValue'])
     ## mac-stats-calculator.h (module 'lte'): ns3::MacStatsCalculator [class]
     module.add_class('MacStatsCalculator', parent=root_module['ns3::LteStatsCalculator'])
+    ## mac-tx-stats-calculator.h (module 'lte'): ns3::MacTxStatsCalculator [class]
+    module.add_class('MacTxStatsCalculator', parent=root_module['ns3::Object'])
     ## propagation-loss-model.h (module 'propagation'): ns3::MatrixPropagationLossModel [class]
     module.add_class('MatrixPropagationLossModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationLossModel'])
+    ## mc-enb-pdcp.h (module 'lte'): ns3::McEnbPdcp [class]
+    module.add_class('McEnbPdcp', parent=root_module['ns3::LtePdcp'])
+    ## mc-enb-pdcp.h (module 'lte'): ns3::McEnbPdcp::Status [struct]
+    module.add_class('Status', outer_class=root_module['ns3::McEnbPdcp'])
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, uint8_t, uint32_t )', u'ns3::McEnbPdcp::PduTxTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, uint8_t, uint32_t )*', u'ns3::McEnbPdcp::PduTxTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, uint8_t, uint32_t )&', u'ns3::McEnbPdcp::PduTxTracedCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t const, uint8_t const, uint32_t const, uint64_t const )', u'ns3::McEnbPdcp::PduRxTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t const, uint8_t const, uint32_t const, uint64_t const )*', u'ns3::McEnbPdcp::PduRxTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t const, uint8_t const, uint32_t const, uint64_t const )&', u'ns3::McEnbPdcp::PduRxTracedCallback&')
+    ## mc-ue-pdcp.h (module 'lte'): ns3::McUePdcp [class]
+    module.add_class('McUePdcp', parent=root_module['ns3::LtePdcp'])
+    ## mc-ue-pdcp.h (module 'lte'): ns3::McUePdcp::Status [struct]
+    module.add_class('Status', outer_class=root_module['ns3::McUePdcp'])
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, uint8_t, uint32_t )', u'ns3::McUePdcp::PduTxTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, uint8_t, uint32_t )*', u'ns3::McUePdcp::PduTxTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, uint8_t, uint32_t )&', u'ns3::McUePdcp::PduTxTracedCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t const, uint8_t const, uint32_t const, uint64_t const )', u'ns3::McUePdcp::PduRxTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t const, uint8_t const, uint32_t const, uint64_t const )*', u'ns3::McUePdcp::PduRxTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t const, uint8_t const, uint32_t const, uint64_t const )&', u'ns3::McUePdcp::PduRxTracedCallback&')
     ## lte-control-messages.h (module 'lte'): ns3::MibLteControlMessage [class]
     module.add_class('MibLteControlMessage', parent=root_module['ns3::LteControlMessage'])
     ## basic-data-calculators.h (module 'stats'): ns3::MinMaxAvgTotalCalculator<unsigned int> [class]
@@ -1322,12 +1638,24 @@ def register_types(module):
     module.add_class('MinMaxAvgTotalCalculator', import_from_module='ns.stats', template_parameters=['unsigned long'], parent=[root_module['ns3::DataCalculator'], root_module['ns3::StatisticalSummary']])
     ## mobility-model.h (module 'mobility'): ns3::MobilityModel [class]
     module.add_class('MobilityModel', import_from_module='ns.mobility', parent=root_module['ns3::Object'])
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::MobilityModel const > )', u'ns3::MobilityModel::TracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::MobilityModel const > )*', u'ns3::MobilityModel::TracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::MobilityModel const > )&', u'ns3::MobilityModel::TracedCallback&')
     ## propagation-loss-model.h (module 'propagation'): ns3::NakagamiPropagationLossModel [class]
     module.add_class('NakagamiPropagationLossModel', import_from_module='ns.propagation', parent=root_module['ns3::PropagationLossModel'])
     ## net-device.h (module 'network'): ns3::NetDevice [class]
     module.add_class('NetDevice', import_from_module='ns.network', parent=root_module['ns3::Object'])
     ## net-device.h (module 'network'): ns3::NetDevice::PacketType [enumeration]
     module.add_enum('PacketType', ['PACKET_HOST', 'NS3_PACKET_HOST', 'PACKET_BROADCAST', 'NS3_PACKET_BROADCAST', 'PACKET_MULTICAST', 'NS3_PACKET_MULTICAST', 'PACKET_OTHERHOST', 'NS3_PACKET_OTHERHOST'], outer_class=root_module['ns3::NetDevice'], import_from_module='ns.network')
+    typehandlers.add_type_alias(u'void ( * ) (  )', u'ns3::NetDevice::LinkChangeTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) (  )*', u'ns3::NetDevice::LinkChangeTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) (  )&', u'ns3::NetDevice::LinkChangeTracedCallback&')
+    typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::NetDevice::ReceiveCallback')
+    typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::NetDevice::ReceiveCallback*')
+    typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::NetDevice::ReceiveCallback&')
+    typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >', u'ns3::NetDevice::PromiscReceiveCallback')
+    typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::NetDevice::PromiscReceiveCallback*')
+    typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::NetDevice::PromiscReceiveCallback&')
     ## nix-vector.h (module 'network'): ns3::NixVector [class]
     module.add_class('NixVector', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> >'])
     ## no-op-component-carrier-manager.h (module 'lte'): ns3::NoOpComponentCarrierManager [class]
@@ -1336,6 +1664,12 @@ def register_types(module):
     module.add_class('NoOpHandoverAlgorithm', parent=root_module['ns3::LteHandoverAlgorithm'])
     ## node.h (module 'network'): ns3::Node [class]
     module.add_class('Node', import_from_module='ns.network', parent=root_module['ns3::Object'])
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >', u'ns3::Node::ProtocolHandler')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::Node::ProtocolHandler*')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::Ptr< ns3::Packet const >, unsigned short, ns3::Address const &, ns3::Address const &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::Node::ProtocolHandler&')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::Node::DeviceAdditionListener')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::Node::DeviceAdditionListener*')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::NetDevice >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::Node::DeviceAdditionListener&')
     ## random-variable-stream.h (module 'core'): ns3::NormalRandomVariable [class]
     module.add_class('NormalRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
     ## object-factory.h (module 'core'): ns3::ObjectFactoryChecker [class]
@@ -1344,6 +1678,24 @@ def register_types(module):
     module.add_class('ObjectFactoryValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## packet.h (module 'network'): ns3::Packet [class]
     module.add_class('Packet', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> >'])
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > )', u'ns3::Packet::TracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > )*', u'ns3::Packet::TracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > )&', u'ns3::Packet::TracedCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Address const & )', u'ns3::Packet::AddressTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Address const & )*', u'ns3::Packet::AddressTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Address const & )&', u'ns3::Packet::AddressTracedCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > const, ns3::Address const &, ns3::Address const & )', u'ns3::Packet::TwoAddressTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > const, ns3::Address const &, ns3::Address const & )*', u'ns3::Packet::TwoAddressTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const > const, ns3::Address const &, ns3::Address const & )&', u'ns3::Packet::TwoAddressTracedCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Mac48Address )', u'ns3::Packet::Mac48AddressTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Mac48Address )*', u'ns3::Packet::Mac48AddressTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, ns3::Mac48Address )&', u'ns3::Packet::Mac48AddressTracedCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( uint32_t, uint32_t )', u'ns3::Packet::SizeTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( uint32_t, uint32_t )*', u'ns3::Packet::SizeTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( uint32_t, uint32_t )&', u'ns3::Packet::SizeTracedCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, double )', u'ns3::Packet::SinrTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, double )*', u'ns3::Packet::SinrTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::Packet const >, double )&', u'ns3::Packet::SinrTracedCallback&')
     ## random-variable-stream.h (module 'core'): ns3::ParetoRandomVariable [class]
     module.add_class('ParetoRandomVariable', import_from_module='ns.core', parent=root_module['ns3::RandomVariableStream'])
     ## pf-ff-mac-scheduler.h (module 'lte'): ns3::PfFfMacScheduler [class]
@@ -1362,6 +1714,17 @@ def register_types(module):
     module.add_class('PointerValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## pss-ff-mac-scheduler.h (module 'lte'): ns3::PssFfMacScheduler [class]
     module.add_class('PssFfMacScheduler', parent=root_module['ns3::FfMacScheduler'])
+    ## queue-item.h (module 'network'): ns3::QueueItem [class]
+    module.add_class('QueueItem', import_from_module='ns.network', parent=root_module['ns3::SimpleRefCount< ns3::QueueItem, ns3::empty, ns3::DefaultDeleter<ns3::QueueItem> >'])
+    ## queue-item.h (module 'network'): ns3::QueueItem::Uint8Values [enumeration]
+    module.add_enum('Uint8Values', ['IP_DSFIELD'], outer_class=root_module['ns3::QueueItem'], import_from_module='ns.network')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::QueueItem const > )', u'ns3::QueueItem::TracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::QueueItem const > )*', u'ns3::QueueItem::TracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::QueueItem const > )&', u'ns3::QueueItem::TracedCallback&')
+    ## queue-size.h (module 'network'): ns3::QueueSizeChecker [class]
+    module.add_class('QueueSizeChecker', import_from_module='ns.network', parent=root_module['ns3::AttributeChecker'])
+    ## queue-size.h (module 'network'): ns3::QueueSizeValue [class]
+    module.add_class('QueueSizeValue', import_from_module='ns.network', parent=root_module['ns3::AttributeValue'])
     ## lte-control-messages.h (module 'lte'): ns3::RachPreambleLteControlMessage [class]
     module.add_class('RachPreambleLteControlMessage', parent=root_module['ns3::LteControlMessage'])
     ## radio-bearer-stats-calculator.h (module 'lte'): ns3::RadioBearerStatsCalculator [class]
@@ -1386,12 +1749,25 @@ def register_types(module):
     module.add_class('RrcUlCcchMessage', parent=root_module['ns3::RrcAsn1Header'])
     ## lte-rrc-header.h (module 'lte'): ns3::RrcUlDcchMessage [class]
     module.add_class('RrcUlDcchMessage', parent=root_module['ns3::RrcAsn1Header'])
+    ## epc-s1ap.h (module 'lte'): ns3::S1apConnectionInfo [class]
+    module.add_class('S1apConnectionInfo', parent=root_module['ns3::SimpleRefCount< ns3::S1apConnectionInfo, ns3::empty, ns3::DefaultDeleter<ns3::S1apConnectionInfo> >'])
+    ## epc-s1ap.h (module 'lte'): ns3::S1apIfaceInfo [class]
+    module.add_class('S1apIfaceInfo', parent=root_module['ns3::SimpleRefCount< ns3::S1apIfaceInfo, ns3::empty, ns3::DefaultDeleter<ns3::S1apIfaceInfo> >'])
     ## lte-control-messages.h (module 'lte'): ns3::Sib1LteControlMessage [class]
     module.add_class('Sib1LteControlMessage', parent=root_module['ns3::LteControlMessage'])
     ## simple-ue-component-carrier-manager.h (module 'lte'): ns3::SimpleUeComponentCarrierManager [class]
     module.add_class('SimpleUeComponentCarrierManager', parent=root_module['ns3::LteUeComponentCarrierManager'])
     ## spectrum-channel.h (module 'spectrum'): ns3::SpectrumChannel [class]
     module.add_class('SpectrumChannel', import_from_module='ns.spectrum', parent=root_module['ns3::Channel'])
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::SpectrumPhy const >, ns3::Ptr< ns3::SpectrumPhy const >, double )', u'ns3::SpectrumChannel::LossTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::SpectrumPhy const >, ns3::Ptr< ns3::SpectrumPhy const >, double )*', u'ns3::SpectrumChannel::LossTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::SpectrumPhy const >, ns3::Ptr< ns3::SpectrumPhy const >, double )&', u'ns3::SpectrumChannel::LossTracedCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::MobilityModel const >, ns3::Ptr< ns3::MobilityModel const >, double, double, double, double )', u'ns3::SpectrumChannel::GainTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::MobilityModel const >, ns3::Ptr< ns3::MobilityModel const >, double, double, double, double )*', u'ns3::SpectrumChannel::GainTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::MobilityModel const >, ns3::Ptr< ns3::MobilityModel const >, double, double, double, double )&', u'ns3::SpectrumChannel::GainTracedCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::SpectrumSignalParameters > )', u'ns3::SpectrumChannel::SignalParametersTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::SpectrumSignalParameters > )*', u'ns3::SpectrumChannel::SignalParametersTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( ns3::Ptr< ns3::SpectrumSignalParameters > )&', u'ns3::SpectrumChannel::SignalParametersTracedCallback&')
     ## lte-vendor-specific-parameters.h (module 'lte'): ns3::SrsCqiRntiVsp [class]
     module.add_class('SrsCqiRntiVsp', parent=root_module['ns3::VendorSpecificValue'])
     ## string.h (module 'core'): ns3::StringChecker [class]
@@ -1426,6 +1802,9 @@ def register_types(module):
     module.add_class('Vector3DValue', import_from_module='ns.core', parent=root_module['ns3::AttributeValue'])
     ## virtual-net-device.h (module 'virtual-net-device'): ns3::VirtualNetDevice [class]
     module.add_class('VirtualNetDevice', import_from_module='ns.virtual_net_device', parent=root_module['ns3::NetDevice'])
+    typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::Packet >, ns3::Address const &, ns3::Address const &, unsigned short, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::VirtualNetDevice::SendCallback')
+    typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::Packet >, ns3::Address const &, ns3::Address const &, unsigned short, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::VirtualNetDevice::SendCallback*')
+    typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::Packet >, ns3::Address const &, ns3::Address const &, unsigned short, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::VirtualNetDevice::SendCallback&')
     ## a2-a4-rsrq-handover-algorithm.h (module 'lte'): ns3::A2A4RsrqHandoverAlgorithm [class]
     module.add_class('A2A4RsrqHandoverAlgorithm', parent=root_module['ns3::LteHandoverAlgorithm'])
     ## a3-rsrp-handover-algorithm.h (module 'lte'): ns3::A3RsrpHandoverAlgorithm [class]
@@ -1446,6 +1825,8 @@ def register_types(module):
     module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['bool', 'ns3::Ptr<ns3::Socket>', 'const ns3::Address &', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
     ## callback.h (module 'core'): ns3::CallbackImpl<ns3::ObjectBase *, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
     module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['ns3::ObjectBase *', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, bool, bool, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
+    module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'bool', 'bool', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, const ns3::SpectrumValue &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
     module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'const ns3::SpectrumValue &', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::DlSchedulingCallbackInfo, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
@@ -1464,6 +1845,10 @@ def register_types(module):
     module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'ns3::Ptr<const ns3::Packet>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::PacketBurst>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
     module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'ns3::Ptr<const ns3::PacketBurst>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::QueueDiscItem>, const char *, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
+    module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'ns3::Ptr<const ns3::QueueDiscItem>', 'const char *', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::QueueDiscItem>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
+    module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'ns3::Ptr<const ns3::QueueDiscItem>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::SpectrumPhy>, ns3::Ptr<const ns3::SpectrumPhy>, double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
     module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'ns3::Ptr<const ns3::SpectrumPhy>', 'ns3::Ptr<const ns3::SpectrumPhy>', 'double', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<ns3::LteUeRrc>, std::list<ns3::LteRrcSap::SCellToAddMod, std::allocator<ns3::LteRrcSap::SCellToAddMod> >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
@@ -1482,10 +1867,16 @@ def register_types(module):
     module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'ns3::Ptr<ns3::Socket>', 'unsigned int', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<ns3::SpectrumSignalParameters>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
     module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'ns3::Ptr<ns3::SpectrumSignalParameters>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Time, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
+    module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'ns3::Time', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
     module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned int, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
+    module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'unsigned int', 'unsigned int', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned int, unsigned int, unsigned short, unsigned char, unsigned short, unsigned char, ns3::empty, ns3::empty, ns3::empty> [class]
     module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'unsigned int', 'unsigned int', 'unsigned short', 'unsigned char', 'unsigned short', 'unsigned char', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned long, unsigned short, long double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
+    module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'unsigned long', 'unsigned short', 'long double', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned long, unsigned short, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
     module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'unsigned long', 'unsigned short', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned long, unsigned short, unsigned short, ns3::LteRrcSap::MeasurementReport, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
@@ -1502,6 +1893,8 @@ def register_types(module):
     module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'unsigned short', 'ns3::Ptr<ns3::SpectrumValue>', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned short, unsigned char, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
     module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'unsigned short', 'unsigned char', 'unsigned int', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned short, unsigned char, unsigned int, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
+    module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'unsigned short', 'unsigned char', 'unsigned int', 'unsigned int', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned short, unsigned char, unsigned int, unsigned long, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
     module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'unsigned short', 'unsigned char', 'unsigned int', 'unsigned long', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned short, unsigned short, double, double, bool, unsigned char, ns3::empty, ns3::empty, ns3::empty> [class]
@@ -1516,6 +1909,8 @@ def register_types(module):
     module.add_class('CallbackImpl', template_parameters=['void', 'unsigned short', 'unsigned short', 'ns3::LteUePhy::State', 'ns3::LteUePhy::State', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
     ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned short, unsigned short, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
     module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'unsigned short', 'unsigned short', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned short, unsigned short, unsigned int, unsigned long, bool, ns3::empty, ns3::empty, ns3::empty, ns3::empty> [class]
+    module.add_class('CallbackImpl', import_from_module='ns.core', template_parameters=['void', 'unsigned short', 'unsigned short', 'unsigned int', 'unsigned long', 'bool', 'ns3::empty', 'ns3::empty', 'ns3::empty', 'ns3::empty'], parent=root_module['ns3::CallbackImplBase'])
     ## cqa-ff-mac-scheduler.h (module 'lte'): ns3::CqaFfMacScheduler [class]
     module.add_class('CqaFfMacScheduler', parent=root_module['ns3::FfMacScheduler'])
     ## lte-control-messages.h (module 'lte'): ns3::DlCqiLteControlMessage [class]
@@ -1538,12 +1933,22 @@ def register_types(module):
     module.add_class('LteDataRadioBearerInfo', parent=root_module['ns3::LteRadioBearerInfo'])
     ## lte-enb-phy.h (module 'lte'): ns3::LteEnbPhy [class]
     module.add_class('LteEnbPhy', parent=root_module['ns3::LtePhy'])
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, uint16_t, double, uint8_t )', u'ns3::LteEnbPhy::ReportUeSinrTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, uint16_t, double, uint8_t )*', u'ns3::LteEnbPhy::ReportUeSinrTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, uint16_t, double, uint8_t )&', u'ns3::LteEnbPhy::ReportUeSinrTracedCallback&')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, ns3::Ptr< ns3::SpectrumValue > )', u'ns3::LteEnbPhy::ReportInterferenceTracedCallback')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, ns3::Ptr< ns3::SpectrumValue > )*', u'ns3::LteEnbPhy::ReportInterferenceTracedCallback*')
+    typehandlers.add_type_alias(u'void ( * ) ( uint16_t, ns3::Ptr< ns3::SpectrumValue > )&', u'ns3::LteEnbPhy::ReportInterferenceTracedCallback&')
     ## lte-net-device.h (module 'lte'): ns3::LteNetDevice [class]
     module.add_class('LteNetDevice', parent=root_module['ns3::NetDevice'])
     ## lte-ue-net-device.h (module 'lte'): ns3::LteUeNetDevice [class]
     module.add_class('LteUeNetDevice', parent=root_module['ns3::LteNetDevice'])
     ## lte-rrc-header.h (module 'lte'): ns3::MeasurementReportHeader [class]
     module.add_class('MeasurementReportHeader', parent=root_module['ns3::RrcUlDcchMessage'])
+    ## queue-item.h (module 'network'): ns3::QueueDiscItem [class]
+    module.add_class('QueueDiscItem', import_from_module='ns.network', parent=root_module['ns3::QueueItem'])
+    ## lte-rrc-header.h (module 'lte'): ns3::RrcConnectToMmWaveHeader [class]
+    module.add_class('RrcConnectToMmWaveHeader', parent=root_module['ns3::RrcDlCcchMessage'])
     ## lte-rrc-header.h (module 'lte'): ns3::RrcConnectionReconfigurationCompleteHeader [class]
     module.add_class('RrcConnectionReconfigurationCompleteHeader', parent=root_module['ns3::RrcUlDcchMessage'])
     ## lte-rrc-header.h (module 'lte'): ns3::RrcConnectionReconfigurationHeader [class]
@@ -1566,6 +1971,10 @@ def register_types(module):
     module.add_class('RrcConnectionSetupCompleteHeader', parent=root_module['ns3::RrcUlDcchMessage'])
     ## lte-rrc-header.h (module 'lte'): ns3::RrcConnectionSetupHeader [class]
     module.add_class('RrcConnectionSetupHeader', parent=root_module['ns3::RrcDlCcchMessage'])
+    ## lte-rrc-header.h (module 'lte'): ns3::RrcConnectionSwitchHeader [class]
+    module.add_class('RrcConnectionSwitchHeader', parent=root_module['ns3::RrcDlDcchMessage'])
+    ## lte-rrc-header.h (module 'lte'): ns3::RrcNotifySecondaryConnectedHeader [class]
+    module.add_class('RrcNotifySecondaryConnectedHeader', parent=root_module['ns3::RrcUlDcchMessage'])
     ## lte-enb-net-device.h (module 'lte'): ns3::LteEnbNetDevice [class]
     module.add_class('LteEnbNetDevice', parent=root_module['ns3::LteNetDevice'])
     module.add_container('std::vector< ns3::CeBitmap_e >', 'ns3::CeBitmap_e', container_type=u'vector')
@@ -1579,20 +1988,22 @@ def register_types(module):
     module.add_container('std::list< ns3::EpcS11SapSgw::BearerContextToBeCreated >', 'ns3::EpcS11SapSgw::BearerContextToBeCreated', container_type=u'list')
     module.add_container('std::list< ns3::EpcS11SapSgw::BearerContextToBeRemoved >', 'ns3::EpcS11SapSgw::BearerContextToBeRemoved', container_type=u'list')
     module.add_container('std::list< ns3::EpcS11SapSgw::BearerContextRemovedSgwPgw >', 'ns3::EpcS11SapSgw::BearerContextRemovedSgwPgw', container_type=u'list')
-    module.add_container('std::list< ns3::EpcS1apSapEnb::ErabToBeSetupItem >', 'ns3::EpcS1apSapEnb::ErabToBeSetupItem', container_type=u'list')
-    module.add_container('std::list< ns3::EpcS1apSapEnb::ErabSwitchedInUplinkItem >', 'ns3::EpcS1apSapEnb::ErabSwitchedInUplinkItem', container_type=u'list')
-    module.add_container('std::list< ns3::EpcS1apSapMme::ErabToBeReleasedIndication >', 'ns3::EpcS1apSapMme::ErabToBeReleasedIndication', container_type=u'list')
-    module.add_container('std::list< ns3::EpcS1apSapMme::ErabSetupItem >', 'ns3::EpcS1apSapMme::ErabSetupItem', container_type=u'list')
-    module.add_container('std::list< ns3::EpcS1apSapMme::ErabSwitchedInDownlinkItem >', 'ns3::EpcS1apSapMme::ErabSwitchedInDownlinkItem', container_type=u'list')
+    module.add_container('std::list< ns3::EpcS1apSap::ErabToBeSetupItem >', 'ns3::EpcS1apSap::ErabToBeSetupItem', container_type=u'list')
+    module.add_container('std::list< ns3::EpcS1apSap::ErabSwitchedInUplinkItem >', 'ns3::EpcS1apSap::ErabSwitchedInUplinkItem', container_type=u'list')
+    module.add_container('std::list< ns3::EpcS1apSap::ErabToBeReleasedIndication >', 'ns3::EpcS1apSap::ErabToBeReleasedIndication', container_type=u'list')
+    module.add_container('std::list< ns3::EpcS1apSap::ErabSetupItem >', 'ns3::EpcS1apSap::ErabSetupItem', container_type=u'list')
+    module.add_container('std::list< ns3::EpcS1apSap::ErabSwitchedInDownlinkItem >', 'ns3::EpcS1apSap::ErabSwitchedInDownlinkItem', container_type=u'list')
     module.add_container('std::vector< bool >', 'bool', container_type=u'vector')
     module.add_container('std::vector< ns3::EpcX2Sap::UlInterferenceOverloadIndicationItem >', 'ns3::EpcX2Sap::UlInterferenceOverloadIndicationItem', container_type=u'vector')
     module.add_container('std::vector< ns3::EpcX2Sap::UlHighInterferenceInformationItem >', 'ns3::EpcX2Sap::UlHighInterferenceInformationItem', container_type=u'vector')
     module.add_container('std::vector< ns3::EpcX2Sap::ErabToBeSetupItem >', 'ns3::EpcX2Sap::ErabToBeSetupItem', container_type=u'vector')
+    module.add_container('std::vector< ns3::EpcX2Sap::RlcSetupRequest >', 'ns3::EpcX2Sap::RlcSetupRequest', container_type=u'vector')
     module.add_container('std::vector< ns3::EpcX2Sap::ErabAdmittedItem >', 'ns3::EpcX2Sap::ErabAdmittedItem', container_type=u'vector')
     module.add_container('std::vector< ns3::EpcX2Sap::ErabNotAdmittedItem >', 'ns3::EpcX2Sap::ErabNotAdmittedItem', container_type=u'vector')
     module.add_container('std::vector< ns3::EpcX2Sap::ErabsSubjectToStatusTransferItem >', 'ns3::EpcX2Sap::ErabsSubjectToStatusTransferItem', container_type=u'vector')
     module.add_container('std::vector< ns3::EpcX2Sap::CellInformationItem >', 'ns3::EpcX2Sap::CellInformationItem', container_type=u'vector')
     module.add_container('std::vector< ns3::EpcX2Sap::CellMeasurementResultItem >', 'ns3::EpcX2Sap::CellMeasurementResultItem', container_type=u'vector')
+    module.add_container('std::map< unsigned long, double >', ('long unsigned int', 'double'), container_type=u'map')
     module.add_container('std::vector< ns3::VendorSpecificListElement_s >', 'ns3::VendorSpecificListElement_s', container_type=u'vector')
     module.add_container('std::vector< ns3::LogicalChannelConfigListElement_s >', 'ns3::LogicalChannelConfigListElement_s', container_type=u'vector')
     module.add_container('std::vector< ns3::PagingInfoListElement_s >', 'ns3::PagingInfoListElement_s', container_type=u'vector')
@@ -1611,6 +2022,8 @@ def register_types(module):
     module.add_container('std::vector< ns3::LteCcmRrcSapProvider::LcsConfig >', 'ns3::LteCcmRrcSapProvider::LcsConfig', container_type=u'vector')
     module.add_container('std::vector< ns3::LteRrcSap::LogicalChannelConfig >', 'ns3::LteRrcSap::LogicalChannelConfig', container_type=u'vector')
     module.add_container('std::map< unsigned short, std::vector< double > >', ('short unsigned int', 'std::vector< double >'), container_type=u'map')
+    module.add_container('std::list< unsigned int >', 'unsigned int', container_type=u'list')
+    module.add_container('std::list< double >', 'double', container_type=u'list')
     module.add_container('std::vector< int >', 'int', container_type=u'vector')
     module.add_container('ns3::HarqProcessInfoList_t', 'ns3::HarqProcessInfoElement_t', container_type=u'vector')
     module.add_container('std::list< ns3::LteRrcSap::SrbToAddMod >', 'ns3::LteRrcSap::SrbToAddMod', container_type=u'list')
@@ -1621,7 +2034,6 @@ def register_types(module):
     module.add_container('std::list< ns3::LteRrcSap::MeasObjectToAddMod >', 'ns3::LteRrcSap::MeasObjectToAddMod', container_type=u'list')
     module.add_container('std::list< ns3::LteRrcSap::ReportConfigToAddMod >', 'ns3::LteRrcSap::ReportConfigToAddMod', container_type=u'list')
     module.add_container('std::list< ns3::LteRrcSap::MeasIdToAddMod >', 'ns3::LteRrcSap::MeasIdToAddMod', container_type=u'list')
-    module.add_container('std::list< unsigned int >', 'unsigned int', container_type=u'list')
     module.add_container('std::list< ns3::LteRrcSap::MeasResultScell >', 'ns3::LteRrcSap::MeasResultScell', container_type=u'list')
     module.add_container('std::list< ns3::LteRrcSap::MeasResultBestNeighCell >', 'ns3::LteRrcSap::MeasResultBestNeighCell', container_type=u'list')
     module.add_container('std::list< ns3::LteRrcSap::MeasResultEutra >', 'ns3::LteRrcSap::MeasResultEutra', container_type=u'list')
@@ -1632,72 +2044,89 @@ def register_types(module):
     module.add_container('std::vector< ns3::HigherLayerSelected_s >', 'ns3::HigherLayerSelected_s', container_type=u'vector')
     module.add_container('std::vector< ns3::SiMessageListElement_s >', 'ns3::SiMessageListElement_s', container_type=u'vector')
     module.add_container('std::list< ns3::Ptr< ns3::Packet > >', 'ns3::Ptr< ns3::Packet >', container_type=u'list')
+    module.add_container('std::map< std::string, unsigned int >', ('std::string', 'unsigned int'), container_type=u'map')
+    module.add_container('std::map< std::string, unsigned long >', ('std::string', 'long unsigned int'), container_type=u'map')
     module.add_container('std::vector< ns3::Ipv6Address >', 'ns3::Ipv6Address', container_type=u'vector')
     module.add_container('std::vector< double >', 'double', container_type=u'vector')
     module.add_container('ns3::Bands', 'ns3::BandInfo', container_type=u'vector')
     module.add_container('std::map< unsigned char, ns3::ComponentCarrier >', ('unsigned char', 'ns3::ComponentCarrier'), container_type=u'map')
     module.add_container('std::map< unsigned int, unsigned int >', ('unsigned int', 'unsigned int'), container_type=u'map')
+    module.add_container('std::map< unsigned char, double >', ('unsigned char', 'double'), container_type=u'map')
     module.add_container('std::map< unsigned char, ns3::Ptr< ns3::ComponentCarrierEnb > >', ('unsigned char', 'ns3::Ptr< ns3::ComponentCarrierEnb >'), container_type=u'map')
+    module.add_container('std::map< unsigned char, ns3::LteEnbRrc::MmWaveComponentCarrierConf >', ('unsigned char', 'ns3::LteEnbRrc::MmWaveComponentCarrierConf'), container_type=u'map')
+    module.add_container('std::map< unsigned long, ns3::LteEnbRrc::HandoverEventInfo >', ('long unsigned int', 'ns3::LteEnbRrc::HandoverEventInfo'), container_type=u'map')
     module.add_container('std::list< ns3::Ptr< ns3::LteControlMessage > >', 'ns3::Ptr< ns3::LteControlMessage >', container_type=u'list')
+    module.add_container('std::vector< ns3::Ptr< ns3::Packet > >', 'ns3::Ptr< ns3::Packet >', container_type=u'vector')
+    module.add_container('std::vector< ns3::LteRlcAm::RetxPdu >', 'ns3::LteRlcAm::RetxPdu', container_type=u'vector')
+    module.add_container('std::map< unsigned int, ns3::Ptr< ns3::Packet > >', ('unsigned int', 'ns3::Ptr< ns3::Packet >'), container_type=u'map')
     module.add_container('std::list< ns3::UlDciLteControlMessage >', 'ns3::UlDciLteControlMessage', container_type=u'list')
     module.add_container('std::map< unsigned char, ns3::Ptr< ns3::ComponentCarrierUe > >', ('unsigned char', 'ns3::Ptr< ns3::ComponentCarrierUe >'), container_type=u'map')
-    typehandlers.add_type_alias(u'std::vector< unsigned char, std::allocator< unsigned char > >', u'ns3::DlHarqProcessesStatus_t')
-    typehandlers.add_type_alias(u'std::vector< unsigned char, std::allocator< unsigned char > >*', u'ns3::DlHarqProcessesStatus_t*')
-    typehandlers.add_type_alias(u'std::vector< unsigned char, std::allocator< unsigned char > >&', u'ns3::DlHarqProcessesStatus_t&')
-    typehandlers.add_type_alias(u'std::vector< unsigned char, std::allocator< unsigned char > >', u'ns3::DlHarqProcessesTimer_t')
-    typehandlers.add_type_alias(u'std::vector< unsigned char, std::allocator< unsigned char > >*', u'ns3::DlHarqProcessesTimer_t*')
-    typehandlers.add_type_alias(u'std::vector< unsigned char, std::allocator< unsigned char > >&', u'ns3::DlHarqProcessesTimer_t&')
-    typehandlers.add_type_alias(u'std::vector< ns3::DlDciListElement_s, std::allocator< ns3::DlDciListElement_s > >', u'ns3::DlHarqProcessesDciBuffer_t')
-    typehandlers.add_type_alias(u'std::vector< ns3::DlDciListElement_s, std::allocator< ns3::DlDciListElement_s > >*', u'ns3::DlHarqProcessesDciBuffer_t*')
-    typehandlers.add_type_alias(u'std::vector< ns3::DlDciListElement_s, std::allocator< ns3::DlDciListElement_s > >&', u'ns3::DlHarqProcessesDciBuffer_t&')
-    typehandlers.add_type_alias(u'std::vector< std::vector< ns3::RlcPduListElement_s, std::allocator< ns3::RlcPduListElement_s > >, std::allocator< std::vector< ns3::RlcPduListElement_s, std::allocator< ns3::RlcPduListElement_s > > > >', u'ns3::RlcPduList_t')
-    typehandlers.add_type_alias(u'std::vector< std::vector< ns3::RlcPduListElement_s, std::allocator< ns3::RlcPduListElement_s > >, std::allocator< std::vector< ns3::RlcPduListElement_s, std::allocator< ns3::RlcPduListElement_s > > > >*', u'ns3::RlcPduList_t*')
-    typehandlers.add_type_alias(u'std::vector< std::vector< ns3::RlcPduListElement_s, std::allocator< ns3::RlcPduListElement_s > >, std::allocator< std::vector< ns3::RlcPduListElement_s, std::allocator< ns3::RlcPduListElement_s > > > >&', u'ns3::RlcPduList_t&')
-    typehandlers.add_type_alias(u'std::vector< std::vector< std::vector< ns3::RlcPduListElement_s, std::allocator< ns3::RlcPduListElement_s > >, std::allocator< std::vector< ns3::RlcPduListElement_s, std::allocator< ns3::RlcPduListElement_s > > > >, std::allocator< std::vector< std::vector< ns3::RlcPduListElement_s, std::allocator< ns3::RlcPduListElement_s > >, std::allocator< std::vector< ns3::RlcPduListElement_s, std::allocator< ns3::RlcPduListElement_s > > > > > >', u'ns3::DlHarqRlcPduListBuffer_t')
-    typehandlers.add_type_alias(u'std::vector< std::vector< std::vector< ns3::RlcPduListElement_s, std::allocator< ns3::RlcPduListElement_s > >, std::allocator< std::vector< ns3::RlcPduListElement_s, std::allocator< ns3::RlcPduListElement_s > > > >, std::allocator< std::vector< std::vector< ns3::RlcPduListElement_s, std::allocator< ns3::RlcPduListElement_s > >, std::allocator< std::vector< ns3::RlcPduListElement_s, std::allocator< ns3::RlcPduListElement_s > > > > > >*', u'ns3::DlHarqRlcPduListBuffer_t*')
-    typehandlers.add_type_alias(u'std::vector< std::vector< std::vector< ns3::RlcPduListElement_s, std::allocator< ns3::RlcPduListElement_s > >, std::allocator< std::vector< ns3::RlcPduListElement_s, std::allocator< ns3::RlcPduListElement_s > > > >, std::allocator< std::vector< std::vector< ns3::RlcPduListElement_s, std::allocator< ns3::RlcPduListElement_s > >, std::allocator< std::vector< ns3::RlcPduListElement_s, std::allocator< ns3::RlcPduListElement_s > > > > > >&', u'ns3::DlHarqRlcPduListBuffer_t&')
-    typehandlers.add_type_alias(u'std::vector< ns3::UlDciListElement_s, std::allocator< ns3::UlDciListElement_s > >', u'ns3::UlHarqProcessesDciBuffer_t')
-    typehandlers.add_type_alias(u'std::vector< ns3::UlDciListElement_s, std::allocator< ns3::UlDciListElement_s > >*', u'ns3::UlHarqProcessesDciBuffer_t*')
-    typehandlers.add_type_alias(u'std::vector< ns3::UlDciListElement_s, std::allocator< ns3::UlDciListElement_s > >&', u'ns3::UlHarqProcessesDciBuffer_t&')
-    typehandlers.add_type_alias(u'std::vector< unsigned char, std::allocator< unsigned char > >', u'ns3::UlHarqProcessesStatus_t')
-    typehandlers.add_type_alias(u'std::vector< unsigned char, std::allocator< unsigned char > >*', u'ns3::UlHarqProcessesStatus_t*')
-    typehandlers.add_type_alias(u'std::vector< unsigned char, std::allocator< unsigned char > >&', u'ns3::UlHarqProcessesStatus_t&')
-    typehandlers.add_type_alias(u'std::map< ns3::ImsiLcidPair_t, unsigned int, std::less< ns3::ImsiLcidPair_t >, std::allocator< std::pair< ns3::ImsiLcidPair_t const, unsigned int > > >', u'ns3::Uint32Map')
-    typehandlers.add_type_alias(u'std::map< ns3::ImsiLcidPair_t, unsigned int, std::less< ns3::ImsiLcidPair_t >, std::allocator< std::pair< ns3::ImsiLcidPair_t const, unsigned int > > >*', u'ns3::Uint32Map*')
-    typehandlers.add_type_alias(u'std::map< ns3::ImsiLcidPair_t, unsigned int, std::less< ns3::ImsiLcidPair_t >, std::allocator< std::pair< ns3::ImsiLcidPair_t const, unsigned int > > >&', u'ns3::Uint32Map&')
-    typehandlers.add_type_alias(u'std::map< ns3::ImsiLcidPair_t, unsigned long, std::less< ns3::ImsiLcidPair_t >, std::allocator< std::pair< ns3::ImsiLcidPair_t const, unsigned long > > >', u'ns3::Uint64Map')
-    typehandlers.add_type_alias(u'std::map< ns3::ImsiLcidPair_t, unsigned long, std::less< ns3::ImsiLcidPair_t >, std::allocator< std::pair< ns3::ImsiLcidPair_t const, unsigned long > > >*', u'ns3::Uint64Map*')
-    typehandlers.add_type_alias(u'std::map< ns3::ImsiLcidPair_t, unsigned long, std::less< ns3::ImsiLcidPair_t >, std::allocator< std::pair< ns3::ImsiLcidPair_t const, unsigned long > > >&', u'ns3::Uint64Map&')
-    typehandlers.add_type_alias(u'std::map< ns3::ImsiLcidPair_t, ns3::Ptr< ns3::MinMaxAvgTotalCalculator< unsigned int > >, std::less< ns3::ImsiLcidPair_t >, std::allocator< std::pair< ns3::ImsiLcidPair_t const, ns3::Ptr< ns3::MinMaxAvgTotalCalculator< unsigned int > > > > >', u'ns3::Uint32StatsMap')
-    typehandlers.add_type_alias(u'std::map< ns3::ImsiLcidPair_t, ns3::Ptr< ns3::MinMaxAvgTotalCalculator< unsigned int > >, std::less< ns3::ImsiLcidPair_t >, std::allocator< std::pair< ns3::ImsiLcidPair_t const, ns3::Ptr< ns3::MinMaxAvgTotalCalculator< unsigned int > > > > >*', u'ns3::Uint32StatsMap*')
-    typehandlers.add_type_alias(u'std::map< ns3::ImsiLcidPair_t, ns3::Ptr< ns3::MinMaxAvgTotalCalculator< unsigned int > >, std::less< ns3::ImsiLcidPair_t >, std::allocator< std::pair< ns3::ImsiLcidPair_t const, ns3::Ptr< ns3::MinMaxAvgTotalCalculator< unsigned int > > > > >&', u'ns3::Uint32StatsMap&')
-    typehandlers.add_type_alias(u'std::map< ns3::ImsiLcidPair_t, ns3::Ptr< ns3::MinMaxAvgTotalCalculator< unsigned long > >, std::less< ns3::ImsiLcidPair_t >, std::allocator< std::pair< ns3::ImsiLcidPair_t const, ns3::Ptr< ns3::MinMaxAvgTotalCalculator< unsigned long > > > > >', u'ns3::Uint64StatsMap')
-    typehandlers.add_type_alias(u'std::map< ns3::ImsiLcidPair_t, ns3::Ptr< ns3::MinMaxAvgTotalCalculator< unsigned long > >, std::less< ns3::ImsiLcidPair_t >, std::allocator< std::pair< ns3::ImsiLcidPair_t const, ns3::Ptr< ns3::MinMaxAvgTotalCalculator< unsigned long > > > > >*', u'ns3::Uint64StatsMap*')
-    typehandlers.add_type_alias(u'std::map< ns3::ImsiLcidPair_t, ns3::Ptr< ns3::MinMaxAvgTotalCalculator< unsigned long > >, std::less< ns3::ImsiLcidPair_t >, std::allocator< std::pair< ns3::ImsiLcidPair_t const, ns3::Ptr< ns3::MinMaxAvgTotalCalculator< unsigned long > > > > >&', u'ns3::Uint64StatsMap&')
-    typehandlers.add_type_alias(u'std::map< ns3::ImsiLcidPair_t, double, std::less< ns3::ImsiLcidPair_t >, std::allocator< std::pair< ns3::ImsiLcidPair_t const, double > > >', u'ns3::DoubleMap')
-    typehandlers.add_type_alias(u'std::map< ns3::ImsiLcidPair_t, double, std::less< ns3::ImsiLcidPair_t >, std::allocator< std::pair< ns3::ImsiLcidPair_t const, double > > >*', u'ns3::DoubleMap*')
-    typehandlers.add_type_alias(u'std::map< ns3::ImsiLcidPair_t, double, std::less< ns3::ImsiLcidPair_t >, std::allocator< std::pair< ns3::ImsiLcidPair_t const, double > > >&', u'ns3::DoubleMap&')
-    typehandlers.add_type_alias(u'std::map< ns3::ImsiLcidPair_t, ns3::LteFlowId_t, std::less< ns3::ImsiLcidPair_t >, std::allocator< std::pair< ns3::ImsiLcidPair_t const, ns3::LteFlowId_t > > >', u'ns3::FlowIdMap')
-    typehandlers.add_type_alias(u'std::map< ns3::ImsiLcidPair_t, ns3::LteFlowId_t, std::less< ns3::ImsiLcidPair_t >, std::allocator< std::pair< ns3::ImsiLcidPair_t const, ns3::LteFlowId_t > > >*', u'ns3::FlowIdMap*')
-    typehandlers.add_type_alias(u'std::map< ns3::ImsiLcidPair_t, ns3::LteFlowId_t, std::less< ns3::ImsiLcidPair_t >, std::allocator< std::pair< ns3::ImsiLcidPair_t const, ns3::LteFlowId_t > > >&', u'ns3::FlowIdMap&')
-    typehandlers.add_type_alias(u'std::vector< std::vector< ns3::Ptr< ns3::PacketBurst >, std::allocator< ns3::Ptr< ns3::PacketBurst > > >, std::allocator< std::vector< ns3::Ptr< ns3::PacketBurst >, std::allocator< ns3::Ptr< ns3::PacketBurst > > > > >', u'ns3::DlHarqProcessesBuffer_t')
-    typehandlers.add_type_alias(u'std::vector< std::vector< ns3::Ptr< ns3::PacketBurst >, std::allocator< ns3::Ptr< ns3::PacketBurst > > >, std::allocator< std::vector< ns3::Ptr< ns3::PacketBurst >, std::allocator< ns3::Ptr< ns3::PacketBurst > > > > >*', u'ns3::DlHarqProcessesBuffer_t*')
-    typehandlers.add_type_alias(u'std::vector< std::vector< ns3::Ptr< ns3::PacketBurst >, std::allocator< ns3::Ptr< ns3::PacketBurst > > >, std::allocator< std::vector< ns3::Ptr< ns3::PacketBurst >, std::allocator< ns3::Ptr< ns3::PacketBurst > > > > >&', u'ns3::DlHarqProcessesBuffer_t&')
+    typehandlers.add_type_alias(u'std::vector< unsigned char >', u'ns3::DlHarqProcessesStatus_t')
+    typehandlers.add_type_alias(u'std::vector< unsigned char >*', u'ns3::DlHarqProcessesStatus_t*')
+    typehandlers.add_type_alias(u'std::vector< unsigned char >&', u'ns3::DlHarqProcessesStatus_t&')
+    typehandlers.add_type_alias(u'std::vector< unsigned char >', u'ns3::DlHarqProcessesTimer_t')
+    typehandlers.add_type_alias(u'std::vector< unsigned char >*', u'ns3::DlHarqProcessesTimer_t*')
+    typehandlers.add_type_alias(u'std::vector< unsigned char >&', u'ns3::DlHarqProcessesTimer_t&')
+    typehandlers.add_type_alias(u'std::vector< ns3::DlDciListElement_s >', u'ns3::DlHarqProcessesDciBuffer_t')
+    typehandlers.add_type_alias(u'std::vector< ns3::DlDciListElement_s >*', u'ns3::DlHarqProcessesDciBuffer_t*')
+    typehandlers.add_type_alias(u'std::vector< ns3::DlDciListElement_s >&', u'ns3::DlHarqProcessesDciBuffer_t&')
+    typehandlers.add_type_alias(u'std::vector< std::vector< ns3::RlcPduListElement_s > >', u'ns3::RlcPduList_t')
+    typehandlers.add_type_alias(u'std::vector< std::vector< ns3::RlcPduListElement_s > >*', u'ns3::RlcPduList_t*')
+    typehandlers.add_type_alias(u'std::vector< std::vector< ns3::RlcPduListElement_s > >&', u'ns3::RlcPduList_t&')
+    typehandlers.add_type_alias(u'std::vector< std::vector< std::vector< ns3::RlcPduListElement_s > > >', u'ns3::DlHarqRlcPduListBuffer_t')
+    typehandlers.add_type_alias(u'std::vector< std::vector< std::vector< ns3::RlcPduListElement_s > > >*', u'ns3::DlHarqRlcPduListBuffer_t*')
+    typehandlers.add_type_alias(u'std::vector< std::vector< std::vector< ns3::RlcPduListElement_s > > >&', u'ns3::DlHarqRlcPduListBuffer_t&')
+    typehandlers.add_type_alias(u'std::vector< ns3::UlDciListElement_s >', u'ns3::UlHarqProcessesDciBuffer_t')
+    typehandlers.add_type_alias(u'std::vector< ns3::UlDciListElement_s >*', u'ns3::UlHarqProcessesDciBuffer_t*')
+    typehandlers.add_type_alias(u'std::vector< ns3::UlDciListElement_s >&', u'ns3::UlHarqProcessesDciBuffer_t&')
+    typehandlers.add_type_alias(u'std::vector< unsigned char >', u'ns3::UlHarqProcessesStatus_t')
+    typehandlers.add_type_alias(u'std::vector< unsigned char >*', u'ns3::UlHarqProcessesStatus_t*')
+    typehandlers.add_type_alias(u'std::vector< unsigned char >&', u'ns3::UlHarqProcessesStatus_t&')
+    typehandlers.add_type_alias(u'std::map< ns3::ImsiLcidPair_t, unsigned int >', u'ns3::Uint32Map')
+    typehandlers.add_type_alias(u'std::map< ns3::ImsiLcidPair_t, unsigned int >*', u'ns3::Uint32Map*')
+    typehandlers.add_type_alias(u'std::map< ns3::ImsiLcidPair_t, unsigned int >&', u'ns3::Uint32Map&')
+    typehandlers.add_type_alias(u'std::map< ns3::ImsiLcidPair_t, unsigned long >', u'ns3::Uint64Map')
+    typehandlers.add_type_alias(u'std::map< ns3::ImsiLcidPair_t, unsigned long >*', u'ns3::Uint64Map*')
+    typehandlers.add_type_alias(u'std::map< ns3::ImsiLcidPair_t, unsigned long >&', u'ns3::Uint64Map&')
+    typehandlers.add_type_alias(u'std::map< ns3::ImsiLcidPair_t, ns3::Ptr< ns3::MinMaxAvgTotalCalculator< unsigned int > > >', u'ns3::Uint32StatsMap')
+    typehandlers.add_type_alias(u'std::map< ns3::ImsiLcidPair_t, ns3::Ptr< ns3::MinMaxAvgTotalCalculator< unsigned int > > >*', u'ns3::Uint32StatsMap*')
+    typehandlers.add_type_alias(u'std::map< ns3::ImsiLcidPair_t, ns3::Ptr< ns3::MinMaxAvgTotalCalculator< unsigned int > > >&', u'ns3::Uint32StatsMap&')
+    typehandlers.add_type_alias(u'std::map< ns3::ImsiLcidPair_t, ns3::Ptr< ns3::MinMaxAvgTotalCalculator< unsigned long > > >', u'ns3::Uint64StatsMap')
+    typehandlers.add_type_alias(u'std::map< ns3::ImsiLcidPair_t, ns3::Ptr< ns3::MinMaxAvgTotalCalculator< unsigned long > > >*', u'ns3::Uint64StatsMap*')
+    typehandlers.add_type_alias(u'std::map< ns3::ImsiLcidPair_t, ns3::Ptr< ns3::MinMaxAvgTotalCalculator< unsigned long > > >&', u'ns3::Uint64StatsMap&')
+    typehandlers.add_type_alias(u'std::map< ns3::ImsiLcidPair_t, double >', u'ns3::DoubleMap')
+    typehandlers.add_type_alias(u'std::map< ns3::ImsiLcidPair_t, double >*', u'ns3::DoubleMap*')
+    typehandlers.add_type_alias(u'std::map< ns3::ImsiLcidPair_t, double >&', u'ns3::DoubleMap&')
+    typehandlers.add_type_alias(u'std::map< ns3::ImsiLcidPair_t, ns3::LteFlowId_t >', u'ns3::FlowIdMap')
+    typehandlers.add_type_alias(u'std::map< ns3::ImsiLcidPair_t, ns3::LteFlowId_t >*', u'ns3::FlowIdMap*')
+    typehandlers.add_type_alias(u'std::map< ns3::ImsiLcidPair_t, ns3::LteFlowId_t >&', u'ns3::FlowIdMap&')
+    typehandlers.add_type_alias(u'std::vector< std::vector< ns3::Ptr< ns3::PacketBurst > > >', u'ns3::DlHarqProcessesBuffer_t')
+    typehandlers.add_type_alias(u'std::vector< std::vector< ns3::Ptr< ns3::PacketBurst > > >*', u'ns3::DlHarqProcessesBuffer_t*')
+    typehandlers.add_type_alias(u'std::vector< std::vector< ns3::Ptr< ns3::PacketBurst > > >&', u'ns3::DlHarqProcessesBuffer_t&')
+    typehandlers.add_type_alias(u'std::map< unsigned long, double >', u'ns3::ImsiSinrMap')
+    typehandlers.add_type_alias(u'std::map< unsigned long, double >*', u'ns3::ImsiSinrMap*')
+    typehandlers.add_type_alias(u'std::map< unsigned long, double >&', u'ns3::ImsiSinrMap&')
+    typehandlers.add_type_alias(u'std::map< unsigned short, double >', u'ns3::CellSinrMap')
+    typehandlers.add_type_alias(u'std::map< unsigned short, double >*', u'ns3::CellSinrMap*')
+    typehandlers.add_type_alias(u'std::map< unsigned short, double >&', u'ns3::CellSinrMap&')
     typehandlers.add_type_alias(u'ns3::Callback< void, ns3::SpectrumValue const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::LteChunkProcessorCallback')
     typehandlers.add_type_alias(u'ns3::Callback< void, ns3::SpectrumValue const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::LteChunkProcessorCallback*')
     typehandlers.add_type_alias(u'ns3::Callback< void, ns3::SpectrumValue const &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::LteChunkProcessorCallback&')
-    typehandlers.add_type_alias(u'std::map< ns3::TbId_t, ns3::tbInfo_t, std::less< ns3::TbId_t >, std::allocator< std::pair< ns3::TbId_t const, ns3::tbInfo_t > > >', u'ns3::expectedTbs_t')
-    typehandlers.add_type_alias(u'std::map< ns3::TbId_t, ns3::tbInfo_t, std::less< ns3::TbId_t >, std::allocator< std::pair< ns3::TbId_t const, ns3::tbInfo_t > > >*', u'ns3::expectedTbs_t*')
-    typehandlers.add_type_alias(u'std::map< ns3::TbId_t, ns3::tbInfo_t, std::less< ns3::TbId_t >, std::allocator< std::pair< ns3::TbId_t const, ns3::tbInfo_t > > >&', u'ns3::expectedTbs_t&')
+    typehandlers.add_type_alias(u'std::map< ns3::TbId_t, ns3::tbInfo_t >', u'ns3::expectedTbs_t')
+    typehandlers.add_type_alias(u'std::map< ns3::TbId_t, ns3::tbInfo_t >*', u'ns3::expectedTbs_t*')
+    typehandlers.add_type_alias(u'std::map< ns3::TbId_t, ns3::tbInfo_t >&', u'ns3::expectedTbs_t&')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::Packet const >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::LtePhyTxEndCallback')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::Packet const >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::LtePhyTxEndCallback*')
+    typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::Packet const >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::LtePhyTxEndCallback&')
     typehandlers.add_type_alias(u'ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::LtePhyRxDataEndErrorCallback')
     typehandlers.add_type_alias(u'ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::LtePhyRxDataEndErrorCallback*')
     typehandlers.add_type_alias(u'ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::LtePhyRxDataEndErrorCallback&')
     typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::Packet >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::LtePhyRxDataEndOkCallback')
     typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::Packet >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::LtePhyRxDataEndOkCallback*')
     typehandlers.add_type_alias(u'ns3::Callback< void, ns3::Ptr< ns3::Packet >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::LtePhyRxDataEndOkCallback&')
-    typehandlers.add_type_alias(u'ns3::Callback< void, std::list< ns3::Ptr< ns3::LteControlMessage >, std::allocator< ns3::Ptr< ns3::LteControlMessage > > >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::LtePhyRxCtrlEndOkCallback')
-    typehandlers.add_type_alias(u'ns3::Callback< void, std::list< ns3::Ptr< ns3::LteControlMessage >, std::allocator< ns3::Ptr< ns3::LteControlMessage > > >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::LtePhyRxCtrlEndOkCallback*')
-    typehandlers.add_type_alias(u'ns3::Callback< void, std::list< ns3::Ptr< ns3::LteControlMessage >, std::allocator< ns3::Ptr< ns3::LteControlMessage > > >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::LtePhyRxCtrlEndOkCallback&')
+    typehandlers.add_type_alias(u'ns3::Callback< void, std::list< ns3::Ptr< ns3::LteControlMessage > >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::LtePhyRxCtrlEndOkCallback')
+    typehandlers.add_type_alias(u'ns3::Callback< void, std::list< ns3::Ptr< ns3::LteControlMessage > >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::LtePhyRxCtrlEndOkCallback*')
+    typehandlers.add_type_alias(u'ns3::Callback< void, std::list< ns3::Ptr< ns3::LteControlMessage > >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::LtePhyRxCtrlEndOkCallback&')
     typehandlers.add_type_alias(u'ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::LtePhyRxCtrlEndErrorCallback')
     typehandlers.add_type_alias(u'ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::LtePhyRxCtrlEndErrorCallback*')
     typehandlers.add_type_alias(u'ns3::Callback< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::LtePhyRxCtrlEndErrorCallback&')
@@ -1710,15 +2139,15 @@ def register_types(module):
     typehandlers.add_type_alias(u'ns3::Callback< void, ns3::UlInfoListElement_s, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::LtePhyUlHarqFeedbackCallback')
     typehandlers.add_type_alias(u'ns3::Callback< void, ns3::UlInfoListElement_s, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::LtePhyUlHarqFeedbackCallback*')
     typehandlers.add_type_alias(u'ns3::Callback< void, ns3::UlInfoListElement_s, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::LtePhyUlHarqFeedbackCallback&')
-    typehandlers.add_type_alias(u'std::vector< ns3::HarqProcessInfoElement_t, std::allocator< ns3::HarqProcessInfoElement_t > >', u'ns3::HarqProcessInfoList_t')
-    typehandlers.add_type_alias(u'std::vector< ns3::HarqProcessInfoElement_t, std::allocator< ns3::HarqProcessInfoElement_t > >*', u'ns3::HarqProcessInfoList_t*')
-    typehandlers.add_type_alias(u'std::vector< ns3::HarqProcessInfoElement_t, std::allocator< ns3::HarqProcessInfoElement_t > >&', u'ns3::HarqProcessInfoList_t&')
-    typehandlers.add_type_alias(u'void ( * ) ( std::ostream & )', u'ns3::LogTimePrinter')
-    typehandlers.add_type_alias(u'void ( * ) ( std::ostream & )*', u'ns3::LogTimePrinter*')
-    typehandlers.add_type_alias(u'void ( * ) ( std::ostream & )&', u'ns3::LogTimePrinter&')
-    typehandlers.add_type_alias(u'void ( * ) ( std::ostream & )', u'ns3::LogNodePrinter')
-    typehandlers.add_type_alias(u'void ( * ) ( std::ostream & )*', u'ns3::LogNodePrinter*')
-    typehandlers.add_type_alias(u'void ( * ) ( std::ostream & )&', u'ns3::LogNodePrinter&')
+    typehandlers.add_type_alias(u'std::vector< ns3::HarqProcessInfoElement_t >', u'ns3::HarqProcessInfoList_t')
+    typehandlers.add_type_alias(u'std::vector< ns3::HarqProcessInfoElement_t >*', u'ns3::HarqProcessInfoList_t*')
+    typehandlers.add_type_alias(u'std::vector< ns3::HarqProcessInfoElement_t >&', u'ns3::HarqProcessInfoList_t&')
+    typehandlers.add_type_alias(u'void ( * ) ( std::ostream & )', u'ns3::TimePrinter')
+    typehandlers.add_type_alias(u'void ( * ) ( std::ostream & )*', u'ns3::TimePrinter*')
+    typehandlers.add_type_alias(u'void ( * ) ( std::ostream & )&', u'ns3::TimePrinter&')
+    typehandlers.add_type_alias(u'void ( * ) ( std::ostream & )', u'ns3::NodePrinter')
+    typehandlers.add_type_alias(u'void ( * ) ( std::ostream & )*', u'ns3::NodePrinter*')
+    typehandlers.add_type_alias(u'void ( * ) ( std::ostream & )&', u'ns3::NodePrinter&')
     typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::Packet >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', u'ns3::GenericPhyTxStartCallback')
     typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::Packet >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >*', u'ns3::GenericPhyTxStartCallback*')
     typehandlers.add_type_alias(u'ns3::Callback< bool, ns3::Ptr< ns3::Packet >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >&', u'ns3::GenericPhyTxStartCallback&')
@@ -1746,12 +2175,12 @@ def register_types(module):
     typehandlers.add_type_alias(u'ns3::Vector3DChecker*', u'ns3::VectorChecker*')
     typehandlers.add_type_alias(u'ns3::Vector3DChecker&', u'ns3::VectorChecker&')
     module.add_typedef(root_module['ns3::Vector3DChecker'], 'VectorChecker')
-    typehandlers.add_type_alias(u'std::vector< double, std::allocator< double > >', u'ns3::Values')
-    typehandlers.add_type_alias(u'std::vector< double, std::allocator< double > >*', u'ns3::Values*')
-    typehandlers.add_type_alias(u'std::vector< double, std::allocator< double > >&', u'ns3::Values&')
-    typehandlers.add_type_alias(u'std::vector< ns3::BandInfo, std::allocator< ns3::BandInfo > >', u'ns3::Bands')
-    typehandlers.add_type_alias(u'std::vector< ns3::BandInfo, std::allocator< ns3::BandInfo > >*', u'ns3::Bands*')
-    typehandlers.add_type_alias(u'std::vector< ns3::BandInfo, std::allocator< ns3::BandInfo > >&', u'ns3::Bands&')
+    typehandlers.add_type_alias(u'std::vector< double >', u'ns3::Values')
+    typehandlers.add_type_alias(u'std::vector< double >*', u'ns3::Values*')
+    typehandlers.add_type_alias(u'std::vector< double >&', u'ns3::Values&')
+    typehandlers.add_type_alias(u'std::vector< ns3::BandInfo >', u'ns3::Bands')
+    typehandlers.add_type_alias(u'std::vector< ns3::BandInfo >*', u'ns3::Bands*')
+    typehandlers.add_type_alias(u'std::vector< ns3::BandInfo >&', u'ns3::Bands&')
     typehandlers.add_type_alias(u'uint32_t', u'ns3::SpectrumModelUid_t')
     typehandlers.add_type_alias(u'uint32_t*', u'ns3::SpectrumModelUid_t*')
     typehandlers.add_type_alias(u'uint32_t&', u'ns3::SpectrumModelUid_t&')
@@ -1791,6 +2220,9 @@ def register_types_ns3_Config(module):
     
     ## config.h (module 'core'): ns3::Config::MatchContainer [class]
     module.add_class('MatchContainer', import_from_module='ns.core')
+    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::Object > > const_iterator', u'ns3::Config::MatchContainer::Iterator')
+    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::Object > > const_iterator*', u'ns3::Config::MatchContainer::Iterator*')
+    typehandlers.add_type_alias(u'std::vector< ns3::Ptr< ns3::Object > > const_iterator&', u'ns3::Config::MatchContainer::Iterator&')
     module.add_container('std::vector< ns3::Ptr< ns3::Object > >', 'ns3::Ptr< ns3::Object >', container_type=u'vector')
     module.add_container('std::vector< std::string >', 'std::string', container_type=u'vector')
 
@@ -1902,6 +2334,9 @@ def register_methods(root_module):
     register_Ns3DefaultDeleter__Ns3LteHarqPhy_methods(root_module, root_module['ns3::DefaultDeleter< ns3::LteHarqPhy >'])
     register_Ns3DefaultDeleter__Ns3NixVector_methods(root_module, root_module['ns3::DefaultDeleter< ns3::NixVector >'])
     register_Ns3DefaultDeleter__Ns3Packet_methods(root_module, root_module['ns3::DefaultDeleter< ns3::Packet >'])
+    register_Ns3DefaultDeleter__Ns3QueueItem_methods(root_module, root_module['ns3::DefaultDeleter< ns3::QueueItem >'])
+    register_Ns3DefaultDeleter__Ns3S1apConnectionInfo_methods(root_module, root_module['ns3::DefaultDeleter< ns3::S1apConnectionInfo >'])
+    register_Ns3DefaultDeleter__Ns3S1apIfaceInfo_methods(root_module, root_module['ns3::DefaultDeleter< ns3::S1apIfaceInfo >'])
     register_Ns3DefaultDeleter__Ns3SpectrumModel_methods(root_module, root_module['ns3::DefaultDeleter< ns3::SpectrumModel >'])
     register_Ns3DefaultDeleter__Ns3SpectrumSignalParameters_methods(root_module, root_module['ns3::DefaultDeleter< ns3::SpectrumSignalParameters >'])
     register_Ns3DefaultDeleter__Ns3SpectrumValue_methods(root_module, root_module['ns3::DefaultDeleter< ns3::SpectrumValue >'])
@@ -1938,13 +2373,15 @@ def register_methods(root_module):
     register_Ns3EpcS11SapSgwDeleteBearerResponseMessage_methods(root_module, root_module['ns3::EpcS11SapSgw::DeleteBearerResponseMessage'])
     register_Ns3EpcS11SapSgwModifyBearerRequestMessage_methods(root_module, root_module['ns3::EpcS11SapSgw::ModifyBearerRequestMessage'])
     register_Ns3EpcS1apSap_methods(root_module, root_module['ns3::EpcS1apSap'])
+    register_Ns3EpcS1apSapErabSetupItem_methods(root_module, root_module['ns3::EpcS1apSap::ErabSetupItem'])
+    register_Ns3EpcS1apSapErabSwitchedInDownlinkItem_methods(root_module, root_module['ns3::EpcS1apSap::ErabSwitchedInDownlinkItem'])
+    register_Ns3EpcS1apSapErabSwitchedInUplinkItem_methods(root_module, root_module['ns3::EpcS1apSap::ErabSwitchedInUplinkItem'])
+    register_Ns3EpcS1apSapErabToBeReleasedIndication_methods(root_module, root_module['ns3::EpcS1apSap::ErabToBeReleasedIndication'])
+    register_Ns3EpcS1apSapErabToBeSetupItem_methods(root_module, root_module['ns3::EpcS1apSap::ErabToBeSetupItem'])
     register_Ns3EpcS1apSapEnb_methods(root_module, root_module['ns3::EpcS1apSapEnb'])
-    register_Ns3EpcS1apSapEnbErabSwitchedInUplinkItem_methods(root_module, root_module['ns3::EpcS1apSapEnb::ErabSwitchedInUplinkItem'])
-    register_Ns3EpcS1apSapEnbErabToBeSetupItem_methods(root_module, root_module['ns3::EpcS1apSapEnb::ErabToBeSetupItem'])
+    register_Ns3EpcS1apSapEnbProvider_methods(root_module, root_module['ns3::EpcS1apSapEnbProvider'])
     register_Ns3EpcS1apSapMme_methods(root_module, root_module['ns3::EpcS1apSapMme'])
-    register_Ns3EpcS1apSapMmeErabSetupItem_methods(root_module, root_module['ns3::EpcS1apSapMme::ErabSetupItem'])
-    register_Ns3EpcS1apSapMmeErabSwitchedInDownlinkItem_methods(root_module, root_module['ns3::EpcS1apSapMme::ErabSwitchedInDownlinkItem'])
-    register_Ns3EpcS1apSapMmeErabToBeReleasedIndication_methods(root_module, root_module['ns3::EpcS1apSapMme::ErabToBeReleasedIndication'])
+    register_Ns3EpcS1apSapMmeProvider_methods(root_module, root_module['ns3::EpcS1apSapMmeProvider'])
     register_Ns3EpcX2Sap_methods(root_module, root_module['ns3::EpcX2Sap'])
     register_Ns3EpcX2SapCellInformationItem_methods(root_module, root_module['ns3::EpcX2Sap::CellInformationItem'])
     register_Ns3EpcX2SapCellMeasurementResultItem_methods(root_module, root_module['ns3::EpcX2Sap::CellMeasurementResultItem'])
@@ -1953,15 +2390,21 @@ def register_methods(root_module):
     register_Ns3EpcX2SapErabNotAdmittedItem_methods(root_module, root_module['ns3::EpcX2Sap::ErabNotAdmittedItem'])
     register_Ns3EpcX2SapErabToBeSetupItem_methods(root_module, root_module['ns3::EpcX2Sap::ErabToBeSetupItem'])
     register_Ns3EpcX2SapErabsSubjectToStatusTransferItem_methods(root_module, root_module['ns3::EpcX2Sap::ErabsSubjectToStatusTransferItem'])
+    register_Ns3EpcX2SapHandoverFailedParams_methods(root_module, root_module['ns3::EpcX2Sap::HandoverFailedParams'])
     register_Ns3EpcX2SapHandoverPreparationFailureParams_methods(root_module, root_module['ns3::EpcX2Sap::HandoverPreparationFailureParams'])
     register_Ns3EpcX2SapHandoverRequestAckParams_methods(root_module, root_module['ns3::EpcX2Sap::HandoverRequestAckParams'])
     register_Ns3EpcX2SapHandoverRequestParams_methods(root_module, root_module['ns3::EpcX2Sap::HandoverRequestParams'])
     register_Ns3EpcX2SapLoadInformationParams_methods(root_module, root_module['ns3::EpcX2Sap::LoadInformationParams'])
     register_Ns3EpcX2SapRelativeNarrowbandTxBand_methods(root_module, root_module['ns3::EpcX2Sap::RelativeNarrowbandTxBand'])
     register_Ns3EpcX2SapResourceStatusUpdateParams_methods(root_module, root_module['ns3::EpcX2Sap::ResourceStatusUpdateParams'])
+    register_Ns3EpcX2SapRlcSetupRequest_methods(root_module, root_module['ns3::EpcX2Sap::RlcSetupRequest'])
+    register_Ns3EpcX2SapSecondaryHandoverCompletedParams_methods(root_module, root_module['ns3::EpcX2Sap::SecondaryHandoverCompletedParams'])
+    register_Ns3EpcX2SapSecondaryHandoverParams_methods(root_module, root_module['ns3::EpcX2Sap::SecondaryHandoverParams'])
     register_Ns3EpcX2SapSnStatusTransferParams_methods(root_module, root_module['ns3::EpcX2Sap::SnStatusTransferParams'])
+    register_Ns3EpcX2SapSwitchConnectionParams_methods(root_module, root_module['ns3::EpcX2Sap::SwitchConnectionParams'])
     register_Ns3EpcX2SapUeContextReleaseParams_methods(root_module, root_module['ns3::EpcX2Sap::UeContextReleaseParams'])
     register_Ns3EpcX2SapUeDataParams_methods(root_module, root_module['ns3::EpcX2Sap::UeDataParams'])
+    register_Ns3EpcX2SapUeImsiSinrParams_methods(root_module, root_module['ns3::EpcX2Sap::UeImsiSinrParams'])
     register_Ns3EpcX2SapUlHighInterferenceInformationItem_methods(root_module, root_module['ns3::EpcX2Sap::UlHighInterferenceInformationItem'])
     register_Ns3EpcX2SapProvider_methods(root_module, root_module['ns3::EpcX2SapProvider'])
     register_Ns3EpcX2SapUser_methods(root_module, root_module['ns3::EpcX2SapUser'])
@@ -2033,6 +2476,7 @@ def register_methods(root_module):
     register_Ns3LteEnbCmacSapUserUeConfig_methods(root_module, root_module['ns3::LteEnbCmacSapUser::UeConfig'])
     register_Ns3LteEnbCphySapProvider_methods(root_module, root_module['ns3::LteEnbCphySapProvider'])
     register_Ns3LteEnbCphySapUser_methods(root_module, root_module['ns3::LteEnbCphySapUser'])
+    register_Ns3LteEnbCphySapUserUeAssociatedSinrInfo_methods(root_module, root_module['ns3::LteEnbCphySapUser::UeAssociatedSinrInfo'])
     register_Ns3LteEnbPhySapProvider_methods(root_module, root_module['ns3::LteEnbPhySapProvider'])
     register_Ns3LteEnbPhySapUser_methods(root_module, root_module['ns3::LteEnbPhySapUser'])
     register_Ns3LteFfConverter_methods(root_module, root_module['ns3::LteFfConverter'])
@@ -2048,6 +2492,8 @@ def register_methods(root_module):
     register_Ns3LteMacSapProviderReportBufferStatusParameters_methods(root_module, root_module['ns3::LteMacSapProvider::ReportBufferStatusParameters'])
     register_Ns3LteMacSapProviderTransmitPduParameters_methods(root_module, root_module['ns3::LteMacSapProvider::TransmitPduParameters'])
     register_Ns3LteMacSapUser_methods(root_module, root_module['ns3::LteMacSapUser'])
+    register_Ns3LteMacSapUserReceivePduParameters_methods(root_module, root_module['ns3::LteMacSapUser::ReceivePduParameters'])
+    register_Ns3LteMacSapUserTxOpportunityParameters_methods(root_module, root_module['ns3::LteMacSapUser::TxOpportunityParameters'])
     register_Ns3LteMiErrorModel_methods(root_module, root_module['ns3::LteMiErrorModel'])
     register_Ns3LtePdcpSapProvider_methods(root_module, root_module['ns3::LtePdcpSapProvider'])
     register_Ns3LtePdcpSapProviderTransmitPdcpSduParameters_methods(root_module, root_module['ns3::LtePdcpSapProvider::TransmitPdcpSduParameters'])
@@ -2056,6 +2502,7 @@ def register_methods(root_module):
     register_Ns3LteRlcSapProvider_methods(root_module, root_module['ns3::LteRlcSapProvider'])
     register_Ns3LteRlcSapProviderTransmitPdcpPduParameters_methods(root_module, root_module['ns3::LteRlcSapProvider::TransmitPdcpPduParameters'])
     register_Ns3LteRlcSapUser_methods(root_module, root_module['ns3::LteRlcSapUser'])
+    register_Ns3LteRlcSpecificLteMacSapUser_methods(root_module, root_module['ns3::LteRlcSpecificLteMacSapUser'])
     register_Ns3LteRrcSap_methods(root_module, root_module['ns3::LteRrcSap'])
     register_Ns3LteRrcSapAntennaInfoCommon_methods(root_module, root_module['ns3::LteRrcSap::AntennaInfoCommon'])
     register_Ns3LteRrcSapAntennaInfoDedicated_methods(root_module, root_module['ns3::LteRrcSap::AntennaInfoDedicated'])
@@ -2122,6 +2569,7 @@ def register_methods(root_module):
     register_Ns3LteRrcSapRrcConnectionRequest_methods(root_module, root_module['ns3::LteRrcSap::RrcConnectionRequest'])
     register_Ns3LteRrcSapRrcConnectionSetup_methods(root_module, root_module['ns3::LteRrcSap::RrcConnectionSetup'])
     register_Ns3LteRrcSapRrcConnectionSetupCompleted_methods(root_module, root_module['ns3::LteRrcSap::RrcConnectionSetupCompleted'])
+    register_Ns3LteRrcSapRrcConnectionSwitch_methods(root_module, root_module['ns3::LteRrcSap::RrcConnectionSwitch'])
     register_Ns3LteRrcSapSCellToAddMod_methods(root_module, root_module['ns3::LteRrcSap::SCellToAddMod'])
     register_Ns3LteRrcSapSoundingRsUlConfigCommon_methods(root_module, root_module['ns3::LteRrcSap::SoundingRsUlConfigCommon'])
     register_Ns3LteRrcSapSoundingRsUlConfigDedicated_methods(root_module, root_module['ns3::LteRrcSap::SoundingRsUlConfigDedicated'])
@@ -2178,6 +2626,7 @@ def register_methods(root_module):
     register_Ns3PhichListElement_s_methods(root_module, root_module['ns3::PhichListElement_s'])
     register_Ns3PhyReceptionStatParameters_methods(root_module, root_module['ns3::PhyReceptionStatParameters'])
     register_Ns3PhyTransmissionStatParameters_methods(root_module, root_module['ns3::PhyTransmissionStatParameters'])
+    register_Ns3QueueSize_methods(root_module, root_module['ns3::QueueSize'])
     register_Ns3RachListElement_s_methods(root_module, root_module['ns3::RachListElement_s'])
     register_Ns3RadioBearerStatsConnector_methods(root_module, root_module['ns3::RadioBearerStatsConnector'])
     register_Ns3RealProtocolRlcSapUser_methods(root_module, root_module['ns3::RealProtocolRlcSapUser'])
@@ -2197,6 +2646,8 @@ def register_methods(root_module):
     register_Ns3TbId_t_methods(root_module, root_module['ns3::TbId_t'])
     register_Ns3TbStats_t_methods(root_module, root_module['ns3::TbStats_t'])
     register_Ns3TimeWithUnit_methods(root_module, root_module['ns3::TimeWithUnit'])
+    register_Ns3TracedValue__Bool_methods(root_module, root_module['ns3::TracedValue< bool >'])
+    register_Ns3TracedValue__Unsigned_int_methods(root_module, root_module['ns3::TracedValue< unsigned int >'])
     register_Ns3TransmissionModesLayers_methods(root_module, root_module['ns3::TransmissionModesLayers'])
     register_Ns3TypeId_methods(root_module, root_module['ns3::TypeId'])
     register_Ns3TypeIdAttributeInformation_methods(root_module, root_module['ns3::TypeId::AttributeInformation'])
@@ -2222,6 +2673,11 @@ def register_methods(root_module):
     register_Ns3TdtbfqsFlowPerf_t_methods(root_module, root_module['ns3::tdtbfqsFlowPerf_t'])
     register_Ns3Chunk_methods(root_module, root_module['ns3::Chunk'])
     register_Ns3DownlinkLteGlobalPathlossDatabase_methods(root_module, root_module['ns3::DownlinkLteGlobalPathlossDatabase'])
+    register_Ns3EpcX2PdcpProvider_methods(root_module, root_module['ns3::EpcX2PdcpProvider'])
+    register_Ns3EpcX2PdcpUser_methods(root_module, root_module['ns3::EpcX2PdcpUser'])
+    register_Ns3EpcX2RlcProvider_methods(root_module, root_module['ns3::EpcX2RlcProvider'])
+    register_Ns3EpcX2RlcUser_methods(root_module, root_module['ns3::EpcX2RlcUser'])
+    register_Ns3EpcX2Tag_methods(root_module, root_module['ns3::EpcX2Tag'])
     register_Ns3EpsBearerTag_methods(root_module, root_module['ns3::EpsBearerTag'])
     register_Ns3Header_methods(root_module, root_module['ns3::Header'])
     register_Ns3Ipv4Header_methods(root_module, root_module['ns3::Ipv4Header'])
@@ -2239,14 +2695,20 @@ def register_methods(root_module):
     register_Ns3Object_methods(root_module, root_module['ns3::Object'])
     register_Ns3ObjectAggregateIterator_methods(root_module, root_module['ns3::Object::AggregateIterator'])
     register_Ns3PacketBurst_methods(root_module, root_module['ns3::PacketBurst'])
+    register_Ns3PacketFilter_methods(root_module, root_module['ns3::PacketFilter'])
     register_Ns3PdcpTag_methods(root_module, root_module['ns3::PdcpTag'])
     register_Ns3PropagationDelayModel_methods(root_module, root_module['ns3::PropagationDelayModel'])
     register_Ns3PropagationLossModel_methods(root_module, root_module['ns3::PropagationLossModel'])
+    register_Ns3QueueDisc_methods(root_module, root_module['ns3::QueueDisc'])
+    register_Ns3QueueDiscStats_methods(root_module, root_module['ns3::QueueDisc::Stats'])
+    register_Ns3QueueDiscClass_methods(root_module, root_module['ns3::QueueDiscClass'])
     register_Ns3RadioEnvironmentMapHelper_methods(root_module, root_module['ns3::RadioEnvironmentMapHelper'])
     register_Ns3RandomPropagationDelayModel_methods(root_module, root_module['ns3::RandomPropagationDelayModel'])
     register_Ns3RandomPropagationLossModel_methods(root_module, root_module['ns3::RandomPropagationLossModel'])
     register_Ns3RandomVariableStream_methods(root_module, root_module['ns3::RandomVariableStream'])
     register_Ns3RangePropagationLossModel_methods(root_module, root_module['ns3::RangePropagationLossModel'])
+    register_Ns3RetxStatsCalculator_methods(root_module, root_module['ns3::RetxStatsCalculator'])
+    register_Ns3RlcBearerInfo_methods(root_module, root_module['ns3::RlcBearerInfo'])
     register_Ns3RlcTag_methods(root_module, root_module['ns3::RlcTag'])
     register_Ns3SequentialRandomVariable_methods(root_module, root_module['ns3::SequentialRandomVariable'])
     register_Ns3SimpleRefCount__Ns3AttributeAccessor_Ns3Empty_Ns3DefaultDeleter__lt__ns3AttributeAccessor__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::AttributeAccessor, ns3::empty, ns3::DefaultDeleter<ns3::AttributeAccessor> >'])
@@ -2264,6 +2726,9 @@ def register_methods(root_module):
     register_Ns3SimpleRefCount__Ns3LteHarqPhy_Ns3Empty_Ns3DefaultDeleter__lt__ns3LteHarqPhy__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::LteHarqPhy, ns3::empty, ns3::DefaultDeleter<ns3::LteHarqPhy> >'])
     register_Ns3SimpleRefCount__Ns3NixVector_Ns3Empty_Ns3DefaultDeleter__lt__ns3NixVector__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::NixVector, ns3::empty, ns3::DefaultDeleter<ns3::NixVector> >'])
     register_Ns3SimpleRefCount__Ns3Packet_Ns3Empty_Ns3DefaultDeleter__lt__ns3Packet__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> >'])
+    register_Ns3SimpleRefCount__Ns3QueueItem_Ns3Empty_Ns3DefaultDeleter__lt__ns3QueueItem__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::QueueItem, ns3::empty, ns3::DefaultDeleter<ns3::QueueItem> >'])
+    register_Ns3SimpleRefCount__Ns3S1apConnectionInfo_Ns3Empty_Ns3DefaultDeleter__lt__ns3S1apConnectionInfo__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::S1apConnectionInfo, ns3::empty, ns3::DefaultDeleter<ns3::S1apConnectionInfo> >'])
+    register_Ns3SimpleRefCount__Ns3S1apIfaceInfo_Ns3Empty_Ns3DefaultDeleter__lt__ns3S1apIfaceInfo__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::S1apIfaceInfo, ns3::empty, ns3::DefaultDeleter<ns3::S1apIfaceInfo> >'])
     register_Ns3SimpleRefCount__Ns3SpectrumModel_Ns3Empty_Ns3DefaultDeleter__lt__ns3SpectrumModel__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::SpectrumModel, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumModel> >'])
     register_Ns3SimpleRefCount__Ns3SpectrumSignalParameters_Ns3Empty_Ns3DefaultDeleter__lt__ns3SpectrumSignalParameters__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::SpectrumSignalParameters, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumSignalParameters> >'])
     register_Ns3SimpleRefCount__Ns3SpectrumValue_Ns3Empty_Ns3DefaultDeleter__lt__ns3SpectrumValue__gt___methods(root_module, root_module['ns3::SimpleRefCount< ns3::SpectrumValue, ns3::empty, ns3::DefaultDeleter<ns3::SpectrumValue> >'])
@@ -2311,6 +2776,7 @@ def register_methods(root_module):
     register_Ns3CallbackValue_methods(root_module, root_module['ns3::CallbackValue'])
     register_Ns3CcHelper_methods(root_module, root_module['ns3::CcHelper'])
     register_Ns3Channel_methods(root_module, root_module['ns3::Channel'])
+    register_Ns3CoDelQueueDisc_methods(root_module, root_module['ns3::CoDelQueueDisc'])
     register_Ns3ComponentCarrier_methods(root_module, root_module['ns3::ComponentCarrier'])
     register_Ns3ComponentCarrierEnb_methods(root_module, root_module['ns3::ComponentCarrierEnb'])
     register_Ns3ComponentCarrierUe_methods(root_module, root_module['ns3::ComponentCarrierUe'])
@@ -2332,20 +2798,37 @@ def register_methods(root_module):
     register_Ns3EpcEnbApplicationEpsFlowId_t_methods(root_module, root_module['ns3::EpcEnbApplication::EpsFlowId_t'])
     register_Ns3EpcHelper_methods(root_module, root_module['ns3::EpcHelper'])
     register_Ns3EpcMme_methods(root_module, root_module['ns3::EpcMme'])
+    register_Ns3EpcMmeApplication_methods(root_module, root_module['ns3::EpcMmeApplication'])
+    register_Ns3EpcS1APErabReleaseIndicationHeader_methods(root_module, root_module['ns3::EpcS1APErabReleaseIndicationHeader'])
+    register_Ns3EpcS1APHeader_methods(root_module, root_module['ns3::EpcS1APHeader'])
+    register_Ns3EpcS1APInitialContextSetupRequestHeader_methods(root_module, root_module['ns3::EpcS1APInitialContextSetupRequestHeader'])
+    register_Ns3EpcS1APInitialContextSetupResponseHeader_methods(root_module, root_module['ns3::EpcS1APInitialContextSetupResponseHeader'])
+    register_Ns3EpcS1APInitialUeMessageHeader_methods(root_module, root_module['ns3::EpcS1APInitialUeMessageHeader'])
+    register_Ns3EpcS1APPathSwitchRequestAcknowledgeHeader_methods(root_module, root_module['ns3::EpcS1APPathSwitchRequestAcknowledgeHeader'])
+    register_Ns3EpcS1APPathSwitchRequestHeader_methods(root_module, root_module['ns3::EpcS1APPathSwitchRequestHeader'])
+    register_Ns3EpcS1apEnb_methods(root_module, root_module['ns3::EpcS1apEnb'])
+    register_Ns3EpcS1apMme_methods(root_module, root_module['ns3::EpcS1apMme'])
     register_Ns3EpcSgwPgwApplication_methods(root_module, root_module['ns3::EpcSgwPgwApplication'])
     register_Ns3EpcTft_methods(root_module, root_module['ns3::EpcTft'])
     register_Ns3EpcTftPacketFilter_methods(root_module, root_module['ns3::EpcTft::PacketFilter'])
     register_Ns3EpcTftClassifier_methods(root_module, root_module['ns3::EpcTftClassifier'])
     register_Ns3EpcUeNas_methods(root_module, root_module['ns3::EpcUeNas'])
     register_Ns3EpcX2_methods(root_module, root_module['ns3::EpcX2'])
+    register_Ns3EpcX2ConnectionSwitchHeader_methods(root_module, root_module['ns3::EpcX2ConnectionSwitchHeader'])
     register_Ns3EpcX2HandoverPreparationFailureHeader_methods(root_module, root_module['ns3::EpcX2HandoverPreparationFailureHeader'])
     register_Ns3EpcX2HandoverRequestAckHeader_methods(root_module, root_module['ns3::EpcX2HandoverRequestAckHeader'])
     register_Ns3EpcX2HandoverRequestHeader_methods(root_module, root_module['ns3::EpcX2HandoverRequestHeader'])
     register_Ns3EpcX2Header_methods(root_module, root_module['ns3::EpcX2Header'])
     register_Ns3EpcX2LoadInformationHeader_methods(root_module, root_module['ns3::EpcX2LoadInformationHeader'])
+    register_Ns3EpcX2McHandoverHeader_methods(root_module, root_module['ns3::EpcX2McHandoverHeader'])
+    register_Ns3EpcX2NotifyCoordinatorHandoverFailedHeader_methods(root_module, root_module['ns3::EpcX2NotifyCoordinatorHandoverFailedHeader'])
     register_Ns3EpcX2ResourceStatusUpdateHeader_methods(root_module, root_module['ns3::EpcX2ResourceStatusUpdateHeader'])
+    register_Ns3EpcX2RlcSetupCompletedHeader_methods(root_module, root_module['ns3::EpcX2RlcSetupCompletedHeader'])
+    register_Ns3EpcX2RlcSetupRequestHeader_methods(root_module, root_module['ns3::EpcX2RlcSetupRequestHeader'])
+    register_Ns3EpcX2SecondaryCellHandoverCompletedHeader_methods(root_module, root_module['ns3::EpcX2SecondaryCellHandoverCompletedHeader'])
     register_Ns3EpcX2SnStatusTransferHeader_methods(root_module, root_module['ns3::EpcX2SnStatusTransferHeader'])
     register_Ns3EpcX2UeContextReleaseHeader_methods(root_module, root_module['ns3::EpcX2UeContextReleaseHeader'])
+    register_Ns3EpcX2UeImsiSinrUpdateHeader_methods(root_module, root_module['ns3::EpcX2UeImsiSinrUpdateHeader'])
     register_Ns3ErlangRandomVariable_methods(root_module, root_module['ns3::ErlangRandomVariable'])
     register_Ns3EventImpl_methods(root_module, root_module['ns3::EventImpl'])
     register_Ns3ExponentialRandomVariable_methods(root_module, root_module['ns3::ExponentialRandomVariable'])
@@ -2376,6 +2859,8 @@ def register_methods(root_module):
     register_Ns3LteEnbComponentCarrierManager_methods(root_module, root_module['ns3::LteEnbComponentCarrierManager'])
     register_Ns3LteEnbMac_methods(root_module, root_module['ns3::LteEnbMac'])
     register_Ns3LteEnbRrc_methods(root_module, root_module['ns3::LteEnbRrc'])
+    register_Ns3LteEnbRrcHandoverEventInfo_methods(root_module, root_module['ns3::LteEnbRrc::HandoverEventInfo'])
+    register_Ns3LteEnbRrcMmWaveComponentCarrierConf_methods(root_module, root_module['ns3::LteEnbRrc::MmWaveComponentCarrierConf'])
     register_Ns3LteEnbRrcProtocolIdeal_methods(root_module, root_module['ns3::LteEnbRrcProtocolIdeal'])
     register_Ns3LteEnbRrcProtocolReal_methods(root_module, root_module['ns3::LteEnbRrcProtocolReal'])
     register_Ns3LteFfrAlgorithm_methods(root_module, root_module['ns3::LteFfrAlgorithm'])
@@ -2397,9 +2882,11 @@ def register_methods(root_module):
     register_Ns3LteRadioBearerInfo_methods(root_module, root_module['ns3::LteRadioBearerInfo'])
     register_Ns3LteRlc_methods(root_module, root_module['ns3::LteRlc'])
     register_Ns3LteRlcAm_methods(root_module, root_module['ns3::LteRlcAm'])
+    register_Ns3LteRlcAmRetxPdu_methods(root_module, root_module['ns3::LteRlcAm::RetxPdu'])
     register_Ns3LteRlcSm_methods(root_module, root_module['ns3::LteRlcSm'])
     register_Ns3LteRlcTm_methods(root_module, root_module['ns3::LteRlcTm'])
     register_Ns3LteRlcUm_methods(root_module, root_module['ns3::LteRlcUm'])
+    register_Ns3LteRlcUmLowLat_methods(root_module, root_module['ns3::LteRlcUmLowLat'])
     register_Ns3LteSignalingRadioBearerInfo_methods(root_module, root_module['ns3::LteSignalingRadioBearerInfo'])
     register_Ns3LteSpectrumPhy_methods(root_module, root_module['ns3::LteSpectrumPhy'])
     register_Ns3LteSpectrumSignalParameters_methods(root_module, root_module['ns3::LteSpectrumSignalParameters'])
@@ -2419,7 +2906,12 @@ def register_methods(root_module):
     register_Ns3Mac64AddressChecker_methods(root_module, root_module['ns3::Mac64AddressChecker'])
     register_Ns3Mac64AddressValue_methods(root_module, root_module['ns3::Mac64AddressValue'])
     register_Ns3MacStatsCalculator_methods(root_module, root_module['ns3::MacStatsCalculator'])
+    register_Ns3MacTxStatsCalculator_methods(root_module, root_module['ns3::MacTxStatsCalculator'])
     register_Ns3MatrixPropagationLossModel_methods(root_module, root_module['ns3::MatrixPropagationLossModel'])
+    register_Ns3McEnbPdcp_methods(root_module, root_module['ns3::McEnbPdcp'])
+    register_Ns3McEnbPdcpStatus_methods(root_module, root_module['ns3::McEnbPdcp::Status'])
+    register_Ns3McUePdcp_methods(root_module, root_module['ns3::McUePdcp'])
+    register_Ns3McUePdcpStatus_methods(root_module, root_module['ns3::McUePdcp::Status'])
     register_Ns3MibLteControlMessage_methods(root_module, root_module['ns3::MibLteControlMessage'])
     register_Ns3MinMaxAvgTotalCalculator__Unsigned_int_methods(root_module, root_module['ns3::MinMaxAvgTotalCalculator< unsigned int >'])
     register_Ns3MinMaxAvgTotalCalculator__Unsigned_long_methods(root_module, root_module['ns3::MinMaxAvgTotalCalculator< unsigned long >'])
@@ -2443,6 +2935,9 @@ def register_methods(root_module):
     register_Ns3PointerChecker_methods(root_module, root_module['ns3::PointerChecker'])
     register_Ns3PointerValue_methods(root_module, root_module['ns3::PointerValue'])
     register_Ns3PssFfMacScheduler_methods(root_module, root_module['ns3::PssFfMacScheduler'])
+    register_Ns3QueueItem_methods(root_module, root_module['ns3::QueueItem'])
+    register_Ns3QueueSizeChecker_methods(root_module, root_module['ns3::QueueSizeChecker'])
+    register_Ns3QueueSizeValue_methods(root_module, root_module['ns3::QueueSizeValue'])
     register_Ns3RachPreambleLteControlMessage_methods(root_module, root_module['ns3::RachPreambleLteControlMessage'])
     register_Ns3RadioBearerStatsCalculator_methods(root_module, root_module['ns3::RadioBearerStatsCalculator'])
     register_Ns3RarLteControlMessage_methods(root_module, root_module['ns3::RarLteControlMessage'])
@@ -2455,6 +2950,8 @@ def register_methods(root_module):
     register_Ns3RrcDlDcchMessage_methods(root_module, root_module['ns3::RrcDlDcchMessage'])
     register_Ns3RrcUlCcchMessage_methods(root_module, root_module['ns3::RrcUlCcchMessage'])
     register_Ns3RrcUlDcchMessage_methods(root_module, root_module['ns3::RrcUlDcchMessage'])
+    register_Ns3S1apConnectionInfo_methods(root_module, root_module['ns3::S1apConnectionInfo'])
+    register_Ns3S1apIfaceInfo_methods(root_module, root_module['ns3::S1apIfaceInfo'])
     register_Ns3Sib1LteControlMessage_methods(root_module, root_module['ns3::Sib1LteControlMessage'])
     register_Ns3SimpleUeComponentCarrierManager_methods(root_module, root_module['ns3::SimpleUeComponentCarrierManager'])
     register_Ns3SpectrumChannel_methods(root_module, root_module['ns3::SpectrumChannel'])
@@ -2485,6 +2982,7 @@ def register_methods(root_module):
     register_Ns3CallbackImpl__Bool_Ns3Ptr__lt__ns3Packet__gt___Const_ns3Address___amp___Const_ns3Address___amp___Unsigned_short_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< bool, ns3::Ptr<ns3::Packet>, const ns3::Address &, const ns3::Address &, unsigned short, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Bool_Ns3Ptr__lt__ns3Socket__gt___Const_ns3Address___amp___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< bool, ns3::Ptr<ns3::Socket>, const ns3::Address &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Ns3ObjectBase___star___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< ns3::ObjectBase *, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
+    register_Ns3CallbackImpl__Void_Bool_Bool_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, bool, bool, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Const_ns3SpectrumValue___amp___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, const ns3::SpectrumValue &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3DlSchedulingCallbackInfo_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::DlSchedulingCallbackInfo, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3EpcUeNasState_Ns3EpcUeNasState_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::EpcUeNas::State, ns3::EpcUeNas::State, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
@@ -2494,6 +2992,8 @@ def register_methods(root_module):
     register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3MobilityModel__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<const ns3::MobilityModel>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3Packet__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<const ns3::Packet>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3PacketBurst__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<const ns3::PacketBurst>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
+    register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3QueueDiscItem__gt___Const_char___star___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<const ns3::QueueDiscItem>, const char *, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
+    register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3QueueDiscItem__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<const ns3::QueueDiscItem>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3SpectrumPhy__gt___Ns3Ptr__lt__const_ns3SpectrumPhy__gt___Double_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<const ns3::SpectrumPhy>, ns3::Ptr<const ns3::SpectrumPhy>, double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3LteUeRrc__gt___StdList__lt__ns3LteRrcSapSCellToAddMod__stdAllocator__lt__ns3LteRrcSapSCellToAddMod__gt_____gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<ns3::LteUeRrc>, std::list<ns3::LteRrcSap::SCellToAddMod, std::allocator<ns3::LteRrcSap::SCellToAddMod> >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3NetDevice__gt___Ns3Ptr__lt__const_ns3Packet__gt___Unsigned_short_Const_ns3Address___amp___Const_ns3Address___amp___Ns3NetDevicePacketType_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<ns3::NetDevice>, ns3::Ptr<const ns3::Packet>, unsigned short, const ns3::Address &, const ns3::Address &, ns3::NetDevice::PacketType, ns3::empty, ns3::empty, ns3::empty >'])
@@ -2503,8 +3003,11 @@ def register_methods(root_module):
     register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3Socket__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<ns3::Socket>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3Socket__gt___Unsigned_int_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<ns3::Socket>, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3SpectrumSignalParameters__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Ptr<ns3::SpectrumSignalParameters>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
+    register_Ns3CallbackImpl__Void_Ns3Time_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::Time, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
+    register_Ns3CallbackImpl__Void_Unsigned_int_Unsigned_int_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, unsigned int, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Unsigned_int_Unsigned_int_Unsigned_short_Unsigned_char_Unsigned_short_Unsigned_char_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, unsigned int, unsigned int, unsigned short, unsigned char, unsigned short, unsigned char, ns3::empty, ns3::empty, ns3::empty >'])
+    register_Ns3CallbackImpl__Void_Unsigned_long_Unsigned_short_Long_double_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, unsigned long, unsigned short, long double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Unsigned_long_Unsigned_short_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, unsigned long, unsigned short, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Unsigned_long_Unsigned_short_Unsigned_short_Ns3LteRrcSapMeasurementReport_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, unsigned long, unsigned short, unsigned short, ns3::LteRrcSap::MeasurementReport, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Unsigned_long_Unsigned_short_Unsigned_short_Ns3LteUeRrcState_Ns3LteUeRrcState_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, unsigned long, unsigned short, unsigned short, ns3::LteUeRrc::State, ns3::LteUeRrc::State, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
@@ -2513,6 +3016,7 @@ def register_methods(root_module):
     register_Ns3CallbackImpl__Void_Unsigned_long_Unsigned_short_Unsigned_short_Unsigned_short_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, unsigned long, unsigned short, unsigned short, unsigned short, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Unsigned_short_Ns3Ptr__lt__ns3SpectrumValue__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, unsigned short, ns3::Ptr<ns3::SpectrumValue>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Unsigned_short_Unsigned_char_Unsigned_int_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, unsigned short, unsigned char, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
+    register_Ns3CallbackImpl__Void_Unsigned_short_Unsigned_char_Unsigned_int_Unsigned_int_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, unsigned short, unsigned char, unsigned int, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Unsigned_short_Unsigned_char_Unsigned_int_Unsigned_long_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, unsigned short, unsigned char, unsigned int, unsigned long, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Unsigned_short_Unsigned_short_Double_Double_Bool_Unsigned_char_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, unsigned short, unsigned short, double, double, bool, unsigned char, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Unsigned_short_Unsigned_short_Double_Double_Unsigned_char_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, unsigned short, unsigned short, double, double, unsigned char, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
@@ -2520,6 +3024,7 @@ def register_methods(root_module):
     register_Ns3CallbackImpl__Void_Unsigned_short_Unsigned_short_Double_Unsigned_char_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, unsigned short, unsigned short, double, unsigned char, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Unsigned_short_Unsigned_short_Ns3LteUePhyState_Ns3LteUePhyState_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, unsigned short, unsigned short, ns3::LteUePhy::State, ns3::LteUePhy::State, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CallbackImpl__Void_Unsigned_short_Unsigned_short_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, unsigned short, unsigned short, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
+    register_Ns3CallbackImpl__Void_Unsigned_short_Unsigned_short_Unsigned_int_Unsigned_long_Bool_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, root_module['ns3::CallbackImpl< void, unsigned short, unsigned short, unsigned int, unsigned long, bool, ns3::empty, ns3::empty, ns3::empty, ns3::empty >'])
     register_Ns3CqaFfMacScheduler_methods(root_module, root_module['ns3::CqaFfMacScheduler'])
     register_Ns3DlCqiLteControlMessage_methods(root_module, root_module['ns3::DlCqiLteControlMessage'])
     register_Ns3DlDciLteControlMessage_methods(root_module, root_module['ns3::DlDciLteControlMessage'])
@@ -2534,6 +3039,8 @@ def register_methods(root_module):
     register_Ns3LteNetDevice_methods(root_module, root_module['ns3::LteNetDevice'])
     register_Ns3LteUeNetDevice_methods(root_module, root_module['ns3::LteUeNetDevice'])
     register_Ns3MeasurementReportHeader_methods(root_module, root_module['ns3::MeasurementReportHeader'])
+    register_Ns3QueueDiscItem_methods(root_module, root_module['ns3::QueueDiscItem'])
+    register_Ns3RrcConnectToMmWaveHeader_methods(root_module, root_module['ns3::RrcConnectToMmWaveHeader'])
     register_Ns3RrcConnectionReconfigurationCompleteHeader_methods(root_module, root_module['ns3::RrcConnectionReconfigurationCompleteHeader'])
     register_Ns3RrcConnectionReconfigurationHeader_methods(root_module, root_module['ns3::RrcConnectionReconfigurationHeader'])
     register_Ns3RrcConnectionReestablishmentCompleteHeader_methods(root_module, root_module['ns3::RrcConnectionReestablishmentCompleteHeader'])
@@ -2545,6 +3052,8 @@ def register_methods(root_module):
     register_Ns3RrcConnectionRequestHeader_methods(root_module, root_module['ns3::RrcConnectionRequestHeader'])
     register_Ns3RrcConnectionSetupCompleteHeader_methods(root_module, root_module['ns3::RrcConnectionSetupCompleteHeader'])
     register_Ns3RrcConnectionSetupHeader_methods(root_module, root_module['ns3::RrcConnectionSetupHeader'])
+    register_Ns3RrcConnectionSwitchHeader_methods(root_module, root_module['ns3::RrcConnectionSwitchHeader'])
+    register_Ns3RrcNotifySecondaryConnectedHeader_methods(root_module, root_module['ns3::RrcNotifySecondaryConnectedHeader'])
     register_Ns3LteEnbNetDevice_methods(root_module, root_module['ns3::LteEnbNetDevice'])
     register_Ns3ConfigMatchContainer_methods(root_module, root_module['ns3::Config::MatchContainer'])
     register_Ns3HashImplementation_methods(root_module, root_module['ns3::Hash::Implementation'])
@@ -3246,7 +3755,7 @@ def register_Ns3DataRate_methods(root_module, cls):
     cls.add_method('CalculateTxTime', 
                    'double', 
                    [param('uint32_t', 'bytes')], 
-                   is_const=True)
+                   deprecated=True, is_const=True)
     ## data-rate.h (module 'network'): uint64_t ns3::DataRate::GetBitRate() const [member function]
     cls.add_method('GetBitRate', 
                    'uint64_t', 
@@ -3395,6 +3904,42 @@ def register_Ns3DefaultDeleter__Ns3Packet_methods(root_module, cls):
     cls.add_method('Delete', 
                    'void', 
                    [param('ns3::Packet *', 'object')], 
+                   is_static=True)
+    return
+
+def register_Ns3DefaultDeleter__Ns3QueueItem_methods(root_module, cls):
+    ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::QueueItem>::DefaultDeleter() [constructor]
+    cls.add_constructor([])
+    ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::QueueItem>::DefaultDeleter(ns3::DefaultDeleter<ns3::QueueItem> const & arg0) [constructor]
+    cls.add_constructor([param('ns3::DefaultDeleter< ns3::QueueItem > const &', 'arg0')])
+    ## default-deleter.h (module 'core'): static void ns3::DefaultDeleter<ns3::QueueItem>::Delete(ns3::QueueItem * object) [member function]
+    cls.add_method('Delete', 
+                   'void', 
+                   [param('ns3::QueueItem *', 'object')], 
+                   is_static=True)
+    return
+
+def register_Ns3DefaultDeleter__Ns3S1apConnectionInfo_methods(root_module, cls):
+    ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::S1apConnectionInfo>::DefaultDeleter() [constructor]
+    cls.add_constructor([])
+    ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::S1apConnectionInfo>::DefaultDeleter(ns3::DefaultDeleter<ns3::S1apConnectionInfo> const & arg0) [constructor]
+    cls.add_constructor([param('ns3::DefaultDeleter< ns3::S1apConnectionInfo > const &', 'arg0')])
+    ## default-deleter.h (module 'core'): static void ns3::DefaultDeleter<ns3::S1apConnectionInfo>::Delete(ns3::S1apConnectionInfo * object) [member function]
+    cls.add_method('Delete', 
+                   'void', 
+                   [param('ns3::S1apConnectionInfo *', 'object')], 
+                   is_static=True)
+    return
+
+def register_Ns3DefaultDeleter__Ns3S1apIfaceInfo_methods(root_module, cls):
+    ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::S1apIfaceInfo>::DefaultDeleter() [constructor]
+    cls.add_constructor([])
+    ## default-deleter.h (module 'core'): ns3::DefaultDeleter<ns3::S1apIfaceInfo>::DefaultDeleter(ns3::DefaultDeleter<ns3::S1apIfaceInfo> const & arg0) [constructor]
+    cls.add_constructor([param('ns3::DefaultDeleter< ns3::S1apIfaceInfo > const &', 'arg0')])
+    ## default-deleter.h (module 'core'): static void ns3::DefaultDeleter<ns3::S1apIfaceInfo>::Delete(ns3::S1apIfaceInfo * object) [member function]
+    cls.add_method('Delete', 
+                   'void', 
+                   [param('ns3::S1apIfaceInfo *', 'object')], 
                    is_static=True)
     return
 
@@ -3908,49 +4453,111 @@ def register_Ns3EpcS1apSap_methods(root_module, cls):
     cls.add_constructor([param('ns3::EpcS1apSap const &', 'arg0')])
     return
 
+def register_Ns3EpcS1apSapErabSetupItem_methods(root_module, cls):
+    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSap::ErabSetupItem::ErabSetupItem() [constructor]
+    cls.add_constructor([])
+    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSap::ErabSetupItem::ErabSetupItem(ns3::EpcS1apSap::ErabSetupItem const & arg0) [constructor]
+    cls.add_constructor([param('ns3::EpcS1apSap::ErabSetupItem const &', 'arg0')])
+    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSap::ErabSetupItem::enbTeid [variable]
+    cls.add_instance_attribute('enbTeid', 'uint32_t', is_const=False)
+    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSap::ErabSetupItem::enbTransportLayerAddress [variable]
+    cls.add_instance_attribute('enbTransportLayerAddress', 'ns3::Ipv4Address', is_const=False)
+    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSap::ErabSetupItem::erabId [variable]
+    cls.add_instance_attribute('erabId', 'uint16_t', is_const=False)
+    return
+
+def register_Ns3EpcS1apSapErabSwitchedInDownlinkItem_methods(root_module, cls):
+    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSap::ErabSwitchedInDownlinkItem::ErabSwitchedInDownlinkItem() [constructor]
+    cls.add_constructor([])
+    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSap::ErabSwitchedInDownlinkItem::ErabSwitchedInDownlinkItem(ns3::EpcS1apSap::ErabSwitchedInDownlinkItem const & arg0) [constructor]
+    cls.add_constructor([param('ns3::EpcS1apSap::ErabSwitchedInDownlinkItem const &', 'arg0')])
+    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSap::ErabSwitchedInDownlinkItem::enbTeid [variable]
+    cls.add_instance_attribute('enbTeid', 'uint32_t', is_const=False)
+    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSap::ErabSwitchedInDownlinkItem::enbTransportLayerAddress [variable]
+    cls.add_instance_attribute('enbTransportLayerAddress', 'ns3::Ipv4Address', is_const=False)
+    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSap::ErabSwitchedInDownlinkItem::erabId [variable]
+    cls.add_instance_attribute('erabId', 'uint16_t', is_const=False)
+    return
+
+def register_Ns3EpcS1apSapErabSwitchedInUplinkItem_methods(root_module, cls):
+    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSap::ErabSwitchedInUplinkItem::ErabSwitchedInUplinkItem() [constructor]
+    cls.add_constructor([])
+    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSap::ErabSwitchedInUplinkItem::ErabSwitchedInUplinkItem(ns3::EpcS1apSap::ErabSwitchedInUplinkItem const & arg0) [constructor]
+    cls.add_constructor([param('ns3::EpcS1apSap::ErabSwitchedInUplinkItem const &', 'arg0')])
+    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSap::ErabSwitchedInUplinkItem::enbTeid [variable]
+    cls.add_instance_attribute('enbTeid', 'uint32_t', is_const=False)
+    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSap::ErabSwitchedInUplinkItem::erabId [variable]
+    cls.add_instance_attribute('erabId', 'uint8_t', is_const=False)
+    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSap::ErabSwitchedInUplinkItem::transportLayerAddress [variable]
+    cls.add_instance_attribute('transportLayerAddress', 'ns3::Ipv4Address', is_const=False)
+    return
+
+def register_Ns3EpcS1apSapErabToBeReleasedIndication_methods(root_module, cls):
+    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSap::ErabToBeReleasedIndication::ErabToBeReleasedIndication() [constructor]
+    cls.add_constructor([])
+    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSap::ErabToBeReleasedIndication::ErabToBeReleasedIndication(ns3::EpcS1apSap::ErabToBeReleasedIndication const & arg0) [constructor]
+    cls.add_constructor([param('ns3::EpcS1apSap::ErabToBeReleasedIndication const &', 'arg0')])
+    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSap::ErabToBeReleasedIndication::erabId [variable]
+    cls.add_instance_attribute('erabId', 'uint8_t', is_const=False)
+    return
+
+def register_Ns3EpcS1apSapErabToBeSetupItem_methods(root_module, cls):
+    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSap::ErabToBeSetupItem::ErabToBeSetupItem() [constructor]
+    cls.add_constructor([])
+    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSap::ErabToBeSetupItem::ErabToBeSetupItem(ns3::EpcS1apSap::ErabToBeSetupItem const & arg0) [constructor]
+    cls.add_constructor([param('ns3::EpcS1apSap::ErabToBeSetupItem const &', 'arg0')])
+    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSap::ErabToBeSetupItem::erabId [variable]
+    cls.add_instance_attribute('erabId', 'uint8_t', is_const=False)
+    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSap::ErabToBeSetupItem::erabLevelQosParameters [variable]
+    cls.add_instance_attribute('erabLevelQosParameters', 'ns3::EpsBearer', is_const=False)
+    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSap::ErabToBeSetupItem::sgwTeid [variable]
+    cls.add_instance_attribute('sgwTeid', 'uint32_t', is_const=False)
+    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSap::ErabToBeSetupItem::transportLayerAddress [variable]
+    cls.add_instance_attribute('transportLayerAddress', 'ns3::Ipv4Address', is_const=False)
+    return
+
 def register_Ns3EpcS1apSapEnb_methods(root_module, cls):
     ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSapEnb::EpcS1apSapEnb() [constructor]
     cls.add_constructor([])
     ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSapEnb::EpcS1apSapEnb(ns3::EpcS1apSapEnb const & arg0) [constructor]
     cls.add_constructor([param('ns3::EpcS1apSapEnb const &', 'arg0')])
-    ## epc-s1ap-sap.h (module 'lte'): void ns3::EpcS1apSapEnb::InitialContextSetupRequest(uint64_t mmeUeS1Id, uint16_t enbUeS1Id, std::list<ns3::EpcS1apSapEnb::ErabToBeSetupItem, std::allocator<ns3::EpcS1apSapEnb::ErabToBeSetupItem> > erabToBeSetupList) [member function]
+    ## epc-s1ap-sap.h (module 'lte'): void ns3::EpcS1apSapEnb::InitialContextSetupRequest(uint64_t mmeUeS1Id, uint16_t enbUeS1Id, std::list<ns3::EpcS1apSap::ErabToBeSetupItem, std::allocator<ns3::EpcS1apSap::ErabToBeSetupItem> > erabToBeSetupList) [member function]
     cls.add_method('InitialContextSetupRequest', 
                    'void', 
-                   [param('uint64_t', 'mmeUeS1Id'), param('uint16_t', 'enbUeS1Id'), param('std::list< ns3::EpcS1apSapEnb::ErabToBeSetupItem >', 'erabToBeSetupList')], 
+                   [param('uint64_t', 'mmeUeS1Id'), param('uint16_t', 'enbUeS1Id'), param('std::list< ns3::EpcS1apSap::ErabToBeSetupItem >', 'erabToBeSetupList')], 
                    is_pure_virtual=True, is_virtual=True)
-    ## epc-s1ap-sap.h (module 'lte'): void ns3::EpcS1apSapEnb::PathSwitchRequestAcknowledge(uint64_t enbUeS1Id, uint64_t mmeUeS1Id, uint16_t cgi, std::list<ns3::EpcS1apSapEnb::ErabSwitchedInUplinkItem, std::allocator<ns3::EpcS1apSapEnb::ErabSwitchedInUplinkItem> > erabToBeSwitchedInUplinkList) [member function]
+    ## epc-s1ap-sap.h (module 'lte'): void ns3::EpcS1apSapEnb::PathSwitchRequestAcknowledge(uint64_t enbUeS1Id, uint64_t mmeUeS1Id, uint16_t cgi, std::list<ns3::EpcS1apSap::ErabSwitchedInUplinkItem, std::allocator<ns3::EpcS1apSap::ErabSwitchedInUplinkItem> > erabToBeSwitchedInUplinkList) [member function]
     cls.add_method('PathSwitchRequestAcknowledge', 
                    'void', 
-                   [param('uint64_t', 'enbUeS1Id'), param('uint64_t', 'mmeUeS1Id'), param('uint16_t', 'cgi'), param('std::list< ns3::EpcS1apSapEnb::ErabSwitchedInUplinkItem >', 'erabToBeSwitchedInUplinkList')], 
+                   [param('uint64_t', 'enbUeS1Id'), param('uint64_t', 'mmeUeS1Id'), param('uint16_t', 'cgi'), param('std::list< ns3::EpcS1apSap::ErabSwitchedInUplinkItem >', 'erabToBeSwitchedInUplinkList')], 
                    is_pure_virtual=True, is_virtual=True)
     return
 
-def register_Ns3EpcS1apSapEnbErabSwitchedInUplinkItem_methods(root_module, cls):
-    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSapEnb::ErabSwitchedInUplinkItem::ErabSwitchedInUplinkItem() [constructor]
+def register_Ns3EpcS1apSapEnbProvider_methods(root_module, cls):
+    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSapEnbProvider::EpcS1apSapEnbProvider() [constructor]
     cls.add_constructor([])
-    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSapEnb::ErabSwitchedInUplinkItem::ErabSwitchedInUplinkItem(ns3::EpcS1apSapEnb::ErabSwitchedInUplinkItem const & arg0) [constructor]
-    cls.add_constructor([param('ns3::EpcS1apSapEnb::ErabSwitchedInUplinkItem const &', 'arg0')])
-    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSapEnb::ErabSwitchedInUplinkItem::enbTeid [variable]
-    cls.add_instance_attribute('enbTeid', 'uint32_t', is_const=False)
-    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSapEnb::ErabSwitchedInUplinkItem::erabId [variable]
-    cls.add_instance_attribute('erabId', 'uint8_t', is_const=False)
-    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSapEnb::ErabSwitchedInUplinkItem::transportLayerAddress [variable]
-    cls.add_instance_attribute('transportLayerAddress', 'ns3::Ipv4Address', is_const=False)
-    return
-
-def register_Ns3EpcS1apSapEnbErabToBeSetupItem_methods(root_module, cls):
-    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSapEnb::ErabToBeSetupItem::ErabToBeSetupItem() [constructor]
-    cls.add_constructor([])
-    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSapEnb::ErabToBeSetupItem::ErabToBeSetupItem(ns3::EpcS1apSapEnb::ErabToBeSetupItem const & arg0) [constructor]
-    cls.add_constructor([param('ns3::EpcS1apSapEnb::ErabToBeSetupItem const &', 'arg0')])
-    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSapEnb::ErabToBeSetupItem::erabId [variable]
-    cls.add_instance_attribute('erabId', 'uint8_t', is_const=False)
-    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSapEnb::ErabToBeSetupItem::erabLevelQosParameters [variable]
-    cls.add_instance_attribute('erabLevelQosParameters', 'ns3::EpsBearer', is_const=False)
-    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSapEnb::ErabToBeSetupItem::sgwTeid [variable]
-    cls.add_instance_attribute('sgwTeid', 'uint32_t', is_const=False)
-    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSapEnb::ErabToBeSetupItem::transportLayerAddress [variable]
-    cls.add_instance_attribute('transportLayerAddress', 'ns3::Ipv4Address', is_const=False)
+    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSapEnbProvider::EpcS1apSapEnbProvider(ns3::EpcS1apSapEnbProvider const & arg0) [constructor]
+    cls.add_constructor([param('ns3::EpcS1apSapEnbProvider const &', 'arg0')])
+    ## epc-s1ap-sap.h (module 'lte'): void ns3::EpcS1apSapEnbProvider::SendErabReleaseIndication(uint64_t mmeUeS1Id, uint16_t enbUeS1Id, std::list<ns3::EpcS1apSap::ErabToBeReleasedIndication, std::allocator<ns3::EpcS1apSap::ErabToBeReleasedIndication> > erabToBeReleaseIndication) [member function]
+    cls.add_method('SendErabReleaseIndication', 
+                   'void', 
+                   [param('uint64_t', 'mmeUeS1Id'), param('uint16_t', 'enbUeS1Id'), param('std::list< ns3::EpcS1apSap::ErabToBeReleasedIndication >', 'erabToBeReleaseIndication')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## epc-s1ap-sap.h (module 'lte'): void ns3::EpcS1apSapEnbProvider::SendInitialContextSetupResponse(uint64_t mmeUeS1Id, uint16_t enbUeS1Id, std::list<ns3::EpcS1apSap::ErabSetupItem, std::allocator<ns3::EpcS1apSap::ErabSetupItem> > erabSetupList) [member function]
+    cls.add_method('SendInitialContextSetupResponse', 
+                   'void', 
+                   [param('uint64_t', 'mmeUeS1Id'), param('uint16_t', 'enbUeS1Id'), param('std::list< ns3::EpcS1apSap::ErabSetupItem >', 'erabSetupList')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## epc-s1ap-sap.h (module 'lte'): void ns3::EpcS1apSapEnbProvider::SendInitialUeMessage(uint64_t mmeUeS1Id, uint16_t enbUeS1Id, uint64_t stmsi, uint16_t ecgi) [member function]
+    cls.add_method('SendInitialUeMessage', 
+                   'void', 
+                   [param('uint64_t', 'mmeUeS1Id'), param('uint16_t', 'enbUeS1Id'), param('uint64_t', 'stmsi'), param('uint16_t', 'ecgi')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## epc-s1ap-sap.h (module 'lte'): void ns3::EpcS1apSapEnbProvider::SendPathSwitchRequest(uint64_t enbUeS1Id, uint64_t mmeUeS1Id, uint16_t gci, std::list<ns3::EpcS1apSap::ErabSwitchedInDownlinkItem, std::allocator<ns3::EpcS1apSap::ErabSwitchedInDownlinkItem> > erabToBeSwitchedInDownlinkList) [member function]
+    cls.add_method('SendPathSwitchRequest', 
+                   'void', 
+                   [param('uint64_t', 'enbUeS1Id'), param('uint64_t', 'mmeUeS1Id'), param('uint16_t', 'gci'), param('std::list< ns3::EpcS1apSap::ErabSwitchedInDownlinkItem >', 'erabToBeSwitchedInDownlinkList')], 
+                   is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3EpcS1apSapMme_methods(root_module, cls):
@@ -3958,61 +4565,43 @@ def register_Ns3EpcS1apSapMme_methods(root_module, cls):
     cls.add_constructor([])
     ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSapMme::EpcS1apSapMme(ns3::EpcS1apSapMme const & arg0) [constructor]
     cls.add_constructor([param('ns3::EpcS1apSapMme const &', 'arg0')])
-    ## epc-s1ap-sap.h (module 'lte'): void ns3::EpcS1apSapMme::ErabReleaseIndication(uint64_t mmeUeS1Id, uint16_t enbUeS1Id, std::list<ns3::EpcS1apSapMme::ErabToBeReleasedIndication, std::allocator<ns3::EpcS1apSapMme::ErabToBeReleasedIndication> > erabToBeReleaseIndication) [member function]
+    ## epc-s1ap-sap.h (module 'lte'): void ns3::EpcS1apSapMme::ErabReleaseIndication(uint64_t mmeUeS1Id, uint16_t enbUeS1Id, std::list<ns3::EpcS1apSap::ErabToBeReleasedIndication, std::allocator<ns3::EpcS1apSap::ErabToBeReleasedIndication> > erabToBeReleaseIndication) [member function]
     cls.add_method('ErabReleaseIndication', 
                    'void', 
-                   [param('uint64_t', 'mmeUeS1Id'), param('uint16_t', 'enbUeS1Id'), param('std::list< ns3::EpcS1apSapMme::ErabToBeReleasedIndication >', 'erabToBeReleaseIndication')], 
+                   [param('uint64_t', 'mmeUeS1Id'), param('uint16_t', 'enbUeS1Id'), param('std::list< ns3::EpcS1apSap::ErabToBeReleasedIndication >', 'erabToBeReleaseIndication')], 
                    is_pure_virtual=True, is_virtual=True)
-    ## epc-s1ap-sap.h (module 'lte'): void ns3::EpcS1apSapMme::InitialContextSetupResponse(uint64_t mmeUeS1Id, uint16_t enbUeS1Id, std::list<ns3::EpcS1apSapMme::ErabSetupItem, std::allocator<ns3::EpcS1apSapMme::ErabSetupItem> > erabSetupList) [member function]
+    ## epc-s1ap-sap.h (module 'lte'): void ns3::EpcS1apSapMme::InitialContextSetupResponse(uint64_t mmeUeS1Id, uint16_t enbUeS1Id, std::list<ns3::EpcS1apSap::ErabSetupItem, std::allocator<ns3::EpcS1apSap::ErabSetupItem> > erabSetupList) [member function]
     cls.add_method('InitialContextSetupResponse', 
                    'void', 
-                   [param('uint64_t', 'mmeUeS1Id'), param('uint16_t', 'enbUeS1Id'), param('std::list< ns3::EpcS1apSapMme::ErabSetupItem >', 'erabSetupList')], 
+                   [param('uint64_t', 'mmeUeS1Id'), param('uint16_t', 'enbUeS1Id'), param('std::list< ns3::EpcS1apSap::ErabSetupItem >', 'erabSetupList')], 
                    is_pure_virtual=True, is_virtual=True)
     ## epc-s1ap-sap.h (module 'lte'): void ns3::EpcS1apSapMme::InitialUeMessage(uint64_t mmeUeS1Id, uint16_t enbUeS1Id, uint64_t stmsi, uint16_t ecgi) [member function]
     cls.add_method('InitialUeMessage', 
                    'void', 
                    [param('uint64_t', 'mmeUeS1Id'), param('uint16_t', 'enbUeS1Id'), param('uint64_t', 'stmsi'), param('uint16_t', 'ecgi')], 
                    is_pure_virtual=True, is_virtual=True)
-    ## epc-s1ap-sap.h (module 'lte'): void ns3::EpcS1apSapMme::PathSwitchRequest(uint64_t enbUeS1Id, uint64_t mmeUeS1Id, uint16_t gci, std::list<ns3::EpcS1apSapMme::ErabSwitchedInDownlinkItem, std::allocator<ns3::EpcS1apSapMme::ErabSwitchedInDownlinkItem> > erabToBeSwitchedInDownlinkList) [member function]
+    ## epc-s1ap-sap.h (module 'lte'): void ns3::EpcS1apSapMme::PathSwitchRequest(uint64_t enbUeS1Id, uint64_t mmeUeS1Id, uint16_t gci, std::list<ns3::EpcS1apSap::ErabSwitchedInDownlinkItem, std::allocator<ns3::EpcS1apSap::ErabSwitchedInDownlinkItem> > erabToBeSwitchedInDownlinkList) [member function]
     cls.add_method('PathSwitchRequest', 
                    'void', 
-                   [param('uint64_t', 'enbUeS1Id'), param('uint64_t', 'mmeUeS1Id'), param('uint16_t', 'gci'), param('std::list< ns3::EpcS1apSapMme::ErabSwitchedInDownlinkItem >', 'erabToBeSwitchedInDownlinkList')], 
+                   [param('uint64_t', 'enbUeS1Id'), param('uint64_t', 'mmeUeS1Id'), param('uint16_t', 'gci'), param('std::list< ns3::EpcS1apSap::ErabSwitchedInDownlinkItem >', 'erabToBeSwitchedInDownlinkList')], 
                    is_pure_virtual=True, is_virtual=True)
     return
 
-def register_Ns3EpcS1apSapMmeErabSetupItem_methods(root_module, cls):
-    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSapMme::ErabSetupItem::ErabSetupItem() [constructor]
+def register_Ns3EpcS1apSapMmeProvider_methods(root_module, cls):
+    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSapMmeProvider::EpcS1apSapMmeProvider() [constructor]
     cls.add_constructor([])
-    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSapMme::ErabSetupItem::ErabSetupItem(ns3::EpcS1apSapMme::ErabSetupItem const & arg0) [constructor]
-    cls.add_constructor([param('ns3::EpcS1apSapMme::ErabSetupItem const &', 'arg0')])
-    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSapMme::ErabSetupItem::enbTeid [variable]
-    cls.add_instance_attribute('enbTeid', 'uint32_t', is_const=False)
-    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSapMme::ErabSetupItem::enbTransportLayerAddress [variable]
-    cls.add_instance_attribute('enbTransportLayerAddress', 'ns3::Ipv4Address', is_const=False)
-    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSapMme::ErabSetupItem::erabId [variable]
-    cls.add_instance_attribute('erabId', 'uint16_t', is_const=False)
-    return
-
-def register_Ns3EpcS1apSapMmeErabSwitchedInDownlinkItem_methods(root_module, cls):
-    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSapMme::ErabSwitchedInDownlinkItem::ErabSwitchedInDownlinkItem() [constructor]
-    cls.add_constructor([])
-    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSapMme::ErabSwitchedInDownlinkItem::ErabSwitchedInDownlinkItem(ns3::EpcS1apSapMme::ErabSwitchedInDownlinkItem const & arg0) [constructor]
-    cls.add_constructor([param('ns3::EpcS1apSapMme::ErabSwitchedInDownlinkItem const &', 'arg0')])
-    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSapMme::ErabSwitchedInDownlinkItem::enbTeid [variable]
-    cls.add_instance_attribute('enbTeid', 'uint32_t', is_const=False)
-    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSapMme::ErabSwitchedInDownlinkItem::enbTransportLayerAddress [variable]
-    cls.add_instance_attribute('enbTransportLayerAddress', 'ns3::Ipv4Address', is_const=False)
-    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSapMme::ErabSwitchedInDownlinkItem::erabId [variable]
-    cls.add_instance_attribute('erabId', 'uint16_t', is_const=False)
-    return
-
-def register_Ns3EpcS1apSapMmeErabToBeReleasedIndication_methods(root_module, cls):
-    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSapMme::ErabToBeReleasedIndication::ErabToBeReleasedIndication() [constructor]
-    cls.add_constructor([])
-    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSapMme::ErabToBeReleasedIndication::ErabToBeReleasedIndication(ns3::EpcS1apSapMme::ErabToBeReleasedIndication const & arg0) [constructor]
-    cls.add_constructor([param('ns3::EpcS1apSapMme::ErabToBeReleasedIndication const &', 'arg0')])
-    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSapMme::ErabToBeReleasedIndication::erabId [variable]
-    cls.add_instance_attribute('erabId', 'uint8_t', is_const=False)
+    ## epc-s1ap-sap.h (module 'lte'): ns3::EpcS1apSapMmeProvider::EpcS1apSapMmeProvider(ns3::EpcS1apSapMmeProvider const & arg0) [constructor]
+    cls.add_constructor([param('ns3::EpcS1apSapMmeProvider const &', 'arg0')])
+    ## epc-s1ap-sap.h (module 'lte'): void ns3::EpcS1apSapMmeProvider::SendInitialContextSetupRequest(uint64_t mmeUeS1Id, uint16_t enbUeS1Id, std::list<ns3::EpcS1apSap::ErabToBeSetupItem, std::allocator<ns3::EpcS1apSap::ErabToBeSetupItem> > erabToBeSetupList, uint16_t cellId) [member function]
+    cls.add_method('SendInitialContextSetupRequest', 
+                   'void', 
+                   [param('uint64_t', 'mmeUeS1Id'), param('uint16_t', 'enbUeS1Id'), param('std::list< ns3::EpcS1apSap::ErabToBeSetupItem >', 'erabToBeSetupList'), param('uint16_t', 'cellId')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## epc-s1ap-sap.h (module 'lte'): void ns3::EpcS1apSapMmeProvider::SendPathSwitchRequestAcknowledge(uint64_t enbUeS1Id, uint64_t mmeUeS1Id, uint16_t cgi, std::list<ns3::EpcS1apSap::ErabSwitchedInUplinkItem, std::allocator<ns3::EpcS1apSap::ErabSwitchedInUplinkItem> > erabToBeSwitchedInUplinkList) [member function]
+    cls.add_method('SendPathSwitchRequestAcknowledge', 
+                   'void', 
+                   [param('uint64_t', 'enbUeS1Id'), param('uint64_t', 'mmeUeS1Id'), param('uint16_t', 'cgi'), param('std::list< ns3::EpcS1apSap::ErabSwitchedInUplinkItem >', 'erabToBeSwitchedInUplinkList')], 
+                   is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3EpcX2Sap_methods(root_module, cls):
@@ -4143,6 +4732,21 @@ def register_Ns3EpcX2SapErabsSubjectToStatusTransferItem_methods(root_module, cl
     cls.add_instance_attribute('ulPdcpSn', 'uint16_t', is_const=False)
     return
 
+def register_Ns3EpcX2SapHandoverFailedParams_methods(root_module, cls):
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::HandoverFailedParams::HandoverFailedParams() [constructor]
+    cls.add_constructor([])
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::HandoverFailedParams::HandoverFailedParams(ns3::EpcX2Sap::HandoverFailedParams const & arg0) [constructor]
+    cls.add_constructor([param('ns3::EpcX2Sap::HandoverFailedParams const &', 'arg0')])
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::HandoverFailedParams::coordinatorId [variable]
+    cls.add_instance_attribute('coordinatorId', 'uint16_t', is_const=False)
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::HandoverFailedParams::imsi [variable]
+    cls.add_instance_attribute('imsi', 'uint64_t', is_const=False)
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::HandoverFailedParams::sourceCellId [variable]
+    cls.add_instance_attribute('sourceCellId', 'uint16_t', is_const=False)
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::HandoverFailedParams::targetCellId [variable]
+    cls.add_instance_attribute('targetCellId', 'uint16_t', is_const=False)
+    return
+
 def register_Ns3EpcX2SapHandoverPreparationFailureParams_methods(root_module, cls):
     ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::HandoverPreparationFailureParams::HandoverPreparationFailureParams() [constructor]
     cls.add_constructor([])
@@ -4190,10 +4794,14 @@ def register_Ns3EpcX2SapHandoverRequestParams_methods(root_module, cls):
     cls.add_instance_attribute('bearers', 'std::vector< ns3::EpcX2Sap::ErabToBeSetupItem >', is_const=False)
     ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::HandoverRequestParams::cause [variable]
     cls.add_instance_attribute('cause', 'uint16_t', is_const=False)
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::HandoverRequestParams::isMc [variable]
+    cls.add_instance_attribute('isMc', 'bool', is_const=False)
     ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::HandoverRequestParams::mmeUeS1apId [variable]
     cls.add_instance_attribute('mmeUeS1apId', 'uint32_t', is_const=False)
     ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::HandoverRequestParams::oldEnbUeX2apId [variable]
     cls.add_instance_attribute('oldEnbUeX2apId', 'uint16_t', is_const=False)
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::HandoverRequestParams::rlcRequests [variable]
+    cls.add_instance_attribute('rlcRequests', 'std::vector< ns3::EpcX2Sap::RlcSetupRequest >', is_const=False)
     ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::HandoverRequestParams::rrcContext [variable]
     cls.add_instance_attribute('rrcContext', 'ns3::Ptr< ns3::Packet >', is_const=False)
     ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::HandoverRequestParams::sourceCellId [variable]
@@ -4249,6 +4857,61 @@ def register_Ns3EpcX2SapResourceStatusUpdateParams_methods(root_module, cls):
     cls.add_instance_attribute('targetCellId', 'uint16_t', is_const=False)
     return
 
+def register_Ns3EpcX2SapRlcSetupRequest_methods(root_module, cls):
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::RlcSetupRequest::RlcSetupRequest() [constructor]
+    cls.add_constructor([])
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::RlcSetupRequest::RlcSetupRequest(ns3::EpcX2Sap::RlcSetupRequest const & arg0) [constructor]
+    cls.add_constructor([param('ns3::EpcX2Sap::RlcSetupRequest const &', 'arg0')])
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::RlcSetupRequest::drbid [variable]
+    cls.add_instance_attribute('drbid', 'uint8_t', is_const=False)
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::RlcSetupRequest::gtpTeid [variable]
+    cls.add_instance_attribute('gtpTeid', 'uint32_t', is_const=False)
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::RlcSetupRequest::lcinfo [variable]
+    cls.add_instance_attribute('lcinfo', 'ns3::LteEnbCmacSapProvider::LcInfo', is_const=False)
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::RlcSetupRequest::logicalChannelConfig [variable]
+    cls.add_instance_attribute('logicalChannelConfig', 'ns3::LteRrcSap::LogicalChannelConfig', is_const=False)
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::RlcSetupRequest::lteRnti [variable]
+    cls.add_instance_attribute('lteRnti', 'uint16_t', is_const=False)
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::RlcSetupRequest::mmWaveRnti [variable]
+    cls.add_instance_attribute('mmWaveRnti', 'uint16_t', is_const=False)
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::RlcSetupRequest::rlcConfig [variable]
+    cls.add_instance_attribute('rlcConfig', 'ns3::LteRrcSap::RlcConfig', is_const=False)
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::RlcSetupRequest::rlcType [variable]
+    cls.add_instance_attribute('rlcType', 'ns3::TypeId', is_const=False)
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::RlcSetupRequest::sourceCellId [variable]
+    cls.add_instance_attribute('sourceCellId', 'uint16_t', is_const=False)
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::RlcSetupRequest::targetCellId [variable]
+    cls.add_instance_attribute('targetCellId', 'uint16_t', is_const=False)
+    return
+
+def register_Ns3EpcX2SapSecondaryHandoverCompletedParams_methods(root_module, cls):
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::SecondaryHandoverCompletedParams::SecondaryHandoverCompletedParams() [constructor]
+    cls.add_constructor([])
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::SecondaryHandoverCompletedParams::SecondaryHandoverCompletedParams(ns3::EpcX2Sap::SecondaryHandoverCompletedParams const & arg0) [constructor]
+    cls.add_constructor([param('ns3::EpcX2Sap::SecondaryHandoverCompletedParams const &', 'arg0')])
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::SecondaryHandoverCompletedParams::cellId [variable]
+    cls.add_instance_attribute('cellId', 'uint16_t', is_const=False)
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::SecondaryHandoverCompletedParams::imsi [variable]
+    cls.add_instance_attribute('imsi', 'uint64_t', is_const=False)
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::SecondaryHandoverCompletedParams::mmWaveRnti [variable]
+    cls.add_instance_attribute('mmWaveRnti', 'uint16_t', is_const=False)
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::SecondaryHandoverCompletedParams::oldEnbUeX2apId [variable]
+    cls.add_instance_attribute('oldEnbUeX2apId', 'uint16_t', is_const=False)
+    return
+
+def register_Ns3EpcX2SapSecondaryHandoverParams_methods(root_module, cls):
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::SecondaryHandoverParams::SecondaryHandoverParams() [constructor]
+    cls.add_constructor([])
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::SecondaryHandoverParams::SecondaryHandoverParams(ns3::EpcX2Sap::SecondaryHandoverParams const & arg0) [constructor]
+    cls.add_constructor([param('ns3::EpcX2Sap::SecondaryHandoverParams const &', 'arg0')])
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::SecondaryHandoverParams::imsi [variable]
+    cls.add_instance_attribute('imsi', 'uint64_t', is_const=False)
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::SecondaryHandoverParams::oldCellId [variable]
+    cls.add_instance_attribute('oldCellId', 'uint16_t', is_const=False)
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::SecondaryHandoverParams::targetCellId [variable]
+    cls.add_instance_attribute('targetCellId', 'uint16_t', is_const=False)
+    return
+
 def register_Ns3EpcX2SapSnStatusTransferParams_methods(root_module, cls):
     ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::SnStatusTransferParams::SnStatusTransferParams() [constructor]
     cls.add_constructor([])
@@ -4264,6 +4927,21 @@ def register_Ns3EpcX2SapSnStatusTransferParams_methods(root_module, cls):
     cls.add_instance_attribute('sourceCellId', 'uint16_t', is_const=False)
     ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::SnStatusTransferParams::targetCellId [variable]
     cls.add_instance_attribute('targetCellId', 'uint16_t', is_const=False)
+    return
+
+def register_Ns3EpcX2SapSwitchConnectionParams_methods(root_module, cls):
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::SwitchConnectionParams::SwitchConnectionParams() [constructor]
+    cls.add_constructor([])
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::SwitchConnectionParams::SwitchConnectionParams(ns3::EpcX2Sap::SwitchConnectionParams const & arg0) [constructor]
+    cls.add_constructor([param('ns3::EpcX2Sap::SwitchConnectionParams const &', 'arg0')])
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::SwitchConnectionParams::drbid [variable]
+    cls.add_instance_attribute('drbid', 'uint8_t', is_const=False)
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::SwitchConnectionParams::mmWaveCellId [variable]
+    cls.add_instance_attribute('mmWaveCellId', 'uint16_t', is_const=False)
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::SwitchConnectionParams::mmWaveRnti [variable]
+    cls.add_instance_attribute('mmWaveRnti', 'uint32_t', is_const=False)
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::SwitchConnectionParams::useMmWaveConnection [variable]
+    cls.add_instance_attribute('useMmWaveConnection', 'bool', is_const=False)
     return
 
 def register_Ns3EpcX2SapUeContextReleaseParams_methods(root_module, cls):
@@ -4296,6 +4974,19 @@ def register_Ns3EpcX2SapUeDataParams_methods(root_module, cls):
     cls.add_instance_attribute('ueData', 'ns3::Ptr< ns3::Packet >', is_const=False)
     return
 
+def register_Ns3EpcX2SapUeImsiSinrParams_methods(root_module, cls):
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::UeImsiSinrParams::UeImsiSinrParams() [constructor]
+    cls.add_constructor([])
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::UeImsiSinrParams::UeImsiSinrParams(ns3::EpcX2Sap::UeImsiSinrParams const & arg0) [constructor]
+    cls.add_constructor([param('ns3::EpcX2Sap::UeImsiSinrParams const &', 'arg0')])
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::UeImsiSinrParams::sourceCellId [variable]
+    cls.add_instance_attribute('sourceCellId', 'uint16_t', is_const=False)
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::UeImsiSinrParams::targetCellId [variable]
+    cls.add_instance_attribute('targetCellId', 'uint16_t', is_const=False)
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::UeImsiSinrParams::ueImsiSinrMap [variable]
+    cls.add_instance_attribute('ueImsiSinrMap', 'std::map< unsigned long, double >', is_const=False)
+    return
+
 def register_Ns3EpcX2SapUlHighInterferenceInformationItem_methods(root_module, cls):
     ## epc-x2-sap.h (module 'lte'): ns3::EpcX2Sap::UlHighInterferenceInformationItem::UlHighInterferenceInformationItem() [constructor]
     cls.add_constructor([])
@@ -4312,6 +5003,31 @@ def register_Ns3EpcX2SapProvider_methods(root_module, cls):
     cls.add_constructor([])
     ## epc-x2-sap.h (module 'lte'): ns3::EpcX2SapProvider::EpcX2SapProvider(ns3::EpcX2SapProvider const & arg0) [constructor]
     cls.add_constructor([param('ns3::EpcX2SapProvider const &', 'arg0')])
+    ## epc-x2-sap.h (module 'lte'): void ns3::EpcX2SapProvider::AddTeidToBeForwarded(uint32_t gtpTeid, uint16_t targetCellId) [member function]
+    cls.add_method('AddTeidToBeForwarded', 
+                   'void', 
+                   [param('uint32_t', 'gtpTeid'), param('uint16_t', 'targetCellId')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## epc-x2-sap.h (module 'lte'): void ns3::EpcX2SapProvider::ForwardRlcPdu(ns3::EpcX2Sap::UeDataParams params) [member function]
+    cls.add_method('ForwardRlcPdu', 
+                   'void', 
+                   [param('ns3::EpcX2Sap::UeDataParams', 'params')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## epc-x2-sap.h (module 'lte'): void ns3::EpcX2SapProvider::NotifyCoordinatorHandoverFailed(ns3::EpcX2Sap::HandoverFailedParams params) [member function]
+    cls.add_method('NotifyCoordinatorHandoverFailed', 
+                   'void', 
+                   [param('ns3::EpcX2Sap::HandoverFailedParams', 'params')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## epc-x2-sap.h (module 'lte'): void ns3::EpcX2SapProvider::NotifyLteMmWaveHandoverCompleted(ns3::EpcX2Sap::SecondaryHandoverParams params) [member function]
+    cls.add_method('NotifyLteMmWaveHandoverCompleted', 
+                   'void', 
+                   [param('ns3::EpcX2Sap::SecondaryHandoverParams', 'params')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## epc-x2-sap.h (module 'lte'): void ns3::EpcX2SapProvider::RemoveTeidToBeForwarded(uint32_t gtpTeid) [member function]
+    cls.add_method('RemoveTeidToBeForwarded', 
+                   'void', 
+                   [param('uint32_t', 'gtpTeid')], 
+                   is_pure_virtual=True, is_virtual=True)
     ## epc-x2-sap.h (module 'lte'): void ns3::EpcX2SapProvider::SendHandoverPreparationFailure(ns3::EpcX2Sap::HandoverPreparationFailureParams params) [member function]
     cls.add_method('SendHandoverPreparationFailure', 
                    'void', 
@@ -4332,15 +5048,40 @@ def register_Ns3EpcX2SapProvider_methods(root_module, cls):
                    'void', 
                    [param('ns3::EpcX2Sap::LoadInformationParams', 'params')], 
                    is_pure_virtual=True, is_virtual=True)
+    ## epc-x2-sap.h (module 'lte'): void ns3::EpcX2SapProvider::SendMcHandoverRequest(ns3::EpcX2Sap::SecondaryHandoverParams params) [member function]
+    cls.add_method('SendMcHandoverRequest', 
+                   'void', 
+                   [param('ns3::EpcX2Sap::SecondaryHandoverParams', 'params')], 
+                   is_pure_virtual=True, is_virtual=True)
     ## epc-x2-sap.h (module 'lte'): void ns3::EpcX2SapProvider::SendResourceStatusUpdate(ns3::EpcX2Sap::ResourceStatusUpdateParams params) [member function]
     cls.add_method('SendResourceStatusUpdate', 
                    'void', 
                    [param('ns3::EpcX2Sap::ResourceStatusUpdateParams', 'params')], 
                    is_pure_virtual=True, is_virtual=True)
+    ## epc-x2-sap.h (module 'lte'): void ns3::EpcX2SapProvider::SendRlcSetupCompleted(ns3::EpcX2Sap::UeDataParams params) [member function]
+    cls.add_method('SendRlcSetupCompleted', 
+                   'void', 
+                   [param('ns3::EpcX2Sap::UeDataParams', 'params')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## epc-x2-sap.h (module 'lte'): void ns3::EpcX2SapProvider::SendRlcSetupRequest(ns3::EpcX2Sap::RlcSetupRequest params) [member function]
+    cls.add_method('SendRlcSetupRequest', 
+                   'void', 
+                   [param('ns3::EpcX2Sap::RlcSetupRequest', 'params')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## epc-x2-sap.h (module 'lte'): void ns3::EpcX2SapProvider::SendSecondaryCellHandoverCompleted(ns3::EpcX2Sap::SecondaryHandoverCompletedParams params) [member function]
+    cls.add_method('SendSecondaryCellHandoverCompleted', 
+                   'void', 
+                   [param('ns3::EpcX2Sap::SecondaryHandoverCompletedParams', 'params')], 
+                   is_pure_virtual=True, is_virtual=True)
     ## epc-x2-sap.h (module 'lte'): void ns3::EpcX2SapProvider::SendSnStatusTransfer(ns3::EpcX2Sap::SnStatusTransferParams params) [member function]
     cls.add_method('SendSnStatusTransfer', 
                    'void', 
                    [param('ns3::EpcX2Sap::SnStatusTransferParams', 'params')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## epc-x2-sap.h (module 'lte'): void ns3::EpcX2SapProvider::SendSwitchConnectionToMmWave(ns3::EpcX2Sap::SwitchConnectionParams params) [member function]
+    cls.add_method('SendSwitchConnectionToMmWave', 
+                   'void', 
+                   [param('ns3::EpcX2Sap::SwitchConnectionParams', 'params')], 
                    is_pure_virtual=True, is_virtual=True)
     ## epc-x2-sap.h (module 'lte'): void ns3::EpcX2SapProvider::SendUeContextRelease(ns3::EpcX2Sap::UeContextReleaseParams params) [member function]
     cls.add_method('SendUeContextRelease', 
@@ -4352,6 +5093,21 @@ def register_Ns3EpcX2SapProvider_methods(root_module, cls):
                    'void', 
                    [param('ns3::EpcX2Sap::UeDataParams', 'params')], 
                    is_pure_virtual=True, is_virtual=True)
+    ## epc-x2-sap.h (module 'lte'): void ns3::EpcX2SapProvider::SendUeSinrUpdate(ns3::EpcX2Sap::UeImsiSinrParams params) [member function]
+    cls.add_method('SendUeSinrUpdate', 
+                   'void', 
+                   [param('ns3::EpcX2Sap::UeImsiSinrParams', 'params')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## epc-x2-sap.h (module 'lte'): void ns3::EpcX2SapProvider::SetEpcX2PdcpUser(uint32_t teid, ns3::EpcX2PdcpUser * s) [member function]
+    cls.add_method('SetEpcX2PdcpUser', 
+                   'void', 
+                   [param('uint32_t', 'teid'), param('ns3::EpcX2PdcpUser *', 's')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## epc-x2-sap.h (module 'lte'): void ns3::EpcX2SapProvider::SetEpcX2RlcUser(uint32_t teid, ns3::EpcX2RlcUser * s) [member function]
+    cls.add_method('SetEpcX2RlcUser', 
+                   'void', 
+                   [param('uint32_t', 'teid'), param('ns3::EpcX2RlcUser *', 's')], 
+                   is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3EpcX2SapUser_methods(root_module, cls):
@@ -4359,6 +5115,11 @@ def register_Ns3EpcX2SapUser_methods(root_module, cls):
     cls.add_constructor([])
     ## epc-x2-sap.h (module 'lte'): ns3::EpcX2SapUser::EpcX2SapUser(ns3::EpcX2SapUser const & arg0) [constructor]
     cls.add_constructor([param('ns3::EpcX2SapUser const &', 'arg0')])
+    ## epc-x2-sap.h (module 'lte'): void ns3::EpcX2SapUser::RecvConnectionSwitchToMmWave(ns3::EpcX2Sap::SwitchConnectionParams params) [member function]
+    cls.add_method('RecvConnectionSwitchToMmWave', 
+                   'void', 
+                   [param('ns3::EpcX2Sap::SwitchConnectionParams', 'params')], 
+                   is_pure_virtual=True, is_virtual=True)
     ## epc-x2-sap.h (module 'lte'): void ns3::EpcX2SapUser::RecvHandoverPreparationFailure(ns3::EpcX2Sap::HandoverPreparationFailureParams params) [member function]
     cls.add_method('RecvHandoverPreparationFailure', 
                    'void', 
@@ -4379,10 +5140,35 @@ def register_Ns3EpcX2SapUser_methods(root_module, cls):
                    'void', 
                    [param('ns3::EpcX2Sap::LoadInformationParams', 'params')], 
                    is_pure_virtual=True, is_virtual=True)
+    ## epc-x2-sap.h (module 'lte'): void ns3::EpcX2SapUser::RecvLteMmWaveHandoverCompleted(ns3::EpcX2Sap::SecondaryHandoverParams params) [member function]
+    cls.add_method('RecvLteMmWaveHandoverCompleted', 
+                   'void', 
+                   [param('ns3::EpcX2Sap::SecondaryHandoverParams', 'params')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## epc-x2-sap.h (module 'lte'): void ns3::EpcX2SapUser::RecvMcHandoverRequest(ns3::EpcX2Sap::SecondaryHandoverParams params) [member function]
+    cls.add_method('RecvMcHandoverRequest', 
+                   'void', 
+                   [param('ns3::EpcX2Sap::SecondaryHandoverParams', 'params')], 
+                   is_pure_virtual=True, is_virtual=True)
     ## epc-x2-sap.h (module 'lte'): void ns3::EpcX2SapUser::RecvResourceStatusUpdate(ns3::EpcX2Sap::ResourceStatusUpdateParams params) [member function]
     cls.add_method('RecvResourceStatusUpdate', 
                    'void', 
                    [param('ns3::EpcX2Sap::ResourceStatusUpdateParams', 'params')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## epc-x2-sap.h (module 'lte'): void ns3::EpcX2SapUser::RecvRlcSetupCompleted(ns3::EpcX2Sap::UeDataParams params) [member function]
+    cls.add_method('RecvRlcSetupCompleted', 
+                   'void', 
+                   [param('ns3::EpcX2Sap::UeDataParams', 'params')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## epc-x2-sap.h (module 'lte'): void ns3::EpcX2SapUser::RecvRlcSetupRequest(ns3::EpcX2Sap::RlcSetupRequest params) [member function]
+    cls.add_method('RecvRlcSetupRequest', 
+                   'void', 
+                   [param('ns3::EpcX2Sap::RlcSetupRequest', 'params')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## epc-x2-sap.h (module 'lte'): void ns3::EpcX2SapUser::RecvSecondaryCellHandoverCompleted(ns3::EpcX2Sap::SecondaryHandoverCompletedParams params) [member function]
+    cls.add_method('RecvSecondaryCellHandoverCompleted', 
+                   'void', 
+                   [param('ns3::EpcX2Sap::SecondaryHandoverCompletedParams', 'params')], 
                    is_pure_virtual=True, is_virtual=True)
     ## epc-x2-sap.h (module 'lte'): void ns3::EpcX2SapUser::RecvSnStatusTransfer(ns3::EpcX2Sap::SnStatusTransferParams params) [member function]
     cls.add_method('RecvSnStatusTransfer', 
@@ -4398,6 +5184,11 @@ def register_Ns3EpcX2SapUser_methods(root_module, cls):
     cls.add_method('RecvUeData', 
                    'void', 
                    [param('ns3::EpcX2Sap::UeDataParams', 'params')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## epc-x2-sap.h (module 'lte'): void ns3::EpcX2SapUser::RecvUeSinrUpdate(ns3::EpcX2Sap::UeImsiSinrParams params) [member function]
+    cls.add_method('RecvUeSinrUpdate', 
+                   'void', 
+                   [param('ns3::EpcX2Sap::UeImsiSinrParams', 'params')], 
                    is_pure_virtual=True, is_virtual=True)
     return
 
@@ -5748,7 +6539,7 @@ def register_Ns3Ipv6Address_methods(root_module, cls):
     cls.add_method('IsAllHostsMulticast', 
                    'bool', 
                    [], 
-                   is_const=True)
+                   deprecated=True, is_const=True)
     ## ipv6-address.h (module 'network'): bool ns3::Ipv6Address::IsAllNodesMulticast() const [member function]
     cls.add_method('IsAllNodesMulticast', 
                    'bool', 
@@ -6244,6 +7035,16 @@ def register_Ns3LteAsSapProvider_methods(root_module, cls):
                    'void', 
                    [param('uint16_t', 'cellId'), param('uint32_t', 'dlEarfcn')], 
                    is_pure_virtual=True, is_virtual=True)
+    ## lte-as-sap.h (module 'lte'): void ns3::LteAsSapProvider::NotifySecondaryCellConnected(uint16_t rnti, uint16_t mmWaveCellId) [member function]
+    cls.add_method('NotifySecondaryCellConnected', 
+                   'void', 
+                   [param('uint16_t', 'rnti'), param('uint16_t', 'mmWaveCellId')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-as-sap.h (module 'lte'): void ns3::LteAsSapProvider::NotifySecondaryCellHandover(uint16_t oldRnti, uint16_t newRnti, uint16_t mmWaveCellId, ns3::LteRrcSap::RadioResourceConfigDedicated radioResourceConfigDedicated) [member function]
+    cls.add_method('NotifySecondaryCellHandover', 
+                   'void', 
+                   [param('uint16_t', 'oldRnti'), param('uint16_t', 'newRnti'), param('uint16_t', 'mmWaveCellId'), param('ns3::LteRrcSap::RadioResourceConfigDedicated', 'radioResourceConfigDedicated')], 
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-as-sap.h (module 'lte'): void ns3::LteAsSapProvider::SendData(ns3::Ptr<ns3::Packet> packet, uint8_t bid) [member function]
     cls.add_method('SendData', 
                    'void', 
@@ -6266,6 +7067,11 @@ def register_Ns3LteAsSapUser_methods(root_module, cls):
     cls.add_constructor([])
     ## lte-as-sap.h (module 'lte'): ns3::LteAsSapUser::LteAsSapUser(ns3::LteAsSapUser const & arg0) [constructor]
     cls.add_constructor([param('ns3::LteAsSapUser const &', 'arg0')])
+    ## lte-as-sap.h (module 'lte'): void ns3::LteAsSapUser::NotifyConnectToMmWave(uint16_t mmWaveCellId) [member function]
+    cls.add_method('NotifyConnectToMmWave', 
+                   'void', 
+                   [param('uint16_t', 'mmWaveCellId')], 
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-as-sap.h (module 'lte'): void ns3::LteAsSapUser::NotifyConnectionFailed() [member function]
     cls.add_method('NotifyConnectionFailed', 
                    'void', 
@@ -6276,10 +7082,20 @@ def register_Ns3LteAsSapUser_methods(root_module, cls):
                    'void', 
                    [], 
                    is_pure_virtual=True, is_virtual=True)
-    ## lte-as-sap.h (module 'lte'): void ns3::LteAsSapUser::NotifyConnectionSuccessful() [member function]
+    ## lte-as-sap.h (module 'lte'): void ns3::LteAsSapUser::NotifyConnectionSuccessful(uint16_t rnti) [member function]
     cls.add_method('NotifyConnectionSuccessful', 
                    'void', 
-                   [], 
+                   [param('uint16_t', 'rnti')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-as-sap.h (module 'lte'): void ns3::LteAsSapUser::NotifyHandoverSuccessful(uint16_t rnti, uint16_t mmWaveCellId) [member function]
+    cls.add_method('NotifyHandoverSuccessful', 
+                   'void', 
+                   [param('uint16_t', 'rnti'), param('uint16_t', 'mmWaveCellId')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-as-sap.h (module 'lte'): void ns3::LteAsSapUser::NotifySecondaryCellHandoverStarted(uint16_t oldRnti, uint16_t newRnti, uint16_t mmWaveCellId, ns3::LteRrcSap::RadioResourceConfigDedicated radioResourceConfigDedicated) [member function]
+    cls.add_method('NotifySecondaryCellHandoverStarted', 
+                   'void', 
+                   [param('uint16_t', 'oldRnti'), param('uint16_t', 'newRnti'), param('uint16_t', 'mmWaveCellId'), param('ns3::LteRrcSap::RadioResourceConfigDedicated', 'radioResourceConfigDedicated')], 
                    is_pure_virtual=True, is_virtual=True)
     ## lte-as-sap.h (module 'lte'): void ns3::LteAsSapUser::RecvData(ns3::Ptr<ns3::Packet> packet) [member function]
     cls.add_method('RecvData', 
@@ -6379,6 +7195,11 @@ def register_Ns3LteCcmRrcSapUser_methods(root_module, cls):
     cls.add_method('ReleaseLcs', 
                    'void', 
                    [param('uint16_t', 'rnti'), param('uint8_t', 'lcid')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-ccm-rrc-sap.h (module 'lte'): void ns3::LteCcmRrcSapUser::SetNumberOfComponentCarriers(uint16_t noOfComponentCarriers) [member function]
+    cls.add_method('SetNumberOfComponentCarriers', 
+                   'void', 
+                   [param('uint16_t', 'noOfComponentCarriers')], 
                    is_pure_virtual=True, is_virtual=True)
     ## lte-ccm-rrc-sap.h (module 'lte'): void ns3::LteCcmRrcSapUser::TriggerComponentCarrier(uint16_t rnti, uint16_t targetCellId) [member function]
     cls.add_method('TriggerComponentCarrier', 
@@ -6601,6 +7422,22 @@ def register_Ns3LteEnbCphySapUser_methods(root_module, cls):
     cls.add_constructor([])
     ## lte-enb-cphy-sap.h (module 'lte'): ns3::LteEnbCphySapUser::LteEnbCphySapUser(ns3::LteEnbCphySapUser const & arg0) [constructor]
     cls.add_constructor([param('ns3::LteEnbCphySapUser const &', 'arg0')])
+    ## lte-enb-cphy-sap.h (module 'lte'): void ns3::LteEnbCphySapUser::UpdateUeSinrEstimate(ns3::LteEnbCphySapUser::UeAssociatedSinrInfo info) [member function]
+    cls.add_method('UpdateUeSinrEstimate', 
+                   'void', 
+                   [param('ns3::LteEnbCphySapUser::UeAssociatedSinrInfo', 'info')], 
+                   is_pure_virtual=True, is_virtual=True)
+    return
+
+def register_Ns3LteEnbCphySapUserUeAssociatedSinrInfo_methods(root_module, cls):
+    ## lte-enb-cphy-sap.h (module 'lte'): ns3::LteEnbCphySapUser::UeAssociatedSinrInfo::UeAssociatedSinrInfo() [constructor]
+    cls.add_constructor([])
+    ## lte-enb-cphy-sap.h (module 'lte'): ns3::LteEnbCphySapUser::UeAssociatedSinrInfo::UeAssociatedSinrInfo(ns3::LteEnbCphySapUser::UeAssociatedSinrInfo const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteEnbCphySapUser::UeAssociatedSinrInfo const &', 'arg0')])
+    ## lte-enb-cphy-sap.h (module 'lte'): ns3::LteEnbCphySapUser::UeAssociatedSinrInfo::componentCarrierId [variable]
+    cls.add_instance_attribute('componentCarrierId', 'uint8_t', is_const=False)
+    ## lte-enb-cphy-sap.h (module 'lte'): ns3::LteEnbCphySapUser::UeAssociatedSinrInfo::ueImsiSinrMap [variable]
+    cls.add_instance_attribute('ueImsiSinrMap', 'std::map< unsigned long, double >', is_const=False)
     return
 
 def register_Ns3LteEnbPhySapProvider_methods(root_module, cls):
@@ -6883,8 +7720,14 @@ def register_Ns3LteMacSapProviderReportBufferStatusParameters_methods(root_modul
     cls.add_constructor([])
     ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapProvider::ReportBufferStatusParameters::ReportBufferStatusParameters(ns3::LteMacSapProvider::ReportBufferStatusParameters const & arg0) [constructor]
     cls.add_constructor([param('ns3::LteMacSapProvider::ReportBufferStatusParameters const &', 'arg0')])
+    ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapProvider::ReportBufferStatusParameters::arrivalRate [variable]
+    cls.add_instance_attribute('arrivalRate', 'double', is_const=False)
     ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapProvider::ReportBufferStatusParameters::lcid [variable]
     cls.add_instance_attribute('lcid', 'uint8_t', is_const=False)
+    ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapProvider::ReportBufferStatusParameters::retxPacketDelays [variable]
+    cls.add_instance_attribute('retxPacketDelays', 'std::list< double >', is_const=False)
+    ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapProvider::ReportBufferStatusParameters::retxPacketSizes [variable]
+    cls.add_instance_attribute('retxPacketSizes', 'std::list< unsigned int >', is_const=False)
     ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapProvider::ReportBufferStatusParameters::retxQueueHolDelay [variable]
     cls.add_instance_attribute('retxQueueHolDelay', 'uint16_t', is_const=False)
     ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapProvider::ReportBufferStatusParameters::retxQueueSize [variable]
@@ -6893,6 +7736,10 @@ def register_Ns3LteMacSapProviderReportBufferStatusParameters_methods(root_modul
     cls.add_instance_attribute('rnti', 'uint16_t', is_const=False)
     ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapProvider::ReportBufferStatusParameters::statusPduSize [variable]
     cls.add_instance_attribute('statusPduSize', 'uint16_t', is_const=False)
+    ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapProvider::ReportBufferStatusParameters::txPacketDelays [variable]
+    cls.add_instance_attribute('txPacketDelays', 'std::list< double >', is_const=False)
+    ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapProvider::ReportBufferStatusParameters::txPacketSizes [variable]
+    cls.add_instance_attribute('txPacketSizes', 'std::list< unsigned int >', is_const=False)
     ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapProvider::ReportBufferStatusParameters::txQueueHolDelay [variable]
     cls.add_instance_attribute('txQueueHolDelay', 'uint16_t', is_const=False)
     ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapProvider::ReportBufferStatusParameters::txQueueSize [variable]
@@ -6923,21 +7770,63 @@ def register_Ns3LteMacSapUser_methods(root_module, cls):
     cls.add_constructor([])
     ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapUser::LteMacSapUser(ns3::LteMacSapUser const & arg0) [constructor]
     cls.add_constructor([param('ns3::LteMacSapUser const &', 'arg0')])
+    ## lte-mac-sap.h (module 'lte'): void ns3::LteMacSapUser::NotifyDlHarqDeliveryFailure(uint8_t harqId) [member function]
+    cls.add_method('NotifyDlHarqDeliveryFailure', 
+                   'void', 
+                   [param('uint8_t', 'harqId')], 
+                   is_virtual=True)
     ## lte-mac-sap.h (module 'lte'): void ns3::LteMacSapUser::NotifyHarqDeliveryFailure() [member function]
     cls.add_method('NotifyHarqDeliveryFailure', 
                    'void', 
                    [], 
                    is_pure_virtual=True, is_virtual=True)
-    ## lte-mac-sap.h (module 'lte'): void ns3::LteMacSapUser::NotifyTxOpportunity(uint32_t bytes, uint8_t layer, uint8_t harqId, uint8_t componentCarrierId, uint16_t rnti, uint8_t lcid) [member function]
+    ## lte-mac-sap.h (module 'lte'): void ns3::LteMacSapUser::NotifyTxOpportunity(ns3::LteMacSapUser::TxOpportunityParameters params) [member function]
     cls.add_method('NotifyTxOpportunity', 
                    'void', 
-                   [param('uint32_t', 'bytes'), param('uint8_t', 'layer'), param('uint8_t', 'harqId'), param('uint8_t', 'componentCarrierId'), param('uint16_t', 'rnti'), param('uint8_t', 'lcid')], 
+                   [param('ns3::LteMacSapUser::TxOpportunityParameters', 'params')], 
                    is_pure_virtual=True, is_virtual=True)
-    ## lte-mac-sap.h (module 'lte'): void ns3::LteMacSapUser::ReceivePdu(ns3::Ptr<ns3::Packet> p, uint16_t rnti, uint8_t lcid) [member function]
+    ## lte-mac-sap.h (module 'lte'): void ns3::LteMacSapUser::NotifyUlHarqDeliveryFailure(uint8_t harqId) [member function]
+    cls.add_method('NotifyUlHarqDeliveryFailure', 
+                   'void', 
+                   [param('uint8_t', 'harqId')], 
+                   is_virtual=True)
+    ## lte-mac-sap.h (module 'lte'): void ns3::LteMacSapUser::ReceivePdu(ns3::LteMacSapUser::ReceivePduParameters params) [member function]
     cls.add_method('ReceivePdu', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint16_t', 'rnti'), param('uint8_t', 'lcid')], 
+                   [param('ns3::LteMacSapUser::ReceivePduParameters', 'params')], 
                    is_pure_virtual=True, is_virtual=True)
+    return
+
+def register_Ns3LteMacSapUserReceivePduParameters_methods(root_module, cls):
+    ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapUser::ReceivePduParameters::ReceivePduParameters() [constructor]
+    cls.add_constructor([])
+    ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapUser::ReceivePduParameters::ReceivePduParameters(ns3::LteMacSapUser::ReceivePduParameters const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteMacSapUser::ReceivePduParameters const &', 'arg0')])
+    ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapUser::ReceivePduParameters::lcid [variable]
+    cls.add_instance_attribute('lcid', 'uint8_t', is_const=False)
+    ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapUser::ReceivePduParameters::p [variable]
+    cls.add_instance_attribute('p', 'ns3::Ptr< ns3::Packet >', is_const=False)
+    ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapUser::ReceivePduParameters::rnti [variable]
+    cls.add_instance_attribute('rnti', 'uint16_t', is_const=False)
+    return
+
+def register_Ns3LteMacSapUserTxOpportunityParameters_methods(root_module, cls):
+    ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapUser::TxOpportunityParameters::TxOpportunityParameters() [constructor]
+    cls.add_constructor([])
+    ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapUser::TxOpportunityParameters::TxOpportunityParameters(ns3::LteMacSapUser::TxOpportunityParameters const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteMacSapUser::TxOpportunityParameters const &', 'arg0')])
+    ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapUser::TxOpportunityParameters::bytes [variable]
+    cls.add_instance_attribute('bytes', 'uint32_t', is_const=False)
+    ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapUser::TxOpportunityParameters::componentCarrierId [variable]
+    cls.add_instance_attribute('componentCarrierId', 'uint8_t', is_const=False)
+    ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapUser::TxOpportunityParameters::harqId [variable]
+    cls.add_instance_attribute('harqId', 'uint8_t', is_const=False)
+    ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapUser::TxOpportunityParameters::layer [variable]
+    cls.add_instance_attribute('layer', 'uint8_t', is_const=False)
+    ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapUser::TxOpportunityParameters::lcid [variable]
+    cls.add_instance_attribute('lcid', 'uint8_t', is_const=False)
+    ## lte-mac-sap.h (module 'lte'): ns3::LteMacSapUser::TxOpportunityParameters::rnti [variable]
+    cls.add_instance_attribute('rnti', 'uint16_t', is_const=False)
     return
 
 def register_Ns3LteMiErrorModel_methods(root_module, cls):
@@ -7052,6 +7941,33 @@ def register_Ns3LteRlcSapUser_methods(root_module, cls):
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'p')], 
                    is_pure_virtual=True, is_virtual=True)
+    return
+
+def register_Ns3LteRlcSpecificLteMacSapUser_methods(root_module, cls):
+    ## lte-rlc.h (module 'lte'): ns3::LteRlcSpecificLteMacSapUser::LteRlcSpecificLteMacSapUser(ns3::LteRlcSpecificLteMacSapUser const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRlcSpecificLteMacSapUser const &', 'arg0')])
+    ## lte-rlc.h (module 'lte'): ns3::LteRlcSpecificLteMacSapUser::LteRlcSpecificLteMacSapUser(ns3::LteRlc * rlc) [constructor]
+    cls.add_constructor([param('ns3::LteRlc *', 'rlc')])
+    ## lte-rlc.h (module 'lte'): void ns3::LteRlcSpecificLteMacSapUser::NotifyHarqDeliveryFailure() [member function]
+    cls.add_method('NotifyHarqDeliveryFailure', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## lte-rlc.h (module 'lte'): void ns3::LteRlcSpecificLteMacSapUser::NotifyHarqDeliveryFailure(uint8_t harqId) [member function]
+    cls.add_method('NotifyHarqDeliveryFailure', 
+                   'void', 
+                   [param('uint8_t', 'harqId')], 
+                   is_virtual=True)
+    ## lte-rlc.h (module 'lte'): void ns3::LteRlcSpecificLteMacSapUser::NotifyTxOpportunity(ns3::LteMacSapUser::TxOpportunityParameters params) [member function]
+    cls.add_method('NotifyTxOpportunity', 
+                   'void', 
+                   [param('ns3::LteMacSapUser::TxOpportunityParameters', 'params')], 
+                   is_virtual=True)
+    ## lte-rlc.h (module 'lte'): void ns3::LteRlcSpecificLteMacSapUser::ReceivePdu(ns3::LteMacSapUser::ReceivePduParameters params) [member function]
+    cls.add_method('ReceivePdu', 
+                   'void', 
+                   [param('ns3::LteMacSapUser::ReceivePduParameters', 'params')], 
+                   is_virtual=True)
     return
 
 def register_Ns3LteRrcSap_methods(root_module, cls):
@@ -7223,6 +8139,8 @@ def register_Ns3LteRrcSapDrbToAddMod_methods(root_module, cls):
     cls.add_instance_attribute('drbIdentity', 'uint8_t', is_const=False)
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::DrbToAddMod::epsBearerIdentity [variable]
     cls.add_instance_attribute('epsBearerIdentity', 'uint8_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::DrbToAddMod::is_mc [variable]
+    cls.add_instance_attribute('is_mc', 'bool', is_const=False)
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::DrbToAddMod::logicalChannelConfig [variable]
     cls.add_instance_attribute('logicalChannelConfig', 'ns3::LteRrcSap::LogicalChannelConfig', is_const=False)
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::DrbToAddMod::logicalChannelIdentity [variable]
@@ -7921,6 +8839,8 @@ def register_Ns3LteRrcSapRrcConnectionRequest_methods(root_module, cls):
     cls.add_constructor([])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RrcConnectionRequest::RrcConnectionRequest(ns3::LteRrcSap::RrcConnectionRequest const & arg0) [constructor]
     cls.add_constructor([param('ns3::LteRrcSap::RrcConnectionRequest const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RrcConnectionRequest::isMc [variable]
+    cls.add_instance_attribute('isMc', 'bool', is_const=False)
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RrcConnectionRequest::ueIdentity [variable]
     cls.add_instance_attribute('ueIdentity', 'uint64_t', is_const=False)
     return
@@ -7943,6 +8863,19 @@ def register_Ns3LteRrcSapRrcConnectionSetupCompleted_methods(root_module, cls):
     cls.add_constructor([param('ns3::LteRrcSap::RrcConnectionSetupCompleted const &', 'arg0')])
     ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RrcConnectionSetupCompleted::rrcTransactionIdentifier [variable]
     cls.add_instance_attribute('rrcTransactionIdentifier', 'uint8_t', is_const=False)
+    return
+
+def register_Ns3LteRrcSapRrcConnectionSwitch_methods(root_module, cls):
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RrcConnectionSwitch::RrcConnectionSwitch() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RrcConnectionSwitch::RrcConnectionSwitch(ns3::LteRrcSap::RrcConnectionSwitch const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRrcSap::RrcConnectionSwitch const &', 'arg0')])
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RrcConnectionSwitch::drbidList [variable]
+    cls.add_instance_attribute('drbidList', 'std::vector< unsigned char >', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RrcConnectionSwitch::rrcTransactionIdentifier [variable]
+    cls.add_instance_attribute('rrcTransactionIdentifier', 'uint8_t', is_const=False)
+    ## lte-rrc-sap.h (module 'lte'): ns3::LteRrcSap::RrcConnectionSwitch::useMmWaveConnection [variable]
+    cls.add_instance_attribute('useMmWaveConnection', 'uint16_t', is_const=False)
     return
 
 def register_Ns3LteRrcSapSCellToAddMod_methods(root_module, cls):
@@ -8138,6 +9071,11 @@ def register_Ns3LteSpectrumValueHelper_methods(root_module, cls):
                    'ns3::Ptr< ns3::SpectrumValue >', 
                    [param('uint32_t', 'earfcn'), param('uint8_t', 'bandwidth'), param('double', 'powerTx'), param('std::map< int, double >', 'powerTxMap'), param('std::vector< int >', 'activeRbs')], 
                    is_static=True)
+    ## lte-spectrum-value-helper.h (module 'lte'): static ns3::Ptr<ns3::SpectrumValue> ns3::LteSpectrumValueHelper::CreateUlTxPowerSpectralDensity(uint16_t earfcn, uint8_t bandwidth, double powerTx, std::vector<int, std::allocator<int> > activeRbs) [member function]
+    cls.add_method('CreateUlTxPowerSpectralDensity', 
+                   'ns3::Ptr< ns3::SpectrumValue >', 
+                   [param('uint16_t', 'earfcn'), param('uint8_t', 'bandwidth'), param('double', 'powerTx'), param('std::vector< int >', 'activeRbs')], 
+                   is_static=True)
     ## lte-spectrum-value-helper.h (module 'lte'): static double ns3::LteSpectrumValueHelper::GetCarrierFrequency(uint32_t earfcn) [member function]
     cls.add_method('GetCarrierFrequency', 
                    'double', 
@@ -8163,10 +9101,10 @@ def register_Ns3LteSpectrumValueHelper_methods(root_module, cls):
                    'ns3::Ptr< ns3::SpectrumModel >', 
                    [param('uint32_t', 'earfcn'), param('uint8_t', 'bandwidth')], 
                    is_static=True)
-    ## lte-spectrum-value-helper.h (module 'lte'): static uint16_t ns3::LteSpectrumValueHelper::GetUplinkCarrierBand(uint32_t nDl) [member function]
+    ## lte-spectrum-value-helper.h (module 'lte'): static uint16_t ns3::LteSpectrumValueHelper::GetUplinkCarrierBand(uint32_t nUl) [member function]
     cls.add_method('GetUplinkCarrierBand', 
                    'uint16_t', 
-                   [param('uint32_t', 'nDl')], 
+                   [param('uint32_t', 'nUl')], 
                    is_static=True)
     ## lte-spectrum-value-helper.h (module 'lte'): static double ns3::LteSpectrumValueHelper::GetUplinkCarrierFrequency(uint32_t earfcn) [member function]
     cls.add_method('GetUplinkCarrierFrequency', 
@@ -8200,6 +9138,11 @@ def register_Ns3LteUeCcmRrcSapProvider_methods(root_module, cls):
                    'std::vector< unsigned short >', 
                    [param('uint8_t', 'lcid')], 
                    is_pure_virtual=True, is_virtual=True)
+    ## lte-ue-ccm-rrc-sap.h (module 'lte'): void ns3::LteUeCcmRrcSapProvider::Reset() [member function]
+    cls.add_method('Reset', 
+                   'void', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3LteUeCcmRrcSapProviderLcsConfig_methods(root_module, cls):
@@ -8210,7 +9153,7 @@ def register_Ns3LteUeCcmRrcSapProviderLcsConfig_methods(root_module, cls):
     ## lte-ue-ccm-rrc-sap.h (module 'lte'): ns3::LteUeCcmRrcSapProvider::LcsConfig::componentCarrierId [variable]
     cls.add_instance_attribute('componentCarrierId', 'uint8_t', is_const=False)
     ## lte-ue-ccm-rrc-sap.h (module 'lte'): ns3::LteUeCcmRrcSapProvider::LcsConfig::lcConfig [variable]
-    cls.add_instance_attribute('lcConfig', 'ns3::LteUeCmacSapProvider::LogicalChannelConfig *', is_const=False)
+    cls.add_instance_attribute('lcConfig', 'ns3::LteUeCmacSapProvider::LogicalChannelConfig', is_const=False)
     ## lte-ue-ccm-rrc-sap.h (module 'lte'): ns3::LteUeCcmRrcSapProvider::LcsConfig::msu [variable]
     cls.add_instance_attribute('msu', 'ns3::LteMacSapUser *', is_const=False)
     return
@@ -8224,6 +9167,11 @@ def register_Ns3LteUeCcmRrcSapUser_methods(root_module, cls):
     cls.add_method('ComponentCarrierEnabling', 
                    'void', 
                    [param('std::vector< unsigned char >', 'componentCarrierList')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-ue-ccm-rrc-sap.h (module 'lte'): void ns3::LteUeCcmRrcSapUser::SetNumberOfComponentCarriers(uint16_t noOfComponentCarriers) [member function]
+    cls.add_method('SetNumberOfComponentCarriers', 
+                   'void', 
+                   [param('uint16_t', 'noOfComponentCarriers')], 
                    is_pure_virtual=True, is_virtual=True)
     return
 
@@ -8371,6 +9319,11 @@ def register_Ns3LteUeCphySapProvider_methods(root_module, cls):
                    'void', 
                    [param('uint16_t', 'rnti')], 
                    is_pure_virtual=True, is_virtual=True)
+    ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapProvider::SetRsrpFilterCoefficient(uint8_t rsrpFilterCoefficient) [member function]
+    cls.add_method('SetRsrpFilterCoefficient', 
+                   'void', 
+                   [param('uint8_t', 'rsrpFilterCoefficient')], 
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapProvider::SetSrsConfigurationIndex(uint16_t srcCi) [member function]
     cls.add_method('SetSrsConfigurationIndex', 
                    'void', 
@@ -8403,6 +9356,11 @@ def register_Ns3LteUeCphySapUser_methods(root_module, cls):
     cls.add_constructor([])
     ## lte-ue-cphy-sap.h (module 'lte'): ns3::LteUeCphySapUser::LteUeCphySapUser(ns3::LteUeCphySapUser const & arg0) [constructor]
     cls.add_constructor([param('ns3::LteUeCphySapUser const &', 'arg0')])
+    ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapUser::NotifyRadioLinkFailure(double lastSinrValue) [member function]
+    cls.add_method('NotifyRadioLinkFailure', 
+                   'void', 
+                   [param('double', 'lastSinrValue')], 
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-ue-cphy-sap.h (module 'lte'): void ns3::LteUeCphySapUser::RecvMasterInformationBlock(uint16_t cellId, ns3::LteRrcSap::MasterInformationBlock mib) [member function]
     cls.add_method('RecvMasterInformationBlock', 
                    'void', 
@@ -8498,6 +9456,11 @@ def register_Ns3LteUeRrcSapProvider_methods(root_module, cls):
                    'void', 
                    [param('ns3::LteUeRrcSapProvider::CompleteSetupParameters', 'params')], 
                    is_pure_virtual=True, is_virtual=True)
+    ## lte-rrc-sap.h (module 'lte'): void ns3::LteUeRrcSapProvider::RecvRrcConnectToMmWave(uint16_t mmWaveCellId) [member function]
+    cls.add_method('RecvRrcConnectToMmWave', 
+                   'void', 
+                   [param('uint16_t', 'mmWaveCellId')], 
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-rrc-sap.h (module 'lte'): void ns3::LteUeRrcSapProvider::RecvRrcConnectionReconfiguration(ns3::LteRrcSap::RrcConnectionReconfiguration msg) [member function]
     cls.add_method('RecvRrcConnectionReconfiguration', 
                    'void', 
@@ -8528,6 +9491,11 @@ def register_Ns3LteUeRrcSapProvider_methods(root_module, cls):
                    'void', 
                    [param('ns3::LteRrcSap::RrcConnectionSetup', 'msg')], 
                    is_pure_virtual=True, is_virtual=True)
+    ## lte-rrc-sap.h (module 'lte'): void ns3::LteUeRrcSapProvider::RecvRrcConnectionSwitch(ns3::LteRrcSap::RrcConnectionSwitch msg) [member function]
+    cls.add_method('RecvRrcConnectionSwitch', 
+                   'void', 
+                   [param('ns3::LteRrcSap::RrcConnectionSwitch', 'msg')], 
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-rrc-sap.h (module 'lte'): void ns3::LteUeRrcSapProvider::RecvSystemInformation(ns3::LteRrcSap::SystemInformation msg) [member function]
     cls.add_method('RecvSystemInformation', 
                    'void', 
@@ -8555,6 +9523,11 @@ def register_Ns3LteUeRrcSapUser_methods(root_module, cls):
     cls.add_method('SendMeasurementReport', 
                    'void', 
                    [param('ns3::LteRrcSap::MeasurementReport', 'msg')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-rrc-sap.h (module 'lte'): void ns3::LteUeRrcSapUser::SendNotifySecondaryCellConnected(uint16_t mmWaveRnti, uint16_t mmWaveCellId) [member function]
+    cls.add_method('SendNotifySecondaryCellConnected', 
+                   'void', 
+                   [param('uint16_t', 'mmWaveRnti'), param('uint16_t', 'mmWaveCellId')], 
                    is_pure_virtual=True, is_virtual=True)
     ## lte-rrc-sap.h (module 'lte'): void ns3::LteUeRrcSapUser::SendRrcConnectionReconfigurationCompleted(ns3::LteRrcSap::RrcConnectionReconfigurationCompleted msg) [member function]
     cls.add_method('SendRrcConnectionReconfigurationCompleted', 
@@ -9337,6 +10310,34 @@ def register_Ns3PhyTransmissionStatParameters_methods(root_module, cls):
     cls.add_instance_attribute('m_txMode', 'uint8_t', is_const=False)
     return
 
+def register_Ns3QueueSize_methods(root_module, cls):
+    cls.add_output_stream_operator()
+    cls.add_binary_comparison_operator('!=')
+    cls.add_binary_comparison_operator('<')
+    cls.add_binary_comparison_operator('<=')
+    cls.add_binary_comparison_operator('==')
+    cls.add_binary_comparison_operator('>')
+    cls.add_binary_comparison_operator('>=')
+    ## queue-size.h (module 'network'): ns3::QueueSize::QueueSize(ns3::QueueSize const & arg0) [constructor]
+    cls.add_constructor([param('ns3::QueueSize const &', 'arg0')])
+    ## queue-size.h (module 'network'): ns3::QueueSize::QueueSize() [constructor]
+    cls.add_constructor([])
+    ## queue-size.h (module 'network'): ns3::QueueSize::QueueSize(ns3::QueueSizeUnit unit, uint32_t value) [constructor]
+    cls.add_constructor([param('ns3::QueueSizeUnit', 'unit'), param('uint32_t', 'value')])
+    ## queue-size.h (module 'network'): ns3::QueueSize::QueueSize(std::string size) [constructor]
+    cls.add_constructor([param('std::string', 'size')])
+    ## queue-size.h (module 'network'): ns3::QueueSizeUnit ns3::QueueSize::GetUnit() const [member function]
+    cls.add_method('GetUnit', 
+                   'ns3::QueueSizeUnit', 
+                   [], 
+                   is_const=True)
+    ## queue-size.h (module 'network'): uint32_t ns3::QueueSize::GetValue() const [member function]
+    cls.add_method('GetValue', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    return
+
 def register_Ns3RachListElement_s_methods(root_module, cls):
     ## ff-mac-common.h (module 'lte'): ns3::RachListElement_s::RachListElement_s() [constructor]
     cls.add_constructor([])
@@ -9534,6 +10535,11 @@ def register_Ns3Simulator_methods(root_module, cls):
     cls.add_method('GetDelayLeft', 
                    'ns3::Time', 
                    [param('ns3::EventId const &', 'id')], 
+                   is_static=True)
+    ## simulator.h (module 'core'): static uint64_t ns3::Simulator::GetEventCount() [member function]
+    cls.add_method('GetEventCount', 
+                   'uint64_t', 
+                   [], 
                    is_static=True)
     ## simulator.h (module 'core'): static ns3::Ptr<ns3::SimulatorImpl> ns3::Simulator::GetImplementation() [member function]
     cls.add_method('GetImplementation', 
@@ -9809,6 +10815,74 @@ def register_Ns3TimeWithUnit_methods(root_module, cls):
     cls.add_constructor([param('ns3::Time const', 'time'), param('ns3::Time::Unit const', 'unit')])
     return
 
+def register_Ns3TracedValue__Bool_methods(root_module, cls):
+    ## traced-value.h (module 'core'): ns3::TracedValue<bool>::TracedValue() [constructor]
+    cls.add_constructor([])
+    ## traced-value.h (module 'core'): ns3::TracedValue<bool>::TracedValue(ns3::TracedValue<bool> const & o) [constructor]
+    cls.add_constructor([param('ns3::TracedValue< bool > const &', 'o')])
+    ## traced-value.h (module 'core'): ns3::TracedValue<bool>::TracedValue(bool const & v) [constructor]
+    cls.add_constructor([param('bool const &', 'v')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<bool>::Connect(ns3::CallbackBase const & cb, std::string path) [member function]
+    cls.add_method('Connect', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb'), param('std::string', 'path')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<bool>::ConnectWithoutContext(ns3::CallbackBase const & cb) [member function]
+    cls.add_method('ConnectWithoutContext', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<bool>::Disconnect(ns3::CallbackBase const & cb, std::string path) [member function]
+    cls.add_method('Disconnect', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb'), param('std::string', 'path')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<bool>::DisconnectWithoutContext(ns3::CallbackBase const & cb) [member function]
+    cls.add_method('DisconnectWithoutContext', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb')])
+    ## traced-value.h (module 'core'): bool ns3::TracedValue<bool>::Get() const [member function]
+    cls.add_method('Get', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## traced-value.h (module 'core'): void ns3::TracedValue<bool>::Set(bool const & v) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('bool const &', 'v')])
+    return
+
+def register_Ns3TracedValue__Unsigned_int_methods(root_module, cls):
+    ## traced-value.h (module 'core'): ns3::TracedValue<unsigned int>::TracedValue() [constructor]
+    cls.add_constructor([])
+    ## traced-value.h (module 'core'): ns3::TracedValue<unsigned int>::TracedValue(ns3::TracedValue<unsigned int> const & o) [constructor]
+    cls.add_constructor([param('ns3::TracedValue< unsigned int > const &', 'o')])
+    ## traced-value.h (module 'core'): ns3::TracedValue<unsigned int>::TracedValue(unsigned int const & v) [constructor]
+    cls.add_constructor([param('unsigned int const &', 'v')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<unsigned int>::Connect(ns3::CallbackBase const & cb, std::string path) [member function]
+    cls.add_method('Connect', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb'), param('std::string', 'path')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<unsigned int>::ConnectWithoutContext(ns3::CallbackBase const & cb) [member function]
+    cls.add_method('ConnectWithoutContext', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<unsigned int>::Disconnect(ns3::CallbackBase const & cb, std::string path) [member function]
+    cls.add_method('Disconnect', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb'), param('std::string', 'path')])
+    ## traced-value.h (module 'core'): void ns3::TracedValue<unsigned int>::DisconnectWithoutContext(ns3::CallbackBase const & cb) [member function]
+    cls.add_method('DisconnectWithoutContext', 
+                   'void', 
+                   [param('ns3::CallbackBase const &', 'cb')])
+    ## traced-value.h (module 'core'): unsigned int ns3::TracedValue<unsigned int>::Get() const [member function]
+    cls.add_method('Get', 
+                   'unsigned int', 
+                   [], 
+                   is_const=True)
+    ## traced-value.h (module 'core'): void ns3::TracedValue<unsigned int>::Set(unsigned int const & v) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('unsigned int const &', 'v')])
+    return
+
 def register_Ns3TransmissionModesLayers_methods(root_module, cls):
     ## lte-common.h (module 'lte'): ns3::TransmissionModesLayers::TransmissionModesLayers() [constructor]
     cls.add_constructor([])
@@ -9843,7 +10917,8 @@ def register_Ns3TypeId_methods(root_module, cls):
     ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::AddTraceSource(std::string name, std::string help, ns3::Ptr<const ns3::TraceSourceAccessor> accessor) [member function]
     cls.add_method('AddTraceSource', 
                    'ns3::TypeId', 
-                   [param('std::string', 'name'), param('std::string', 'help'), param('ns3::Ptr< ns3::TraceSourceAccessor const >', 'accessor')])
+                   [param('std::string', 'name'), param('std::string', 'help'), param('ns3::Ptr< ns3::TraceSourceAccessor const >', 'accessor')], 
+                   deprecated=True)
     ## type-id.h (module 'core'): ns3::TypeId ns3::TypeId::AddTraceSource(std::string name, std::string help, ns3::Ptr<const ns3::TraceSourceAccessor> accessor, std::string callback, ns3::TypeId::SupportLevel supportLevel=::ns3::TypeId::SupportLevel::SUPPORTED, std::string const & supportMsg="") [member function]
     cls.add_method('AddTraceSource', 
                    'ns3::TypeId', 
@@ -10283,6 +11358,7 @@ def register_Ns3FdtbfqsFlowPerf_t_methods(root_module, cls):
     return
 
 def register_Ns3Int64x64_t_methods(root_module, cls):
+    cls.add_binary_numeric_operator('*', root_module['ns3::Time'], root_module['ns3::int64x64_t'], param('ns3::Time const &', u'right'))
     cls.add_binary_numeric_operator('+', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('ns3::int64x64_t const &', u'right'))
     cls.add_binary_numeric_operator('-', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('ns3::int64x64_t const &', u'right'))
     cls.add_binary_numeric_operator('*', root_module['ns3::int64x64_t'], root_module['ns3::int64x64_t'], param('ns3::int64x64_t const &', u'right'))
@@ -10487,6 +11563,102 @@ def register_Ns3DownlinkLteGlobalPathlossDatabase_methods(root_module, cls):
                    'void', 
                    [param('std::string', 'context'), param('ns3::Ptr< ns3::SpectrumPhy const >', 'txPhy'), param('ns3::Ptr< ns3::SpectrumPhy const >', 'rxPhy'), param('double', 'lossDb')], 
                    is_virtual=True)
+    return
+
+def register_Ns3EpcX2PdcpProvider_methods(root_module, cls):
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2PdcpProvider::EpcX2PdcpProvider() [constructor]
+    cls.add_constructor([])
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2PdcpProvider::EpcX2PdcpProvider(ns3::EpcX2PdcpProvider const & arg0) [constructor]
+    cls.add_constructor([param('ns3::EpcX2PdcpProvider const &', 'arg0')])
+    ## epc-x2-sap.h (module 'lte'): void ns3::EpcX2PdcpProvider::SendMcPdcpPdu(ns3::EpcX2Sap::UeDataParams params) [member function]
+    cls.add_method('SendMcPdcpPdu', 
+                   'void', 
+                   [param('ns3::EpcX2Sap::UeDataParams', 'params')], 
+                   is_pure_virtual=True, is_virtual=True)
+    return
+
+def register_Ns3EpcX2PdcpUser_methods(root_module, cls):
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2PdcpUser::EpcX2PdcpUser() [constructor]
+    cls.add_constructor([])
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2PdcpUser::EpcX2PdcpUser(ns3::EpcX2PdcpUser const & arg0) [constructor]
+    cls.add_constructor([param('ns3::EpcX2PdcpUser const &', 'arg0')])
+    ## epc-x2-sap.h (module 'lte'): void ns3::EpcX2PdcpUser::ReceiveMcPdcpPdu(ns3::EpcX2Sap::UeDataParams params) [member function]
+    cls.add_method('ReceiveMcPdcpPdu', 
+                   'void', 
+                   [param('ns3::EpcX2Sap::UeDataParams', 'params')], 
+                   is_pure_virtual=True, is_virtual=True)
+    return
+
+def register_Ns3EpcX2RlcProvider_methods(root_module, cls):
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2RlcProvider::EpcX2RlcProvider() [constructor]
+    cls.add_constructor([])
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2RlcProvider::EpcX2RlcProvider(ns3::EpcX2RlcProvider const & arg0) [constructor]
+    cls.add_constructor([param('ns3::EpcX2RlcProvider const &', 'arg0')])
+    ## epc-x2-sap.h (module 'lte'): void ns3::EpcX2RlcProvider::ReceiveMcPdcpSdu(ns3::EpcX2Sap::UeDataParams params) [member function]
+    cls.add_method('ReceiveMcPdcpSdu', 
+                   'void', 
+                   [param('ns3::EpcX2Sap::UeDataParams', 'params')], 
+                   is_pure_virtual=True, is_virtual=True)
+    return
+
+def register_Ns3EpcX2RlcUser_methods(root_module, cls):
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2RlcUser::EpcX2RlcUser() [constructor]
+    cls.add_constructor([])
+    ## epc-x2-sap.h (module 'lte'): ns3::EpcX2RlcUser::EpcX2RlcUser(ns3::EpcX2RlcUser const & arg0) [constructor]
+    cls.add_constructor([param('ns3::EpcX2RlcUser const &', 'arg0')])
+    ## epc-x2-sap.h (module 'lte'): void ns3::EpcX2RlcUser::SendMcPdcpSdu(ns3::EpcX2Sap::UeDataParams params) [member function]
+    cls.add_method('SendMcPdcpSdu', 
+                   'void', 
+                   [param('ns3::EpcX2Sap::UeDataParams', 'params')], 
+                   is_pure_virtual=True, is_virtual=True)
+    return
+
+def register_Ns3EpcX2Tag_methods(root_module, cls):
+    ## epc-x2-tag.h (module 'lte'): ns3::EpcX2Tag::EpcX2Tag(ns3::EpcX2Tag const & arg0) [constructor]
+    cls.add_constructor([param('ns3::EpcX2Tag const &', 'arg0')])
+    ## epc-x2-tag.h (module 'lte'): ns3::EpcX2Tag::EpcX2Tag() [constructor]
+    cls.add_constructor([])
+    ## epc-x2-tag.h (module 'lte'): ns3::EpcX2Tag::EpcX2Tag(ns3::Time senderTimestamp) [constructor]
+    cls.add_constructor([param('ns3::Time', 'senderTimestamp')])
+    ## epc-x2-tag.h (module 'lte'): void ns3::EpcX2Tag::Deserialize(ns3::TagBuffer i) [member function]
+    cls.add_method('Deserialize', 
+                   'void', 
+                   [param('ns3::TagBuffer', 'i')], 
+                   is_virtual=True)
+    ## epc-x2-tag.h (module 'lte'): ns3::TypeId ns3::EpcX2Tag::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-x2-tag.h (module 'lte'): ns3::Time ns3::EpcX2Tag::GetSenderTimestamp() const [member function]
+    cls.add_method('GetSenderTimestamp', 
+                   'ns3::Time', 
+                   [], 
+                   is_const=True)
+    ## epc-x2-tag.h (module 'lte'): uint32_t ns3::EpcX2Tag::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-x2-tag.h (module 'lte'): static ns3::TypeId ns3::EpcX2Tag::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## epc-x2-tag.h (module 'lte'): void ns3::EpcX2Tag::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## epc-x2-tag.h (module 'lte'): void ns3::EpcX2Tag::Serialize(ns3::TagBuffer i) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::TagBuffer', 'i')], 
+                   is_const=True, is_virtual=True)
+    ## epc-x2-tag.h (module 'lte'): void ns3::EpcX2Tag::SetSenderTimestamp(ns3::Time senderTimestamp) [member function]
+    cls.add_method('SetSenderTimestamp', 
+                   'void', 
+                   [param('ns3::Time', 'senderTimestamp')])
     return
 
 def register_Ns3EpsBearerTag_methods(root_module, cls):
@@ -10808,6 +11980,11 @@ def register_Ns3LteEnbRrcSapProvider_methods(root_module, cls):
                    'void', 
                    [param('uint16_t', 'rnti'), param('ns3::LteRrcSap::RrcConnectionSetupCompleted', 'msg')], 
                    is_pure_virtual=True, is_virtual=True)
+    ## lte-rrc-sap.h (module 'lte'): void ns3::LteEnbRrcSapProvider::RecvRrcSecondaryCellInitialAccessSuccessful(uint16_t rnti, uint16_t mmWaveRnti, uint16_t mmWaveCellId) [member function]
+    cls.add_method('RecvRrcSecondaryCellInitialAccessSuccessful', 
+                   'void', 
+                   [param('uint16_t', 'rnti'), param('uint16_t', 'mmWaveRnti'), param('uint16_t', 'mmWaveCellId')], 
+                   is_pure_virtual=True, is_virtual=True)
     return
 
 def register_Ns3LteEnbRrcSapProviderCompleteSetupUeParameters_methods(root_module, cls):
@@ -10851,6 +12028,11 @@ def register_Ns3LteEnbRrcSapUser_methods(root_module, cls):
                    'void', 
                    [param('uint16_t', 'rnti')], 
                    is_pure_virtual=True, is_virtual=True)
+    ## lte-rrc-sap.h (module 'lte'): void ns3::LteEnbRrcSapUser::SendRrcConnectToMmWave(uint16_t rnti, uint16_t mmWaveCellId) [member function]
+    cls.add_method('SendRrcConnectToMmWave', 
+                   'void', 
+                   [param('uint16_t', 'rnti'), param('uint16_t', 'mmWaveCellId')], 
+                   is_pure_virtual=True, is_virtual=True)
     ## lte-rrc-sap.h (module 'lte'): void ns3::LteEnbRrcSapUser::SendRrcConnectionReconfiguration(uint16_t rnti, ns3::LteRrcSap::RrcConnectionReconfiguration msg) [member function]
     cls.add_method('SendRrcConnectionReconfiguration', 
                    'void', 
@@ -10880,6 +12062,11 @@ def register_Ns3LteEnbRrcSapUser_methods(root_module, cls):
     cls.add_method('SendRrcConnectionSetup', 
                    'void', 
                    [param('uint16_t', 'rnti'), param('ns3::LteRrcSap::RrcConnectionSetup', 'msg')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## lte-rrc-sap.h (module 'lte'): void ns3::LteEnbRrcSapUser::SendRrcConnectionSwitch(uint16_t rnti, ns3::LteRrcSap::RrcConnectionSwitch msg) [member function]
+    cls.add_method('SendRrcConnectionSwitch', 
+                   'void', 
+                   [param('uint16_t', 'rnti'), param('ns3::LteRrcSap::RrcConnectionSwitch', 'msg')], 
                    is_pure_virtual=True, is_virtual=True)
     ## lte-rrc-sap.h (module 'lte'): void ns3::LteEnbRrcSapUser::SendSystemInformation(uint16_t cellId, ns3::LteRrcSap::SystemInformation msg) [member function]
     cls.add_method('SendSystemInformation', 
@@ -11465,6 +12652,35 @@ def register_Ns3PacketBurst_methods(root_module, cls):
                    visibility='private', is_virtual=True)
     return
 
+def register_Ns3PacketFilter_methods(root_module, cls):
+    ## packet-filter.h (module 'traffic-control'): ns3::PacketFilter::PacketFilter(ns3::PacketFilter const & arg0) [constructor]
+    cls.add_constructor([param('ns3::PacketFilter const &', 'arg0')])
+    ## packet-filter.h (module 'traffic-control'): ns3::PacketFilter::PacketFilter() [constructor]
+    cls.add_constructor([])
+    ## packet-filter.h (module 'traffic-control'): int32_t ns3::PacketFilter::Classify(ns3::Ptr<ns3::QueueDiscItem> item) const [member function]
+    cls.add_method('Classify', 
+                   'int32_t', 
+                   [param('ns3::Ptr< ns3::QueueDiscItem >', 'item')], 
+                   is_const=True)
+    ## packet-filter.h (module 'traffic-control'): static ns3::TypeId ns3::PacketFilter::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## packet-filter.h (module 'traffic-control'): ns3::PacketFilter::PF_NO_MATCH [variable]
+    cls.add_static_attribute('PF_NO_MATCH', 'int const', is_const=True)
+    ## packet-filter.h (module 'traffic-control'): bool ns3::PacketFilter::CheckProtocol(ns3::Ptr<ns3::QueueDiscItem> item) const [member function]
+    cls.add_method('CheckProtocol', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::QueueDiscItem >', 'item')], 
+                   is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
+    ## packet-filter.h (module 'traffic-control'): int32_t ns3::PacketFilter::DoClassify(ns3::Ptr<ns3::QueueDiscItem> item) const [member function]
+    cls.add_method('DoClassify', 
+                   'int32_t', 
+                   [param('ns3::Ptr< ns3::QueueDiscItem >', 'item')], 
+                   is_pure_virtual=True, is_const=True, visibility='private', is_virtual=True)
+    return
+
 def register_Ns3PdcpTag_methods(root_module, cls):
     ## lte-pdcp-tag.h (module 'lte'): ns3::PdcpTag::PdcpTag(ns3::PdcpTag const & arg0) [constructor]
     cls.add_constructor([param('ns3::PdcpTag const &', 'arg0')])
@@ -11574,6 +12790,301 @@ def register_Ns3PropagationLossModel_methods(root_module, cls):
                    'int64_t', 
                    [param('int64_t', 'stream')], 
                    is_pure_virtual=True, visibility='private', is_virtual=True)
+    return
+
+def register_Ns3QueueDisc_methods(root_module, cls):
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::QueueDisc(ns3::QueueDiscSizePolicy policy=::ns3::QueueDiscSizePolicy::SINGLE_INTERNAL_QUEUE) [constructor]
+    cls.add_constructor([param('ns3::QueueDiscSizePolicy', 'policy', default_value='::ns3::QueueDiscSizePolicy::SINGLE_INTERNAL_QUEUE')])
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::QueueDisc(ns3::QueueDiscSizePolicy policy, ns3::QueueSizeUnit unit) [constructor]
+    cls.add_constructor([param('ns3::QueueDiscSizePolicy', 'policy'), param('ns3::QueueSizeUnit', 'unit')])
+    ## queue-disc.h (module 'traffic-control'): void ns3::QueueDisc::AddInternalQueue(ns3::Ptr<ns3::Queue<ns3::QueueDiscItem> > queue) [member function]
+    cls.add_method('AddInternalQueue', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Queue< ns3::QueueDiscItem > >', 'queue')])
+    ## queue-disc.h (module 'traffic-control'): void ns3::QueueDisc::AddPacketFilter(ns3::Ptr<ns3::PacketFilter> filter) [member function]
+    cls.add_method('AddPacketFilter', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::PacketFilter >', 'filter')])
+    ## queue-disc.h (module 'traffic-control'): void ns3::QueueDisc::AddQueueDiscClass(ns3::Ptr<ns3::QueueDiscClass> qdClass) [member function]
+    cls.add_method('AddQueueDiscClass', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::QueueDiscClass >', 'qdClass')])
+    ## queue-disc.h (module 'traffic-control'): int32_t ns3::QueueDisc::Classify(ns3::Ptr<ns3::QueueDiscItem> item) [member function]
+    cls.add_method('Classify', 
+                   'int32_t', 
+                   [param('ns3::Ptr< ns3::QueueDiscItem >', 'item')])
+    ## queue-disc.h (module 'traffic-control'): ns3::Ptr<ns3::QueueDiscItem> ns3::QueueDisc::Dequeue() [member function]
+    cls.add_method('Dequeue', 
+                   'ns3::Ptr< ns3::QueueDiscItem >', 
+                   [])
+    ## queue-disc.h (module 'traffic-control'): bool ns3::QueueDisc::Enqueue(ns3::Ptr<ns3::QueueDiscItem> item) [member function]
+    cls.add_method('Enqueue', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::QueueDiscItem >', 'item')])
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueSize ns3::QueueDisc::GetCurrentSize() [member function]
+    cls.add_method('GetCurrentSize', 
+                   'ns3::QueueSize', 
+                   [])
+    ## queue-disc.h (module 'traffic-control'): ns3::Ptr<ns3::Queue<ns3::QueueDiscItem> > ns3::QueueDisc::GetInternalQueue(std::size_t i) const [member function]
+    cls.add_method('GetInternalQueue', 
+                   'ns3::Ptr< ns3::Queue< ns3::QueueDiscItem > >', 
+                   [param('std::size_t', 'i')], 
+                   is_const=True)
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueSize ns3::QueueDisc::GetMaxSize() const [member function]
+    cls.add_method('GetMaxSize', 
+                   'ns3::QueueSize', 
+                   [], 
+                   is_const=True)
+    ## queue-disc.h (module 'traffic-control'): uint32_t ns3::QueueDisc::GetNBytes() const [member function]
+    cls.add_method('GetNBytes', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## queue-disc.h (module 'traffic-control'): std::size_t ns3::QueueDisc::GetNInternalQueues() const [member function]
+    cls.add_method('GetNInternalQueues', 
+                   'std::size_t', 
+                   [], 
+                   is_const=True)
+    ## queue-disc.h (module 'traffic-control'): std::size_t ns3::QueueDisc::GetNPacketFilters() const [member function]
+    cls.add_method('GetNPacketFilters', 
+                   'std::size_t', 
+                   [], 
+                   is_const=True)
+    ## queue-disc.h (module 'traffic-control'): uint32_t ns3::QueueDisc::GetNPackets() const [member function]
+    cls.add_method('GetNPackets', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## queue-disc.h (module 'traffic-control'): std::size_t ns3::QueueDisc::GetNQueueDiscClasses() const [member function]
+    cls.add_method('GetNQueueDiscClasses', 
+                   'std::size_t', 
+                   [], 
+                   is_const=True)
+    ## queue-disc.h (module 'traffic-control'): ns3::Ptr<ns3::NetDeviceQueueInterface> ns3::QueueDisc::GetNetDeviceQueueInterface() const [member function]
+    cls.add_method('GetNetDeviceQueueInterface', 
+                   'ns3::Ptr< ns3::NetDeviceQueueInterface >', 
+                   [], 
+                   is_const=True)
+    ## queue-disc.h (module 'traffic-control'): ns3::Ptr<ns3::PacketFilter> ns3::QueueDisc::GetPacketFilter(std::size_t i) const [member function]
+    cls.add_method('GetPacketFilter', 
+                   'ns3::Ptr< ns3::PacketFilter >', 
+                   [param('std::size_t', 'i')], 
+                   is_const=True)
+    ## queue-disc.h (module 'traffic-control'): ns3::Ptr<ns3::QueueDiscClass> ns3::QueueDisc::GetQueueDiscClass(std::size_t i) const [member function]
+    cls.add_method('GetQueueDiscClass', 
+                   'ns3::Ptr< ns3::QueueDiscClass >', 
+                   [param('std::size_t', 'i')], 
+                   is_const=True)
+    ## queue-disc.h (module 'traffic-control'): uint32_t ns3::QueueDisc::GetQuota() const [member function]
+    cls.add_method('GetQuota', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::SendCallback ns3::QueueDisc::GetSendCallback() const [member function]
+    cls.add_method('GetSendCallback', 
+                   'ns3::QueueDisc::SendCallback', 
+                   [], 
+                   is_const=True)
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::Stats const & ns3::QueueDisc::GetStats() [member function]
+    cls.add_method('GetStats', 
+                   'ns3::QueueDisc::Stats const &', 
+                   [])
+    ## queue-disc.h (module 'traffic-control'): static ns3::TypeId ns3::QueueDisc::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::WakeMode ns3::QueueDisc::GetWakeMode() const [member function]
+    cls.add_method('GetWakeMode', 
+                   'ns3::QueueDisc::WakeMode', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## queue-disc.h (module 'traffic-control'): ns3::Ptr<const ns3::QueueDiscItem> ns3::QueueDisc::Peek() [member function]
+    cls.add_method('Peek', 
+                   'ns3::Ptr< ns3::QueueDiscItem const >', 
+                   [])
+    ## queue-disc.h (module 'traffic-control'): void ns3::QueueDisc::Run() [member function]
+    cls.add_method('Run', 
+                   'void', 
+                   [])
+    ## queue-disc.h (module 'traffic-control'): bool ns3::QueueDisc::SetMaxSize(ns3::QueueSize size) [member function]
+    cls.add_method('SetMaxSize', 
+                   'bool', 
+                   [param('ns3::QueueSize', 'size')])
+    ## queue-disc.h (module 'traffic-control'): void ns3::QueueDisc::SetNetDeviceQueueInterface(ns3::Ptr<ns3::NetDeviceQueueInterface> ndqi) [member function]
+    cls.add_method('SetNetDeviceQueueInterface', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::NetDeviceQueueInterface >', 'ndqi')])
+    ## queue-disc.h (module 'traffic-control'): void ns3::QueueDisc::SetQuota(uint32_t const quota) [member function]
+    cls.add_method('SetQuota', 
+                   'void', 
+                   [param('uint32_t const', 'quota')], 
+                   is_virtual=True)
+    ## queue-disc.h (module 'traffic-control'): void ns3::QueueDisc::SetSendCallback(ns3::QueueDisc::SendCallback func) [member function]
+    cls.add_method('SetSendCallback', 
+                   'void', 
+                   [param('std::function< void ( ns3::Ptr< ns3::QueueDiscItem > ) >', 'func')])
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::CHILD_QUEUE_DISC_DROP [variable]
+    cls.add_static_attribute('CHILD_QUEUE_DISC_DROP', 'char const * const', is_const=True)
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::INTERNAL_QUEUE_DROP [variable]
+    cls.add_static_attribute('INTERNAL_QUEUE_DROP', 'char const * const', is_const=True)
+    ## queue-disc.h (module 'traffic-control'): void ns3::QueueDisc::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## queue-disc.h (module 'traffic-control'): void ns3::QueueDisc::DoInitialize() [member function]
+    cls.add_method('DoInitialize', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    ## queue-disc.h (module 'traffic-control'): void ns3::QueueDisc::DropAfterDequeue(ns3::Ptr<const ns3::QueueDiscItem> item, char const * reason) [member function]
+    cls.add_method('DropAfterDequeue', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::QueueDiscItem const >', 'item'), param('char const *', 'reason')], 
+                   visibility='protected')
+    ## queue-disc.h (module 'traffic-control'): void ns3::QueueDisc::DropBeforeEnqueue(ns3::Ptr<const ns3::QueueDiscItem> item, char const * reason) [member function]
+    cls.add_method('DropBeforeEnqueue', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::QueueDiscItem const >', 'item'), param('char const *', 'reason')], 
+                   visibility='protected')
+    ## queue-disc.h (module 'traffic-control'): bool ns3::QueueDisc::Mark(ns3::Ptr<ns3::QueueDiscItem> item, char const * reason) [member function]
+    cls.add_method('Mark', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::QueueDiscItem >', 'item'), param('char const *', 'reason')], 
+                   visibility='protected')
+    ## queue-disc.h (module 'traffic-control'): bool ns3::QueueDisc::CheckConfig() [member function]
+    cls.add_method('CheckConfig', 
+                   'bool', 
+                   [], 
+                   is_pure_virtual=True, visibility='private', is_virtual=True)
+    ## queue-disc.h (module 'traffic-control'): ns3::Ptr<ns3::QueueDiscItem> ns3::QueueDisc::DoDequeue() [member function]
+    cls.add_method('DoDequeue', 
+                   'ns3::Ptr< ns3::QueueDiscItem >', 
+                   [], 
+                   is_pure_virtual=True, visibility='private', is_virtual=True)
+    ## queue-disc.h (module 'traffic-control'): bool ns3::QueueDisc::DoEnqueue(ns3::Ptr<ns3::QueueDiscItem> item) [member function]
+    cls.add_method('DoEnqueue', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::QueueDiscItem >', 'item')], 
+                   is_pure_virtual=True, visibility='private', is_virtual=True)
+    ## queue-disc.h (module 'traffic-control'): ns3::Ptr<const ns3::QueueDiscItem> ns3::QueueDisc::DoPeek() [member function]
+    cls.add_method('DoPeek', 
+                   'ns3::Ptr< ns3::QueueDiscItem const >', 
+                   [], 
+                   visibility='private', is_virtual=True)
+    ## queue-disc.h (module 'traffic-control'): void ns3::QueueDisc::InitializeParams() [member function]
+    cls.add_method('InitializeParams', 
+                   'void', 
+                   [], 
+                   is_pure_virtual=True, visibility='private', is_virtual=True)
+    return
+
+def register_Ns3QueueDiscStats_methods(root_module, cls):
+    cls.add_output_stream_operator()
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::Stats::Stats(ns3::QueueDisc::Stats const & arg0) [constructor]
+    cls.add_constructor([param('ns3::QueueDisc::Stats const &', 'arg0')])
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::Stats::Stats() [constructor]
+    cls.add_constructor([])
+    ## queue-disc.h (module 'traffic-control'): uint64_t ns3::QueueDisc::Stats::GetNDroppedBytes(std::string reason) const [member function]
+    cls.add_method('GetNDroppedBytes', 
+                   'uint64_t', 
+                   [param('std::string', 'reason')], 
+                   is_const=True)
+    ## queue-disc.h (module 'traffic-control'): uint32_t ns3::QueueDisc::Stats::GetNDroppedPackets(std::string reason) const [member function]
+    cls.add_method('GetNDroppedPackets', 
+                   'uint32_t', 
+                   [param('std::string', 'reason')], 
+                   is_const=True)
+    ## queue-disc.h (module 'traffic-control'): uint64_t ns3::QueueDisc::Stats::GetNMarkedBytes(std::string reason) const [member function]
+    cls.add_method('GetNMarkedBytes', 
+                   'uint64_t', 
+                   [param('std::string', 'reason')], 
+                   is_const=True)
+    ## queue-disc.h (module 'traffic-control'): uint32_t ns3::QueueDisc::Stats::GetNMarkedPackets(std::string reason) const [member function]
+    cls.add_method('GetNMarkedPackets', 
+                   'uint32_t', 
+                   [param('std::string', 'reason')], 
+                   is_const=True)
+    ## queue-disc.h (module 'traffic-control'): void ns3::QueueDisc::Stats::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True)
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::Stats::nDroppedBytesAfterDequeue [variable]
+    cls.add_instance_attribute('nDroppedBytesAfterDequeue', 'std::map< std::string, unsigned long >', is_const=False)
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::Stats::nDroppedBytesBeforeEnqueue [variable]
+    cls.add_instance_attribute('nDroppedBytesBeforeEnqueue', 'std::map< std::string, unsigned long >', is_const=False)
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::Stats::nDroppedPacketsAfterDequeue [variable]
+    cls.add_instance_attribute('nDroppedPacketsAfterDequeue', 'std::map< std::string, unsigned int >', is_const=False)
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::Stats::nDroppedPacketsBeforeEnqueue [variable]
+    cls.add_instance_attribute('nDroppedPacketsBeforeEnqueue', 'std::map< std::string, unsigned int >', is_const=False)
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::Stats::nMarkedBytes [variable]
+    cls.add_instance_attribute('nMarkedBytes', 'std::map< std::string, unsigned long >', is_const=False)
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::Stats::nMarkedPackets [variable]
+    cls.add_instance_attribute('nMarkedPackets', 'std::map< std::string, unsigned int >', is_const=False)
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::Stats::nTotalDequeuedBytes [variable]
+    cls.add_instance_attribute('nTotalDequeuedBytes', 'uint64_t', is_const=False)
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::Stats::nTotalDequeuedPackets [variable]
+    cls.add_instance_attribute('nTotalDequeuedPackets', 'uint32_t', is_const=False)
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::Stats::nTotalDroppedBytes [variable]
+    cls.add_instance_attribute('nTotalDroppedBytes', 'uint64_t', is_const=False)
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::Stats::nTotalDroppedBytesAfterDequeue [variable]
+    cls.add_instance_attribute('nTotalDroppedBytesAfterDequeue', 'uint64_t', is_const=False)
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::Stats::nTotalDroppedBytesBeforeEnqueue [variable]
+    cls.add_instance_attribute('nTotalDroppedBytesBeforeEnqueue', 'uint64_t', is_const=False)
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::Stats::nTotalDroppedPackets [variable]
+    cls.add_instance_attribute('nTotalDroppedPackets', 'uint32_t', is_const=False)
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::Stats::nTotalDroppedPacketsAfterDequeue [variable]
+    cls.add_instance_attribute('nTotalDroppedPacketsAfterDequeue', 'uint32_t', is_const=False)
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::Stats::nTotalDroppedPacketsBeforeEnqueue [variable]
+    cls.add_instance_attribute('nTotalDroppedPacketsBeforeEnqueue', 'uint32_t', is_const=False)
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::Stats::nTotalEnqueuedBytes [variable]
+    cls.add_instance_attribute('nTotalEnqueuedBytes', 'uint64_t', is_const=False)
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::Stats::nTotalEnqueuedPackets [variable]
+    cls.add_instance_attribute('nTotalEnqueuedPackets', 'uint32_t', is_const=False)
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::Stats::nTotalMarkedBytes [variable]
+    cls.add_instance_attribute('nTotalMarkedBytes', 'uint32_t', is_const=False)
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::Stats::nTotalMarkedPackets [variable]
+    cls.add_instance_attribute('nTotalMarkedPackets', 'uint32_t', is_const=False)
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::Stats::nTotalReceivedBytes [variable]
+    cls.add_instance_attribute('nTotalReceivedBytes', 'uint64_t', is_const=False)
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::Stats::nTotalReceivedPackets [variable]
+    cls.add_instance_attribute('nTotalReceivedPackets', 'uint32_t', is_const=False)
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::Stats::nTotalRequeuedBytes [variable]
+    cls.add_instance_attribute('nTotalRequeuedBytes', 'uint64_t', is_const=False)
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::Stats::nTotalRequeuedPackets [variable]
+    cls.add_instance_attribute('nTotalRequeuedPackets', 'uint32_t', is_const=False)
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::Stats::nTotalSentBytes [variable]
+    cls.add_instance_attribute('nTotalSentBytes', 'uint64_t', is_const=False)
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDisc::Stats::nTotalSentPackets [variable]
+    cls.add_instance_attribute('nTotalSentPackets', 'uint32_t', is_const=False)
+    return
+
+def register_Ns3QueueDiscClass_methods(root_module, cls):
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDiscClass::QueueDiscClass(ns3::QueueDiscClass const & arg0) [constructor]
+    cls.add_constructor([param('ns3::QueueDiscClass const &', 'arg0')])
+    ## queue-disc.h (module 'traffic-control'): ns3::QueueDiscClass::QueueDiscClass() [constructor]
+    cls.add_constructor([])
+    ## queue-disc.h (module 'traffic-control'): ns3::Ptr<ns3::QueueDisc> ns3::QueueDiscClass::GetQueueDisc() const [member function]
+    cls.add_method('GetQueueDisc', 
+                   'ns3::Ptr< ns3::QueueDisc >', 
+                   [], 
+                   is_const=True)
+    ## queue-disc.h (module 'traffic-control'): static ns3::TypeId ns3::QueueDiscClass::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## queue-disc.h (module 'traffic-control'): void ns3::QueueDiscClass::SetQueueDisc(ns3::Ptr<ns3::QueueDisc> qd) [member function]
+    cls.add_method('SetQueueDisc', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::QueueDisc >', 'qd')])
+    ## queue-disc.h (module 'traffic-control'): void ns3::QueueDiscClass::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
     return
 
 def register_Ns3RadioEnvironmentMapHelper_methods(root_module, cls):
@@ -11707,6 +13218,71 @@ def register_Ns3RangePropagationLossModel_methods(root_module, cls):
                    'int64_t', 
                    [param('int64_t', 'stream')], 
                    visibility='private', is_virtual=True)
+    return
+
+def register_Ns3RetxStatsCalculator_methods(root_module, cls):
+    ## retx-stats-calculator.h (module 'lte'): ns3::RetxStatsCalculator::RetxStatsCalculator() [constructor]
+    cls.add_constructor([])
+    ## retx-stats-calculator.h (module 'lte'): static ns3::TypeId ns3::RetxStatsCalculator::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## retx-stats-calculator.h (module 'lte'): void ns3::RetxStatsCalculator::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## retx-stats-calculator.h (module 'lte'): void ns3::RetxStatsCalculator::RegisterRetxDl(uint64_t imsi, uint16_t cellId, uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint32_t numRetx) [member function]
+    cls.add_method('RegisterRetxDl', 
+                   'void', 
+                   [param('uint64_t', 'imsi'), param('uint16_t', 'cellId'), param('uint16_t', 'rnti'), param('uint8_t', 'lcid'), param('uint32_t', 'packetSize'), param('uint32_t', 'numRetx')])
+    ## retx-stats-calculator.h (module 'lte'): void ns3::RetxStatsCalculator::RegisterRetxUl(uint64_t imsi, uint16_t cellId, uint16_t rnti, uint8_t lcid, uint32_t packetSize, uint32_t numRetx) [member function]
+    cls.add_method('RegisterRetxUl', 
+                   'void', 
+                   [param('uint64_t', 'imsi'), param('uint16_t', 'cellId'), param('uint16_t', 'rnti'), param('uint8_t', 'lcid'), param('uint32_t', 'packetSize'), param('uint32_t', 'numRetx')])
+    ## retx-stats-calculator.h (module 'lte'): ns3::RetxStatsCalculator::m_retxDlFile [variable]
+    cls.add_instance_attribute('m_retxDlFile', 'std::ofstream', is_const=False)
+    ## retx-stats-calculator.h (module 'lte'): ns3::RetxStatsCalculator::m_retxDlFilename [variable]
+    cls.add_instance_attribute('m_retxDlFilename', 'std::string', is_const=False)
+    ## retx-stats-calculator.h (module 'lte'): ns3::RetxStatsCalculator::m_retxUlFile [variable]
+    cls.add_instance_attribute('m_retxUlFile', 'std::ofstream', is_const=False)
+    ## retx-stats-calculator.h (module 'lte'): ns3::RetxStatsCalculator::m_retxUlFilename [variable]
+    cls.add_instance_attribute('m_retxUlFilename', 'std::string', is_const=False)
+    return
+
+def register_Ns3RlcBearerInfo_methods(root_module, cls):
+    ## lte-radio-bearer-info.h (module 'lte'): ns3::RlcBearerInfo::RlcBearerInfo(ns3::RlcBearerInfo const & arg0) [constructor]
+    cls.add_constructor([param('ns3::RlcBearerInfo const &', 'arg0')])
+    ## lte-radio-bearer-info.h (module 'lte'): ns3::RlcBearerInfo::RlcBearerInfo() [constructor]
+    cls.add_constructor([])
+    ## lte-radio-bearer-info.h (module 'lte'): static ns3::TypeId ns3::RlcBearerInfo::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## lte-radio-bearer-info.h (module 'lte'): ns3::RlcBearerInfo::drbid [variable]
+    cls.add_instance_attribute('drbid', 'uint8_t', is_const=False)
+    ## lte-radio-bearer-info.h (module 'lte'): ns3::RlcBearerInfo::gtpTeid [variable]
+    cls.add_instance_attribute('gtpTeid', 'uint32_t', is_const=False)
+    ## lte-radio-bearer-info.h (module 'lte'): ns3::RlcBearerInfo::lcinfo [variable]
+    cls.add_instance_attribute('lcinfo', 'ns3::LteEnbCmacSapProvider::LcInfo', is_const=False)
+    ## lte-radio-bearer-info.h (module 'lte'): ns3::RlcBearerInfo::logicalChannelConfig [variable]
+    cls.add_instance_attribute('logicalChannelConfig', 'ns3::LteRrcSap::LogicalChannelConfig', is_const=False)
+    ## lte-radio-bearer-info.h (module 'lte'): ns3::RlcBearerInfo::logicalChannelIdentity [variable]
+    cls.add_instance_attribute('logicalChannelIdentity', 'uint8_t', is_const=False)
+    ## lte-radio-bearer-info.h (module 'lte'): ns3::RlcBearerInfo::lteRnti [variable]
+    cls.add_instance_attribute('lteRnti', 'uint16_t', is_const=False)
+    ## lte-radio-bearer-info.h (module 'lte'): ns3::RlcBearerInfo::m_rlc [variable]
+    cls.add_instance_attribute('m_rlc', 'ns3::Ptr< ns3::LteRlc >', is_const=False)
+    ## lte-radio-bearer-info.h (module 'lte'): ns3::RlcBearerInfo::mmWaveRnti [variable]
+    cls.add_instance_attribute('mmWaveRnti', 'uint16_t', is_const=False)
+    ## lte-radio-bearer-info.h (module 'lte'): ns3::RlcBearerInfo::rlcConfig [variable]
+    cls.add_instance_attribute('rlcConfig', 'ns3::LteRrcSap::RlcConfig', is_const=False)
+    ## lte-radio-bearer-info.h (module 'lte'): ns3::RlcBearerInfo::sourceCellId [variable]
+    cls.add_instance_attribute('sourceCellId', 'uint16_t', is_const=False)
+    ## lte-radio-bearer-info.h (module 'lte'): ns3::RlcBearerInfo::targetCellId [variable]
+    cls.add_instance_attribute('targetCellId', 'uint16_t', is_const=False)
     return
 
 def register_Ns3RlcTag_methods(root_module, cls):
@@ -11900,6 +13476,27 @@ def register_Ns3SimpleRefCount__Ns3Packet_Ns3Empty_Ns3DefaultDeleter__lt__ns3Pac
     cls.add_constructor([])
     ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> >::SimpleRefCount(ns3::SimpleRefCount<ns3::Packet, ns3::empty, ns3::DefaultDeleter<ns3::Packet> > const & o) [constructor]
     cls.add_constructor([param('ns3::SimpleRefCount< ns3::Packet, ns3::empty, ns3::DefaultDeleter< ns3::Packet > > const &', 'o')])
+    return
+
+def register_Ns3SimpleRefCount__Ns3QueueItem_Ns3Empty_Ns3DefaultDeleter__lt__ns3QueueItem__gt___methods(root_module, cls):
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::QueueItem, ns3::empty, ns3::DefaultDeleter<ns3::QueueItem> >::SimpleRefCount() [constructor]
+    cls.add_constructor([])
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::QueueItem, ns3::empty, ns3::DefaultDeleter<ns3::QueueItem> >::SimpleRefCount(ns3::SimpleRefCount<ns3::QueueItem, ns3::empty, ns3::DefaultDeleter<ns3::QueueItem> > const & o) [constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::QueueItem, ns3::empty, ns3::DefaultDeleter< ns3::QueueItem > > const &', 'o')])
+    return
+
+def register_Ns3SimpleRefCount__Ns3S1apConnectionInfo_Ns3Empty_Ns3DefaultDeleter__lt__ns3S1apConnectionInfo__gt___methods(root_module, cls):
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::S1apConnectionInfo, ns3::empty, ns3::DefaultDeleter<ns3::S1apConnectionInfo> >::SimpleRefCount() [constructor]
+    cls.add_constructor([])
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::S1apConnectionInfo, ns3::empty, ns3::DefaultDeleter<ns3::S1apConnectionInfo> >::SimpleRefCount(ns3::SimpleRefCount<ns3::S1apConnectionInfo, ns3::empty, ns3::DefaultDeleter<ns3::S1apConnectionInfo> > const & o) [constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::S1apConnectionInfo, ns3::empty, ns3::DefaultDeleter< ns3::S1apConnectionInfo > > const &', 'o')])
+    return
+
+def register_Ns3SimpleRefCount__Ns3S1apIfaceInfo_Ns3Empty_Ns3DefaultDeleter__lt__ns3S1apIfaceInfo__gt___methods(root_module, cls):
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::S1apIfaceInfo, ns3::empty, ns3::DefaultDeleter<ns3::S1apIfaceInfo> >::SimpleRefCount() [constructor]
+    cls.add_constructor([])
+    ## simple-ref-count.h (module 'core'): ns3::SimpleRefCount<ns3::S1apIfaceInfo, ns3::empty, ns3::DefaultDeleter<ns3::S1apIfaceInfo> >::SimpleRefCount(ns3::SimpleRefCount<ns3::S1apIfaceInfo, ns3::empty, ns3::DefaultDeleter<ns3::S1apIfaceInfo> > const & o) [constructor]
+    cls.add_constructor([param('ns3::SimpleRefCount< ns3::S1apIfaceInfo, ns3::empty, ns3::DefaultDeleter< ns3::S1apIfaceInfo > > const &', 'o')])
     return
 
 def register_Ns3SimpleRefCount__Ns3SpectrumModel_Ns3Empty_Ns3DefaultDeleter__lt__ns3SpectrumModel__gt___methods(root_module, cls):
@@ -12868,7 +14465,10 @@ def register_Ns3Time_methods(root_module, cls):
     cls.add_binary_numeric_operator('+', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', u'right'))
     cls.add_binary_numeric_operator('-', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::Time const &', u'right'))
     cls.add_binary_numeric_operator('*', root_module['ns3::Time'], root_module['ns3::Time'], param('int64_t const &', u'right'))
+    cls.add_binary_numeric_operator('*', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::int64x64_t const &', u'right'))
+    cls.add_binary_numeric_operator('/', root_module['ns3::int64x64_t'], root_module['ns3::Time'], param('ns3::Time const &', u'right'))
     cls.add_binary_numeric_operator('/', root_module['ns3::Time'], root_module['ns3::Time'], param('int64_t const &', u'right'))
+    cls.add_binary_numeric_operator('/', root_module['ns3::Time'], root_module['ns3::Time'], param('ns3::int64x64_t const &', u'right'))
     cls.add_inplace_numeric_operator('+=', param('ns3::Time const &', u'right'))
     cls.add_inplace_numeric_operator('-=', param('ns3::Time const &', u'right'))
     cls.add_output_stream_operator()
@@ -13260,6 +14860,10 @@ def register_Ns3UeManager_methods(root_module, cls):
     cls.add_method('DoReceivePdcpSdu', 
                    'void', 
                    [param('ns3::LtePdcpSapUser::ReceivePdcpSduParameters', 'params')])
+    ## lte-enb-rrc.h (module 'lte'): bool ns3::UeManager::GetAllMmWaveInOutageAtInitialAccess() [member function]
+    cls.add_method('GetAllMmWaveInOutageAtInitialAccess', 
+                   'bool', 
+                   [])
     ## lte-enb-rrc.h (module 'lte'): uint8_t ns3::UeManager::GetComponentCarrierId() const [member function]
     cls.add_method('GetComponentCarrierId', 
                    'uint8_t', 
@@ -13274,6 +14878,11 @@ def register_Ns3UeManager_methods(root_module, cls):
                    'uint64_t', 
                    [], 
                    is_const=True)
+    ## lte-enb-rrc.h (module 'lte'): bool ns3::UeManager::GetIsMc() const [member function]
+    cls.add_method('GetIsMc', 
+                   'bool', 
+                   [], 
+                   is_const=True)
     ## lte-enb-rrc.h (module 'lte'): ns3::LteRrcSap::RadioResourceConfigDedicated ns3::UeManager::GetRadioResourceConfigForHandoverPreparationInfo() [member function]
     cls.add_method('GetRadioResourceConfigForHandoverPreparationInfo', 
                    'ns3::LteRrcSap::RadioResourceConfigDedicated', 
@@ -13286,6 +14895,10 @@ def register_Ns3UeManager_methods(root_module, cls):
     ## lte-enb-rrc.h (module 'lte'): ns3::LteRrcSap::RrcConnectionReconfiguration ns3::UeManager::GetRrcConnectionReconfigurationForHandover() [member function]
     cls.add_method('GetRrcConnectionReconfigurationForHandover', 
                    'ns3::LteRrcSap::RrcConnectionReconfiguration', 
+                   [])
+    ## lte-enb-rrc.h (module 'lte'): std::pair<unsigned short, unsigned short> ns3::UeManager::GetSource() [member function]
+    cls.add_method('GetSource', 
+                   'std::pair< unsigned short, unsigned short >', 
                    [])
     ## lte-enb-rrc.h (module 'lte'): uint16_t ns3::UeManager::GetSrsConfigurationIndex() const [member function]
     cls.add_method('GetSrsConfigurationIndex', 
@@ -13310,6 +14923,10 @@ def register_Ns3UeManager_methods(root_module, cls):
     cls.add_method('RecordDataRadioBearersToBeStarted', 
                    'void', 
                    [])
+    ## lte-enb-rrc.h (module 'lte'): void ns3::UeManager::RecvConnectionSwitchToMmWave(bool useMmWaveConnection, uint8_t drbid) [member function]
+    cls.add_method('RecvConnectionSwitchToMmWave', 
+                   'void', 
+                   [param('bool', 'useMmWaveConnection'), param('uint8_t', 'drbid')])
     ## lte-enb-rrc.h (module 'lte'): void ns3::UeManager::RecvHandoverPreparationFailure(uint16_t cellId) [member function]
     cls.add_method('RecvHandoverPreparationFailure', 
                    'void', 
@@ -13322,6 +14939,18 @@ def register_Ns3UeManager_methods(root_module, cls):
     cls.add_method('RecvMeasurementReport', 
                    'void', 
                    [param('ns3::LteRrcSap::MeasurementReport', 'msg')])
+    ## lte-enb-rrc.h (module 'lte'): void ns3::UeManager::RecvNotifyLteMmWaveHandoverCompleted() [member function]
+    cls.add_method('RecvNotifyLteMmWaveHandoverCompleted', 
+                   'void', 
+                   [])
+    ## lte-enb-rrc.h (module 'lte'): void ns3::UeManager::RecvRlcSetupCompleted(uint8_t drbid) [member function]
+    cls.add_method('RecvRlcSetupCompleted', 
+                   'void', 
+                   [param('uint8_t', 'drbid')])
+    ## lte-enb-rrc.h (module 'lte'): void ns3::UeManager::RecvRlcSetupRequest(ns3::EpcX2Sap::RlcSetupRequest params) [member function]
+    cls.add_method('RecvRlcSetupRequest', 
+                   'void', 
+                   [param('ns3::EpcX2Sap::RlcSetupRequest', 'params')])
     ## lte-enb-rrc.h (module 'lte'): void ns3::UeManager::RecvRrcConnectionReconfigurationCompleted(ns3::LteRrcSap::RrcConnectionReconfigurationCompleted msg) [member function]
     cls.add_method('RecvRrcConnectionReconfigurationCompleted', 
                    'void', 
@@ -13342,6 +14971,14 @@ def register_Ns3UeManager_methods(root_module, cls):
     cls.add_method('RecvRrcConnectionSetupCompleted', 
                    'void', 
                    [param('ns3::LteRrcSap::RrcConnectionSetupCompleted', 'msg')])
+    ## lte-enb-rrc.h (module 'lte'): void ns3::UeManager::RecvRrcSecondaryCellInitialAccessSuccessful(uint16_t mmWaveRnti, uint16_t mmWaveCellId) [member function]
+    cls.add_method('RecvRrcSecondaryCellInitialAccessSuccessful', 
+                   'void', 
+                   [param('uint16_t', 'mmWaveRnti'), param('uint16_t', 'mmWaveCellId')])
+    ## lte-enb-rrc.h (module 'lte'): void ns3::UeManager::RecvSecondaryCellHandoverCompleted(ns3::EpcX2Sap::SecondaryHandoverCompletedParams params) [member function]
+    cls.add_method('RecvSecondaryCellHandoverCompleted', 
+                   'void', 
+                   [param('ns3::EpcX2Sap::SecondaryHandoverCompletedParams', 'params')])
     ## lte-enb-rrc.h (module 'lte'): void ns3::UeManager::RecvSnStatusTransfer(ns3::EpcX2Sap::SnStatusTransferParams params) [member function]
     cls.add_method('RecvSnStatusTransfer', 
                    'void', 
@@ -13362,14 +14999,30 @@ def register_Ns3UeManager_methods(root_module, cls):
     cls.add_method('SendData', 
                    'void', 
                    [param('uint8_t', 'bid'), param('ns3::Ptr< ns3::Packet >', 'p')])
+    ## lte-enb-rrc.h (module 'lte'): void ns3::UeManager::SendRrcConnectionSwitch(bool useMmWaveConnection) [member function]
+    cls.add_method('SendRrcConnectionSwitch', 
+                   'void', 
+                   [param('bool', 'useMmWaveConnection')])
     ## lte-enb-rrc.h (module 'lte'): void ns3::UeManager::SendUeContextRelease() [member function]
     cls.add_method('SendUeContextRelease', 
+                   'void', 
+                   [])
+    ## lte-enb-rrc.h (module 'lte'): void ns3::UeManager::SetAllMmWaveInOutageAtInitialAccess(bool param) [member function]
+    cls.add_method('SetAllMmWaveInOutageAtInitialAccess', 
+                   'void', 
+                   [param('bool', 'param')])
+    ## lte-enb-rrc.h (module 'lte'): void ns3::UeManager::SetFirstConnection() [member function]
+    cls.add_method('SetFirstConnection', 
                    'void', 
                    [])
     ## lte-enb-rrc.h (module 'lte'): void ns3::UeManager::SetImsi(uint64_t imsi) [member function]
     cls.add_method('SetImsi', 
                    'void', 
                    [param('uint64_t', 'imsi')])
+    ## lte-enb-rrc.h (module 'lte'): void ns3::UeManager::SetIsMc(bool isMc) [member function]
+    cls.add_method('SetIsMc', 
+                   'void', 
+                   [param('bool', 'isMc')])
     ## lte-enb-rrc.h (module 'lte'): void ns3::UeManager::SetPdschConfigDedicated(ns3::LteRrcSap::PdschConfigDedicated pdschConfigDedicated) [member function]
     cls.add_method('SetPdschConfigDedicated', 
                    'void', 
@@ -14114,6 +15767,16 @@ def register_Ns3CallbackImplBase_methods(root_module, cls):
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
+                   is_static=True, visibility='protected', template_parameters=[u'unsigned int'])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
+    cls.add_method('GetCppTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True, visibility='protected', template_parameters=[u'bool'])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
+    cls.add_method('GetCppTypeid', 
+                   'std::string', 
+                   [], 
                    is_static=True, visibility='protected', template_parameters=[u'ns3::Ptr<ns3::NetDevice> '])
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
@@ -14189,17 +15852,7 @@ def register_Ns3CallbackImplBase_methods(root_module, cls):
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, visibility='protected', template_parameters=[u'bool'])
-    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
-    cls.add_method('GetCppTypeid', 
-                   'std::string', 
-                   [], 
                    is_static=True, visibility='protected', template_parameters=[u'ns3::Ptr<ns3::Socket> '])
-    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
-    cls.add_method('GetCppTypeid', 
-                   'std::string', 
-                   [], 
-                   is_static=True, visibility='protected', template_parameters=[u'unsigned int'])
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
@@ -14214,12 +15867,27 @@ def register_Ns3CallbackImplBase_methods(root_module, cls):
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
+                   is_static=True, visibility='protected', template_parameters=[u'unsigned long'])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
+    cls.add_method('GetCppTypeid', 
+                   'std::string', 
+                   [], 
                    is_static=True, visibility='protected', template_parameters=[u'ns3::SpectrumValue const&'])
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
                    [], 
-                   is_static=True, visibility='protected', template_parameters=[u'unsigned long'])
+                   is_static=True, visibility='protected', template_parameters=[u'ns3::Time'])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
+    cls.add_method('GetCppTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True, visibility='protected', template_parameters=[u'ns3::Ptr<ns3::QueueDiscItem const> '])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
+    cls.add_method('GetCppTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True, visibility='protected', template_parameters=[u'char const*'])
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
@@ -14230,6 +15898,11 @@ def register_Ns3CallbackImplBase_methods(root_module, cls):
                    'std::string', 
                    [], 
                    is_static=True, visibility='protected', template_parameters=[u'ns3::LteRrcSap::MeasurementReport'])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
+    cls.add_method('GetCppTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True, visibility='protected', template_parameters=[u'long double'])
     ## callback.h (module 'core'): static std::string ns3::CallbackImplBase::GetCppTypeid() [member function]
     cls.add_method('GetCppTypeid', 
                    'std::string', 
@@ -14379,6 +16052,52 @@ def register_Ns3Channel_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    return
+
+def register_Ns3CoDelQueueDisc_methods(root_module, cls):
+    ## codel-queue-disc.h (module 'traffic-control'): static ns3::TypeId ns3::CoDelQueueDisc::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## codel-queue-disc.h (module 'traffic-control'): ns3::CoDelQueueDisc::CoDelQueueDisc() [constructor]
+    cls.add_constructor([])
+    ## codel-queue-disc.h (module 'traffic-control'): ns3::Time ns3::CoDelQueueDisc::GetTarget() [member function]
+    cls.add_method('GetTarget', 
+                   'ns3::Time', 
+                   [])
+    ## codel-queue-disc.h (module 'traffic-control'): ns3::Time ns3::CoDelQueueDisc::GetInterval() [member function]
+    cls.add_method('GetInterval', 
+                   'ns3::Time', 
+                   [])
+    ## codel-queue-disc.h (module 'traffic-control'): uint32_t ns3::CoDelQueueDisc::GetDropNext() [member function]
+    cls.add_method('GetDropNext', 
+                   'uint32_t', 
+                   [])
+    ## codel-queue-disc.h (module 'traffic-control'): ns3::CoDelQueueDisc::TARGET_EXCEEDED_DROP [variable]
+    cls.add_static_attribute('TARGET_EXCEEDED_DROP', 'char const * const', is_const=True)
+    ## codel-queue-disc.h (module 'traffic-control'): ns3::CoDelQueueDisc::OVERLIMIT_DROP [variable]
+    cls.add_static_attribute('OVERLIMIT_DROP', 'char const * const', is_const=True)
+    ## codel-queue-disc.h (module 'traffic-control'): bool ns3::CoDelQueueDisc::DoEnqueue(ns3::Ptr<ns3::QueueDiscItem> item) [member function]
+    cls.add_method('DoEnqueue', 
+                   'bool', 
+                   [param('ns3::Ptr< ns3::QueueDiscItem >', 'item')], 
+                   visibility='private', is_virtual=True)
+    ## codel-queue-disc.h (module 'traffic-control'): ns3::Ptr<ns3::QueueDiscItem> ns3::CoDelQueueDisc::DoDequeue() [member function]
+    cls.add_method('DoDequeue', 
+                   'ns3::Ptr< ns3::QueueDiscItem >', 
+                   [], 
+                   visibility='private', is_virtual=True)
+    ## codel-queue-disc.h (module 'traffic-control'): bool ns3::CoDelQueueDisc::CheckConfig() [member function]
+    cls.add_method('CheckConfig', 
+                   'bool', 
+                   [], 
+                   visibility='private', is_virtual=True)
+    ## codel-queue-disc.h (module 'traffic-control'): void ns3::CoDelQueueDisc::InitializeParams() [member function]
+    cls.add_method('InitializeParams', 
+                   'void', 
+                   [], 
+                   visibility='private', is_virtual=True)
     return
 
 def register_Ns3ComponentCarrier_methods(root_module, cls):
@@ -15059,10 +16778,10 @@ def register_Ns3EpcEnbApplication_methods(root_module, cls):
     cls.add_method('SetS1SapUser', 
                    'void', 
                    [param('ns3::EpcEnbS1SapUser *', 's')])
-    ## epc-enb-application.h (module 'lte'): void ns3::EpcEnbApplication::SetS1apSapMme(ns3::EpcS1apSapMme * s) [member function]
+    ## epc-enb-application.h (module 'lte'): void ns3::EpcEnbApplication::SetS1apSapMme(ns3::EpcS1apSapEnbProvider * s) [member function]
     cls.add_method('SetS1apSapMme', 
                    'void', 
-                   [param('ns3::EpcS1apSapMme *', 's')])
+                   [param('ns3::EpcS1apSapEnbProvider *', 's')])
     ## epc-enb-application.h (module 'lte'): void ns3::EpcEnbApplication::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
@@ -15094,6 +16813,11 @@ def register_Ns3EpcHelper_methods(root_module, cls):
     cls.add_method('ActivateEpsBearer', 
                    'uint8_t', 
                    [param('ns3::Ptr< ns3::NetDevice >', 'ueLteDevice'), param('uint64_t', 'imsi'), param('ns3::Ptr< ns3::EpcTft >', 'tft'), param('ns3::EpsBearer', 'bearer')], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## epc-helper.h (module 'lte'): uint8_t ns3::EpcHelper::ActivateEpsBearer(ns3::Ptr<ns3::NetDevice> ueLteDevice, ns3::Ptr<ns3::EpcUeNas> ueNas, uint64_t imsi, ns3::Ptr<ns3::EpcTft> tft, ns3::EpsBearer bearer) [member function]
+    cls.add_method('ActivateEpsBearer', 
+                   'uint8_t', 
+                   [param('ns3::Ptr< ns3::NetDevice >', 'ueLteDevice'), param('ns3::Ptr< ns3::EpcUeNas >', 'ueNas'), param('uint64_t', 'imsi'), param('ns3::Ptr< ns3::EpcTft >', 'tft'), param('ns3::EpsBearer', 'bearer')], 
                    is_pure_virtual=True, is_virtual=True)
     ## epc-helper.h (module 'lte'): void ns3::EpcHelper::AddEnb(ns3::Ptr<ns3::Node> enbNode, ns3::Ptr<ns3::NetDevice> lteEnbNetDevice, uint16_t cellId) [member function]
     cls.add_method('AddEnb', 
@@ -15185,6 +16909,672 @@ def register_Ns3EpcMme_methods(root_module, cls):
     cls.add_method('DoDispose', 
                    'void', 
                    [], 
+                   visibility='protected', is_virtual=True)
+    return
+
+def register_Ns3EpcMmeApplication_methods(root_module, cls):
+    ## epc-mme-application.h (module 'lte'): ns3::EpcMmeApplication::EpcMmeApplication(ns3::EpcMmeApplication const & arg0) [constructor]
+    cls.add_constructor([param('ns3::EpcMmeApplication const &', 'arg0')])
+    ## epc-mme-application.h (module 'lte'): ns3::EpcMmeApplication::EpcMmeApplication() [constructor]
+    cls.add_constructor([])
+    ## epc-mme-application.h (module 'lte'): uint8_t ns3::EpcMmeApplication::AddBearer(uint64_t imsi, ns3::Ptr<ns3::EpcTft> tft, ns3::EpsBearer bearer) [member function]
+    cls.add_method('AddBearer', 
+                   'uint8_t', 
+                   [param('uint64_t', 'imsi'), param('ns3::Ptr< ns3::EpcTft >', 'tft'), param('ns3::EpsBearer', 'bearer')])
+    ## epc-mme-application.h (module 'lte'): void ns3::EpcMmeApplication::AddEnb(uint16_t ecgi, ns3::Ipv4Address enbS1UAddr) [member function]
+    cls.add_method('AddEnb', 
+                   'void', 
+                   [param('uint16_t', 'ecgi'), param('ns3::Ipv4Address', 'enbS1UAddr')])
+    ## epc-mme-application.h (module 'lte'): void ns3::EpcMmeApplication::AddUe(uint64_t imsi) [member function]
+    cls.add_method('AddUe', 
+                   'void', 
+                   [param('uint64_t', 'imsi')])
+    ## epc-mme-application.h (module 'lte'): ns3::EpcS11SapMme * ns3::EpcMmeApplication::GetS11SapMme() [member function]
+    cls.add_method('GetS11SapMme', 
+                   'ns3::EpcS11SapMme *', 
+                   [])
+    ## epc-mme-application.h (module 'lte'): ns3::EpcS1apSapMme * ns3::EpcMmeApplication::GetS1apSapMme() [member function]
+    cls.add_method('GetS1apSapMme', 
+                   'ns3::EpcS1apSapMme *', 
+                   [])
+    ## epc-mme-application.h (module 'lte'): static ns3::TypeId ns3::EpcMmeApplication::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## epc-mme-application.h (module 'lte'): void ns3::EpcMmeApplication::SetS11SapSgw(ns3::EpcS11SapSgw * s) [member function]
+    cls.add_method('SetS11SapSgw', 
+                   'void', 
+                   [param('ns3::EpcS11SapSgw *', 's')])
+    ## epc-mme-application.h (module 'lte'): void ns3::EpcMmeApplication::SetS1apSapMmeProvider(ns3::EpcS1apSapMmeProvider * provider) [member function]
+    cls.add_method('SetS1apSapMmeProvider', 
+                   'void', 
+                   [param('ns3::EpcS1apSapMmeProvider *', 'provider')])
+    ## epc-mme-application.h (module 'lte'): void ns3::EpcMmeApplication::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   visibility='protected', is_virtual=True)
+    return
+
+def register_Ns3EpcS1APErabReleaseIndicationHeader_methods(root_module, cls):
+    ## epc-s1ap-header.h (module 'lte'): ns3::EpcS1APErabReleaseIndicationHeader::EpcS1APErabReleaseIndicationHeader(ns3::EpcS1APErabReleaseIndicationHeader const & arg0) [constructor]
+    cls.add_constructor([param('ns3::EpcS1APErabReleaseIndicationHeader const &', 'arg0')])
+    ## epc-s1ap-header.h (module 'lte'): ns3::EpcS1APErabReleaseIndicationHeader::EpcS1APErabReleaseIndicationHeader() [constructor]
+    cls.add_constructor([])
+    ## epc-s1ap-header.h (module 'lte'): uint32_t ns3::EpcS1APErabReleaseIndicationHeader::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## epc-s1ap-header.h (module 'lte'): uint16_t ns3::EpcS1APErabReleaseIndicationHeader::GetEnbUeS1Id() const [member function]
+    cls.add_method('GetEnbUeS1Id', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## epc-s1ap-header.h (module 'lte'): std::list<ns3::EpcS1apSap::ErabToBeReleasedIndication, std::allocator<ns3::EpcS1apSap::ErabToBeReleasedIndication> > ns3::EpcS1APErabReleaseIndicationHeader::GetErabToBeReleaseIndication() const [member function]
+    cls.add_method('GetErabToBeReleaseIndication', 
+                   'std::list< ns3::EpcS1apSap::ErabToBeReleasedIndication >', 
+                   [], 
+                   is_const=True)
+    ## epc-s1ap-header.h (module 'lte'): ns3::TypeId ns3::EpcS1APErabReleaseIndicationHeader::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-s1ap-header.h (module 'lte'): uint32_t ns3::EpcS1APErabReleaseIndicationHeader::GetLengthOfIes() const [member function]
+    cls.add_method('GetLengthOfIes', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## epc-s1ap-header.h (module 'lte'): uint64_t ns3::EpcS1APErabReleaseIndicationHeader::GetMmeUeS1Id() const [member function]
+    cls.add_method('GetMmeUeS1Id', 
+                   'uint64_t', 
+                   [], 
+                   is_const=True)
+    ## epc-s1ap-header.h (module 'lte'): uint32_t ns3::EpcS1APErabReleaseIndicationHeader::GetNumberOfIes() const [member function]
+    cls.add_method('GetNumberOfIes', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## epc-s1ap-header.h (module 'lte'): uint32_t ns3::EpcS1APErabReleaseIndicationHeader::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-s1ap-header.h (module 'lte'): static ns3::TypeId ns3::EpcS1APErabReleaseIndicationHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## epc-s1ap-header.h (module 'lte'): void ns3::EpcS1APErabReleaseIndicationHeader::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## epc-s1ap-header.h (module 'lte'): void ns3::EpcS1APErabReleaseIndicationHeader::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## epc-s1ap-header.h (module 'lte'): void ns3::EpcS1APErabReleaseIndicationHeader::SetEnbUeS1Id(uint16_t enbUeS1Id) [member function]
+    cls.add_method('SetEnbUeS1Id', 
+                   'void', 
+                   [param('uint16_t', 'enbUeS1Id')])
+    ## epc-s1ap-header.h (module 'lte'): void ns3::EpcS1APErabReleaseIndicationHeader::SetErabReleaseIndication(std::list<ns3::EpcS1apSap::ErabToBeReleasedIndication, std::allocator<ns3::EpcS1apSap::ErabToBeReleasedIndication> > erabToBeReleaseIndication) [member function]
+    cls.add_method('SetErabReleaseIndication', 
+                   'void', 
+                   [param('std::list< ns3::EpcS1apSap::ErabToBeReleasedIndication >', 'erabToBeReleaseIndication')])
+    ## epc-s1ap-header.h (module 'lte'): void ns3::EpcS1APErabReleaseIndicationHeader::SetMmeUeS1Id(uint64_t mmeUeS1Id) [member function]
+    cls.add_method('SetMmeUeS1Id', 
+                   'void', 
+                   [param('uint64_t', 'mmeUeS1Id')])
+    return
+
+def register_Ns3EpcS1APHeader_methods(root_module, cls):
+    ## epc-s1ap-header.h (module 'lte'): ns3::EpcS1APHeader::EpcS1APHeader(ns3::EpcS1APHeader const & arg0) [constructor]
+    cls.add_constructor([param('ns3::EpcS1APHeader const &', 'arg0')])
+    ## epc-s1ap-header.h (module 'lte'): ns3::EpcS1APHeader::EpcS1APHeader() [constructor]
+    cls.add_constructor([])
+    ## epc-s1ap-header.h (module 'lte'): uint32_t ns3::EpcS1APHeader::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## epc-s1ap-header.h (module 'lte'): ns3::TypeId ns3::EpcS1APHeader::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-s1ap-header.h (module 'lte'): uint8_t ns3::EpcS1APHeader::GetProcedureCode() const [member function]
+    cls.add_method('GetProcedureCode', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## epc-s1ap-header.h (module 'lte'): uint32_t ns3::EpcS1APHeader::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-s1ap-header.h (module 'lte'): static ns3::TypeId ns3::EpcS1APHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## epc-s1ap-header.h (module 'lte'): void ns3::EpcS1APHeader::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## epc-s1ap-header.h (module 'lte'): void ns3::EpcS1APHeader::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## epc-s1ap-header.h (module 'lte'): void ns3::EpcS1APHeader::SetLengthOfIes(uint32_t lengthOfIes) [member function]
+    cls.add_method('SetLengthOfIes', 
+                   'void', 
+                   [param('uint32_t', 'lengthOfIes')])
+    ## epc-s1ap-header.h (module 'lte'): void ns3::EpcS1APHeader::SetNumberOfIes(uint32_t numberOfIes) [member function]
+    cls.add_method('SetNumberOfIes', 
+                   'void', 
+                   [param('uint32_t', 'numberOfIes')])
+    ## epc-s1ap-header.h (module 'lte'): void ns3::EpcS1APHeader::SetProcedureCode(uint8_t procedureCode) [member function]
+    cls.add_method('SetProcedureCode', 
+                   'void', 
+                   [param('uint8_t', 'procedureCode')])
+    return
+
+def register_Ns3EpcS1APInitialContextSetupRequestHeader_methods(root_module, cls):
+    ## epc-s1ap-header.h (module 'lte'): ns3::EpcS1APInitialContextSetupRequestHeader::EpcS1APInitialContextSetupRequestHeader(ns3::EpcS1APInitialContextSetupRequestHeader const & arg0) [constructor]
+    cls.add_constructor([param('ns3::EpcS1APInitialContextSetupRequestHeader const &', 'arg0')])
+    ## epc-s1ap-header.h (module 'lte'): ns3::EpcS1APInitialContextSetupRequestHeader::EpcS1APInitialContextSetupRequestHeader() [constructor]
+    cls.add_constructor([])
+    ## epc-s1ap-header.h (module 'lte'): uint32_t ns3::EpcS1APInitialContextSetupRequestHeader::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## epc-s1ap-header.h (module 'lte'): uint16_t ns3::EpcS1APInitialContextSetupRequestHeader::GetEnbUeS1Id() const [member function]
+    cls.add_method('GetEnbUeS1Id', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## epc-s1ap-header.h (module 'lte'): std::list<ns3::EpcS1apSap::ErabToBeSetupItem, std::allocator<ns3::EpcS1apSap::ErabToBeSetupItem> > ns3::EpcS1APInitialContextSetupRequestHeader::GetErabToBeSetupItem() const [member function]
+    cls.add_method('GetErabToBeSetupItem', 
+                   'std::list< ns3::EpcS1apSap::ErabToBeSetupItem >', 
+                   [], 
+                   is_const=True)
+    ## epc-s1ap-header.h (module 'lte'): ns3::TypeId ns3::EpcS1APInitialContextSetupRequestHeader::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-s1ap-header.h (module 'lte'): uint32_t ns3::EpcS1APInitialContextSetupRequestHeader::GetLengthOfIes() const [member function]
+    cls.add_method('GetLengthOfIes', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## epc-s1ap-header.h (module 'lte'): uint64_t ns3::EpcS1APInitialContextSetupRequestHeader::GetMmeUeS1Id() const [member function]
+    cls.add_method('GetMmeUeS1Id', 
+                   'uint64_t', 
+                   [], 
+                   is_const=True)
+    ## epc-s1ap-header.h (module 'lte'): uint32_t ns3::EpcS1APInitialContextSetupRequestHeader::GetNumberOfIes() const [member function]
+    cls.add_method('GetNumberOfIes', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## epc-s1ap-header.h (module 'lte'): uint32_t ns3::EpcS1APInitialContextSetupRequestHeader::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-s1ap-header.h (module 'lte'): static ns3::TypeId ns3::EpcS1APInitialContextSetupRequestHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## epc-s1ap-header.h (module 'lte'): void ns3::EpcS1APInitialContextSetupRequestHeader::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## epc-s1ap-header.h (module 'lte'): void ns3::EpcS1APInitialContextSetupRequestHeader::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## epc-s1ap-header.h (module 'lte'): void ns3::EpcS1APInitialContextSetupRequestHeader::SetEnbUeS1Id(uint16_t enbUeS1Id) [member function]
+    cls.add_method('SetEnbUeS1Id', 
+                   'void', 
+                   [param('uint16_t', 'enbUeS1Id')])
+    ## epc-s1ap-header.h (module 'lte'): void ns3::EpcS1APInitialContextSetupRequestHeader::SetErabToBeSetupItem(std::list<ns3::EpcS1apSap::ErabToBeSetupItem, std::allocator<ns3::EpcS1apSap::ErabToBeSetupItem> > erabToBeSetupList) [member function]
+    cls.add_method('SetErabToBeSetupItem', 
+                   'void', 
+                   [param('std::list< ns3::EpcS1apSap::ErabToBeSetupItem >', 'erabToBeSetupList')])
+    ## epc-s1ap-header.h (module 'lte'): void ns3::EpcS1APInitialContextSetupRequestHeader::SetMmeUeS1Id(uint64_t mmeUeS1Id) [member function]
+    cls.add_method('SetMmeUeS1Id', 
+                   'void', 
+                   [param('uint64_t', 'mmeUeS1Id')])
+    return
+
+def register_Ns3EpcS1APInitialContextSetupResponseHeader_methods(root_module, cls):
+    ## epc-s1ap-header.h (module 'lte'): ns3::EpcS1APInitialContextSetupResponseHeader::EpcS1APInitialContextSetupResponseHeader(ns3::EpcS1APInitialContextSetupResponseHeader const & arg0) [constructor]
+    cls.add_constructor([param('ns3::EpcS1APInitialContextSetupResponseHeader const &', 'arg0')])
+    ## epc-s1ap-header.h (module 'lte'): ns3::EpcS1APInitialContextSetupResponseHeader::EpcS1APInitialContextSetupResponseHeader() [constructor]
+    cls.add_constructor([])
+    ## epc-s1ap-header.h (module 'lte'): uint32_t ns3::EpcS1APInitialContextSetupResponseHeader::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## epc-s1ap-header.h (module 'lte'): uint16_t ns3::EpcS1APInitialContextSetupResponseHeader::GetEnbUeS1Id() const [member function]
+    cls.add_method('GetEnbUeS1Id', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## epc-s1ap-header.h (module 'lte'): std::list<ns3::EpcS1apSap::ErabSetupItem, std::allocator<ns3::EpcS1apSap::ErabSetupItem> > ns3::EpcS1APInitialContextSetupResponseHeader::GetErabSetupItem() const [member function]
+    cls.add_method('GetErabSetupItem', 
+                   'std::list< ns3::EpcS1apSap::ErabSetupItem >', 
+                   [], 
+                   is_const=True)
+    ## epc-s1ap-header.h (module 'lte'): ns3::TypeId ns3::EpcS1APInitialContextSetupResponseHeader::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-s1ap-header.h (module 'lte'): uint32_t ns3::EpcS1APInitialContextSetupResponseHeader::GetLengthOfIes() const [member function]
+    cls.add_method('GetLengthOfIes', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## epc-s1ap-header.h (module 'lte'): uint64_t ns3::EpcS1APInitialContextSetupResponseHeader::GetMmeUeS1Id() const [member function]
+    cls.add_method('GetMmeUeS1Id', 
+                   'uint64_t', 
+                   [], 
+                   is_const=True)
+    ## epc-s1ap-header.h (module 'lte'): uint32_t ns3::EpcS1APInitialContextSetupResponseHeader::GetNumberOfIes() const [member function]
+    cls.add_method('GetNumberOfIes', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## epc-s1ap-header.h (module 'lte'): uint32_t ns3::EpcS1APInitialContextSetupResponseHeader::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-s1ap-header.h (module 'lte'): static ns3::TypeId ns3::EpcS1APInitialContextSetupResponseHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## epc-s1ap-header.h (module 'lte'): void ns3::EpcS1APInitialContextSetupResponseHeader::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## epc-s1ap-header.h (module 'lte'): void ns3::EpcS1APInitialContextSetupResponseHeader::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## epc-s1ap-header.h (module 'lte'): void ns3::EpcS1APInitialContextSetupResponseHeader::SetEnbUeS1Id(uint16_t enbUeS1Id) [member function]
+    cls.add_method('SetEnbUeS1Id', 
+                   'void', 
+                   [param('uint16_t', 'enbUeS1Id')])
+    ## epc-s1ap-header.h (module 'lte'): void ns3::EpcS1APInitialContextSetupResponseHeader::SetErabSetupItem(std::list<ns3::EpcS1apSap::ErabSetupItem, std::allocator<ns3::EpcS1apSap::ErabSetupItem> > erabSetupList) [member function]
+    cls.add_method('SetErabSetupItem', 
+                   'void', 
+                   [param('std::list< ns3::EpcS1apSap::ErabSetupItem >', 'erabSetupList')])
+    ## epc-s1ap-header.h (module 'lte'): void ns3::EpcS1APInitialContextSetupResponseHeader::SetMmeUeS1Id(uint64_t mmeUeS1Id) [member function]
+    cls.add_method('SetMmeUeS1Id', 
+                   'void', 
+                   [param('uint64_t', 'mmeUeS1Id')])
+    return
+
+def register_Ns3EpcS1APInitialUeMessageHeader_methods(root_module, cls):
+    ## epc-s1ap-header.h (module 'lte'): ns3::EpcS1APInitialUeMessageHeader::EpcS1APInitialUeMessageHeader(ns3::EpcS1APInitialUeMessageHeader const & arg0) [constructor]
+    cls.add_constructor([param('ns3::EpcS1APInitialUeMessageHeader const &', 'arg0')])
+    ## epc-s1ap-header.h (module 'lte'): ns3::EpcS1APInitialUeMessageHeader::EpcS1APInitialUeMessageHeader() [constructor]
+    cls.add_constructor([])
+    ## epc-s1ap-header.h (module 'lte'): uint32_t ns3::EpcS1APInitialUeMessageHeader::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## epc-s1ap-header.h (module 'lte'): uint16_t ns3::EpcS1APInitialUeMessageHeader::GetEcgi() const [member function]
+    cls.add_method('GetEcgi', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## epc-s1ap-header.h (module 'lte'): uint16_t ns3::EpcS1APInitialUeMessageHeader::GetEnbUeS1Id() const [member function]
+    cls.add_method('GetEnbUeS1Id', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## epc-s1ap-header.h (module 'lte'): ns3::TypeId ns3::EpcS1APInitialUeMessageHeader::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-s1ap-header.h (module 'lte'): uint32_t ns3::EpcS1APInitialUeMessageHeader::GetLengthOfIes() const [member function]
+    cls.add_method('GetLengthOfIes', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## epc-s1ap-header.h (module 'lte'): uint64_t ns3::EpcS1APInitialUeMessageHeader::GetMmeUeS1Id() const [member function]
+    cls.add_method('GetMmeUeS1Id', 
+                   'uint64_t', 
+                   [], 
+                   is_const=True)
+    ## epc-s1ap-header.h (module 'lte'): uint32_t ns3::EpcS1APInitialUeMessageHeader::GetNumberOfIes() const [member function]
+    cls.add_method('GetNumberOfIes', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## epc-s1ap-header.h (module 'lte'): uint64_t ns3::EpcS1APInitialUeMessageHeader::GetSTmsi() const [member function]
+    cls.add_method('GetSTmsi', 
+                   'uint64_t', 
+                   [], 
+                   is_const=True)
+    ## epc-s1ap-header.h (module 'lte'): uint32_t ns3::EpcS1APInitialUeMessageHeader::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-s1ap-header.h (module 'lte'): static ns3::TypeId ns3::EpcS1APInitialUeMessageHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## epc-s1ap-header.h (module 'lte'): void ns3::EpcS1APInitialUeMessageHeader::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## epc-s1ap-header.h (module 'lte'): void ns3::EpcS1APInitialUeMessageHeader::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## epc-s1ap-header.h (module 'lte'): void ns3::EpcS1APInitialUeMessageHeader::SetEcgi(uint16_t ecgi) [member function]
+    cls.add_method('SetEcgi', 
+                   'void', 
+                   [param('uint16_t', 'ecgi')])
+    ## epc-s1ap-header.h (module 'lte'): void ns3::EpcS1APInitialUeMessageHeader::SetEnbUeS1Id(uint16_t enbUeS1Id) [member function]
+    cls.add_method('SetEnbUeS1Id', 
+                   'void', 
+                   [param('uint16_t', 'enbUeS1Id')])
+    ## epc-s1ap-header.h (module 'lte'): void ns3::EpcS1APInitialUeMessageHeader::SetMmeUeS1Id(uint64_t mmeUeS1Id) [member function]
+    cls.add_method('SetMmeUeS1Id', 
+                   'void', 
+                   [param('uint64_t', 'mmeUeS1Id')])
+    ## epc-s1ap-header.h (module 'lte'): void ns3::EpcS1APInitialUeMessageHeader::SetSTmsi(uint64_t stmsi) [member function]
+    cls.add_method('SetSTmsi', 
+                   'void', 
+                   [param('uint64_t', 'stmsi')])
+    return
+
+def register_Ns3EpcS1APPathSwitchRequestAcknowledgeHeader_methods(root_module, cls):
+    ## epc-s1ap-header.h (module 'lte'): ns3::EpcS1APPathSwitchRequestAcknowledgeHeader::EpcS1APPathSwitchRequestAcknowledgeHeader(ns3::EpcS1APPathSwitchRequestAcknowledgeHeader const & arg0) [constructor]
+    cls.add_constructor([param('ns3::EpcS1APPathSwitchRequestAcknowledgeHeader const &', 'arg0')])
+    ## epc-s1ap-header.h (module 'lte'): ns3::EpcS1APPathSwitchRequestAcknowledgeHeader::EpcS1APPathSwitchRequestAcknowledgeHeader() [constructor]
+    cls.add_constructor([])
+    ## epc-s1ap-header.h (module 'lte'): uint32_t ns3::EpcS1APPathSwitchRequestAcknowledgeHeader::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## epc-s1ap-header.h (module 'lte'): uint16_t ns3::EpcS1APPathSwitchRequestAcknowledgeHeader::GetEcgi() const [member function]
+    cls.add_method('GetEcgi', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## epc-s1ap-header.h (module 'lte'): uint16_t ns3::EpcS1APPathSwitchRequestAcknowledgeHeader::GetEnbUeS1Id() const [member function]
+    cls.add_method('GetEnbUeS1Id', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## epc-s1ap-header.h (module 'lte'): std::list<ns3::EpcS1apSap::ErabSwitchedInUplinkItem, std::allocator<ns3::EpcS1apSap::ErabSwitchedInUplinkItem> > ns3::EpcS1APPathSwitchRequestAcknowledgeHeader::GetErabSwitchedInUplinkItemList() const [member function]
+    cls.add_method('GetErabSwitchedInUplinkItemList', 
+                   'std::list< ns3::EpcS1apSap::ErabSwitchedInUplinkItem >', 
+                   [], 
+                   is_const=True)
+    ## epc-s1ap-header.h (module 'lte'): ns3::TypeId ns3::EpcS1APPathSwitchRequestAcknowledgeHeader::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-s1ap-header.h (module 'lte'): uint32_t ns3::EpcS1APPathSwitchRequestAcknowledgeHeader::GetLengthOfIes() const [member function]
+    cls.add_method('GetLengthOfIes', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## epc-s1ap-header.h (module 'lte'): uint64_t ns3::EpcS1APPathSwitchRequestAcknowledgeHeader::GetMmeUeS1Id() const [member function]
+    cls.add_method('GetMmeUeS1Id', 
+                   'uint64_t', 
+                   [], 
+                   is_const=True)
+    ## epc-s1ap-header.h (module 'lte'): uint32_t ns3::EpcS1APPathSwitchRequestAcknowledgeHeader::GetNumberOfIes() const [member function]
+    cls.add_method('GetNumberOfIes', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## epc-s1ap-header.h (module 'lte'): uint32_t ns3::EpcS1APPathSwitchRequestAcknowledgeHeader::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-s1ap-header.h (module 'lte'): static ns3::TypeId ns3::EpcS1APPathSwitchRequestAcknowledgeHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## epc-s1ap-header.h (module 'lte'): void ns3::EpcS1APPathSwitchRequestAcknowledgeHeader::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## epc-s1ap-header.h (module 'lte'): void ns3::EpcS1APPathSwitchRequestAcknowledgeHeader::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## epc-s1ap-header.h (module 'lte'): void ns3::EpcS1APPathSwitchRequestAcknowledgeHeader::SetEcgi(uint16_t ecgi) [member function]
+    cls.add_method('SetEcgi', 
+                   'void', 
+                   [param('uint16_t', 'ecgi')])
+    ## epc-s1ap-header.h (module 'lte'): void ns3::EpcS1APPathSwitchRequestAcknowledgeHeader::SetEnbUeS1Id(uint16_t enbUeS1Id) [member function]
+    cls.add_method('SetEnbUeS1Id', 
+                   'void', 
+                   [param('uint16_t', 'enbUeS1Id')])
+    ## epc-s1ap-header.h (module 'lte'): void ns3::EpcS1APPathSwitchRequestAcknowledgeHeader::SetErabSwitchedInUplinkItemList(std::list<ns3::EpcS1apSap::ErabSwitchedInUplinkItem, std::allocator<ns3::EpcS1apSap::ErabSwitchedInUplinkItem> > erabToBeSwitchedInDownlinkList) [member function]
+    cls.add_method('SetErabSwitchedInUplinkItemList', 
+                   'void', 
+                   [param('std::list< ns3::EpcS1apSap::ErabSwitchedInUplinkItem >', 'erabToBeSwitchedInDownlinkList')])
+    ## epc-s1ap-header.h (module 'lte'): void ns3::EpcS1APPathSwitchRequestAcknowledgeHeader::SetMmeUeS1Id(uint64_t mmeUeS1Id) [member function]
+    cls.add_method('SetMmeUeS1Id', 
+                   'void', 
+                   [param('uint64_t', 'mmeUeS1Id')])
+    return
+
+def register_Ns3EpcS1APPathSwitchRequestHeader_methods(root_module, cls):
+    ## epc-s1ap-header.h (module 'lte'): ns3::EpcS1APPathSwitchRequestHeader::EpcS1APPathSwitchRequestHeader(ns3::EpcS1APPathSwitchRequestHeader const & arg0) [constructor]
+    cls.add_constructor([param('ns3::EpcS1APPathSwitchRequestHeader const &', 'arg0')])
+    ## epc-s1ap-header.h (module 'lte'): ns3::EpcS1APPathSwitchRequestHeader::EpcS1APPathSwitchRequestHeader() [constructor]
+    cls.add_constructor([])
+    ## epc-s1ap-header.h (module 'lte'): uint32_t ns3::EpcS1APPathSwitchRequestHeader::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## epc-s1ap-header.h (module 'lte'): uint16_t ns3::EpcS1APPathSwitchRequestHeader::GetEcgi() const [member function]
+    cls.add_method('GetEcgi', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## epc-s1ap-header.h (module 'lte'): uint16_t ns3::EpcS1APPathSwitchRequestHeader::GetEnbUeS1Id() const [member function]
+    cls.add_method('GetEnbUeS1Id', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## epc-s1ap-header.h (module 'lte'): std::list<ns3::EpcS1apSap::ErabSwitchedInDownlinkItem, std::allocator<ns3::EpcS1apSap::ErabSwitchedInDownlinkItem> > ns3::EpcS1APPathSwitchRequestHeader::GetErabSwitchedInDownlinkItemList() const [member function]
+    cls.add_method('GetErabSwitchedInDownlinkItemList', 
+                   'std::list< ns3::EpcS1apSap::ErabSwitchedInDownlinkItem >', 
+                   [], 
+                   is_const=True)
+    ## epc-s1ap-header.h (module 'lte'): ns3::TypeId ns3::EpcS1APPathSwitchRequestHeader::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-s1ap-header.h (module 'lte'): uint32_t ns3::EpcS1APPathSwitchRequestHeader::GetLengthOfIes() const [member function]
+    cls.add_method('GetLengthOfIes', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## epc-s1ap-header.h (module 'lte'): uint64_t ns3::EpcS1APPathSwitchRequestHeader::GetMmeUeS1Id() const [member function]
+    cls.add_method('GetMmeUeS1Id', 
+                   'uint64_t', 
+                   [], 
+                   is_const=True)
+    ## epc-s1ap-header.h (module 'lte'): uint32_t ns3::EpcS1APPathSwitchRequestHeader::GetNumberOfIes() const [member function]
+    cls.add_method('GetNumberOfIes', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## epc-s1ap-header.h (module 'lte'): uint32_t ns3::EpcS1APPathSwitchRequestHeader::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-s1ap-header.h (module 'lte'): static ns3::TypeId ns3::EpcS1APPathSwitchRequestHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## epc-s1ap-header.h (module 'lte'): void ns3::EpcS1APPathSwitchRequestHeader::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## epc-s1ap-header.h (module 'lte'): void ns3::EpcS1APPathSwitchRequestHeader::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## epc-s1ap-header.h (module 'lte'): void ns3::EpcS1APPathSwitchRequestHeader::SetEcgi(uint16_t ecgi) [member function]
+    cls.add_method('SetEcgi', 
+                   'void', 
+                   [param('uint16_t', 'ecgi')])
+    ## epc-s1ap-header.h (module 'lte'): void ns3::EpcS1APPathSwitchRequestHeader::SetEnbUeS1Id(uint16_t enbUeS1Id) [member function]
+    cls.add_method('SetEnbUeS1Id', 
+                   'void', 
+                   [param('uint16_t', 'enbUeS1Id')])
+    ## epc-s1ap-header.h (module 'lte'): void ns3::EpcS1APPathSwitchRequestHeader::SetErabSwitchedInDownlinkItemList(std::list<ns3::EpcS1apSap::ErabSwitchedInDownlinkItem, std::allocator<ns3::EpcS1apSap::ErabSwitchedInDownlinkItem> > erabToBeSwitchedInDownlinkList) [member function]
+    cls.add_method('SetErabSwitchedInDownlinkItemList', 
+                   'void', 
+                   [param('std::list< ns3::EpcS1apSap::ErabSwitchedInDownlinkItem >', 'erabToBeSwitchedInDownlinkList')])
+    ## epc-s1ap-header.h (module 'lte'): void ns3::EpcS1APPathSwitchRequestHeader::SetMmeUeS1Id(uint64_t mmeUeS1Id) [member function]
+    cls.add_method('SetMmeUeS1Id', 
+                   'void', 
+                   [param('uint64_t', 'mmeUeS1Id')])
+    return
+
+def register_Ns3EpcS1apEnb_methods(root_module, cls):
+    ## epc-s1ap.h (module 'lte'): ns3::EpcS1apEnb::EpcS1apEnb(ns3::EpcS1apEnb const & arg0) [constructor]
+    cls.add_constructor([param('ns3::EpcS1apEnb const &', 'arg0')])
+    ## epc-s1ap.h (module 'lte'): ns3::EpcS1apEnb::EpcS1apEnb(ns3::Ptr<ns3::Socket> localSocket, ns3::Ipv4Address enbAddress, ns3::Ipv4Address mmeAddress, uint16_t cellId, uint16_t mmeId) [constructor]
+    cls.add_constructor([param('ns3::Ptr< ns3::Socket >', 'localSocket'), param('ns3::Ipv4Address', 'enbAddress'), param('ns3::Ipv4Address', 'mmeAddress'), param('uint16_t', 'cellId'), param('uint16_t', 'mmeId')])
+    ## epc-s1ap.h (module 'lte'): void ns3::EpcS1apEnb::AddS1apInterface(uint16_t enbId, ns3::Ipv4Address enbAddress, uint16_t mmeId, ns3::Ipv4Address mmeAddress, ns3::Ptr<ns3::Socket> localS1apSocket) [member function]
+    cls.add_method('AddS1apInterface', 
+                   'void', 
+                   [param('uint16_t', 'enbId'), param('ns3::Ipv4Address', 'enbAddress'), param('uint16_t', 'mmeId'), param('ns3::Ipv4Address', 'mmeAddress'), param('ns3::Ptr< ns3::Socket >', 'localS1apSocket')])
+    ## epc-s1ap.h (module 'lte'): void ns3::EpcS1apEnb::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## epc-s1ap.h (module 'lte'): ns3::EpcS1apSapEnbProvider * ns3::EpcS1apEnb::GetEpcS1apSapEnbProvider() [member function]
+    cls.add_method('GetEpcS1apSapEnbProvider', 
+                   'ns3::EpcS1apSapEnbProvider *', 
+                   [])
+    ## epc-s1ap.h (module 'lte'): static ns3::TypeId ns3::EpcS1apEnb::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## epc-s1ap.h (module 'lte'): void ns3::EpcS1apEnb::RecvFromS1apSocket(ns3::Ptr<ns3::Socket> socket) [member function]
+    cls.add_method('RecvFromS1apSocket', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Socket >', 'socket')])
+    ## epc-s1ap.h (module 'lte'): void ns3::EpcS1apEnb::SetEpcS1apSapEnbUser(ns3::EpcS1apSapEnb * s) [member function]
+    cls.add_method('SetEpcS1apSapEnbUser', 
+                   'void', 
+                   [param('ns3::EpcS1apSapEnb *', 's')])
+    ## epc-s1ap.h (module 'lte'): void ns3::EpcS1apEnb::DoSendErabReleaseIndication(uint64_t mmeUeS1Id, uint16_t enbUeS1Id, std::list<ns3::EpcS1apSap::ErabToBeReleasedIndication, std::allocator<ns3::EpcS1apSap::ErabToBeReleasedIndication> > erabToBeReleaseIndication) [member function]
+    cls.add_method('DoSendErabReleaseIndication', 
+                   'void', 
+                   [param('uint64_t', 'mmeUeS1Id'), param('uint16_t', 'enbUeS1Id'), param('std::list< ns3::EpcS1apSap::ErabToBeReleasedIndication >', 'erabToBeReleaseIndication')], 
+                   visibility='protected', is_virtual=True)
+    ## epc-s1ap.h (module 'lte'): void ns3::EpcS1apEnb::DoSendInitialContextSetupResponse(uint64_t mmeUeS1Id, uint16_t enbUeS1Id, std::list<ns3::EpcS1apSap::ErabSetupItem, std::allocator<ns3::EpcS1apSap::ErabSetupItem> > erabSetupList) [member function]
+    cls.add_method('DoSendInitialContextSetupResponse', 
+                   'void', 
+                   [param('uint64_t', 'mmeUeS1Id'), param('uint16_t', 'enbUeS1Id'), param('std::list< ns3::EpcS1apSap::ErabSetupItem >', 'erabSetupList')], 
+                   visibility='protected', is_virtual=True)
+    ## epc-s1ap.h (module 'lte'): void ns3::EpcS1apEnb::DoSendInitialUeMessage(uint64_t mmeUeS1Id, uint16_t enbUeS1Id, uint64_t stmsi, uint16_t ecgi) [member function]
+    cls.add_method('DoSendInitialUeMessage', 
+                   'void', 
+                   [param('uint64_t', 'mmeUeS1Id'), param('uint16_t', 'enbUeS1Id'), param('uint64_t', 'stmsi'), param('uint16_t', 'ecgi')], 
+                   visibility='protected', is_virtual=True)
+    ## epc-s1ap.h (module 'lte'): void ns3::EpcS1apEnb::DoSendPathSwitchRequest(uint64_t enbUeS1Id, uint64_t mmeUeS1Id, uint16_t gci, std::list<ns3::EpcS1apSap::ErabSwitchedInDownlinkItem, std::allocator<ns3::EpcS1apSap::ErabSwitchedInDownlinkItem> > erabToBeSwitchedInDownlinkList) [member function]
+    cls.add_method('DoSendPathSwitchRequest', 
+                   'void', 
+                   [param('uint64_t', 'enbUeS1Id'), param('uint64_t', 'mmeUeS1Id'), param('uint16_t', 'gci'), param('std::list< ns3::EpcS1apSap::ErabSwitchedInDownlinkItem >', 'erabToBeSwitchedInDownlinkList')], 
+                   visibility='protected', is_virtual=True)
+    return
+
+def register_Ns3EpcS1apMme_methods(root_module, cls):
+    ## epc-s1ap.h (module 'lte'): ns3::EpcS1apMme::EpcS1apMme(ns3::EpcS1apMme const & arg0) [constructor]
+    cls.add_constructor([param('ns3::EpcS1apMme const &', 'arg0')])
+    ## epc-s1ap.h (module 'lte'): ns3::EpcS1apMme::EpcS1apMme(ns3::Ptr<ns3::Socket> const s1apSocket, uint16_t mmeId) [constructor]
+    cls.add_constructor([param('ns3::Ptr< ns3::Socket > const', 's1apSocket'), param('uint16_t', 'mmeId')])
+    ## epc-s1ap.h (module 'lte'): void ns3::EpcS1apMme::AddS1apInterface(uint16_t enbId, ns3::Ipv4Address enbAddress) [member function]
+    cls.add_method('AddS1apInterface', 
+                   'void', 
+                   [param('uint16_t', 'enbId'), param('ns3::Ipv4Address', 'enbAddress')])
+    ## epc-s1ap.h (module 'lte'): void ns3::EpcS1apMme::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## epc-s1ap.h (module 'lte'): ns3::EpcS1apSapMmeProvider * ns3::EpcS1apMme::GetEpcS1apSapMmeProvider() [member function]
+    cls.add_method('GetEpcS1apSapMmeProvider', 
+                   'ns3::EpcS1apSapMmeProvider *', 
+                   [])
+    ## epc-s1ap.h (module 'lte'): static ns3::TypeId ns3::EpcS1apMme::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## epc-s1ap.h (module 'lte'): void ns3::EpcS1apMme::RecvFromS1apSocket(ns3::Ptr<ns3::Socket> socket) [member function]
+    cls.add_method('RecvFromS1apSocket', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Socket >', 'socket')])
+    ## epc-s1ap.h (module 'lte'): void ns3::EpcS1apMme::SetEpcS1apSapMmeUser(ns3::EpcS1apSapMme * s) [member function]
+    cls.add_method('SetEpcS1apSapMmeUser', 
+                   'void', 
+                   [param('ns3::EpcS1apSapMme *', 's')])
+    ## epc-s1ap.h (module 'lte'): void ns3::EpcS1apMme::DoSendInitialContextSetupRequest(uint64_t mmeUeS1Id, uint16_t enbUeS1Id, std::list<ns3::EpcS1apSap::ErabToBeSetupItem, std::allocator<ns3::EpcS1apSap::ErabToBeSetupItem> > erabToBeSetupList, uint16_t cellId) [member function]
+    cls.add_method('DoSendInitialContextSetupRequest', 
+                   'void', 
+                   [param('uint64_t', 'mmeUeS1Id'), param('uint16_t', 'enbUeS1Id'), param('std::list< ns3::EpcS1apSap::ErabToBeSetupItem >', 'erabToBeSetupList'), param('uint16_t', 'cellId')], 
+                   visibility='protected', is_virtual=True)
+    ## epc-s1ap.h (module 'lte'): void ns3::EpcS1apMme::DoSendPathSwitchRequestAcknowledge(uint64_t enbUeS1Id, uint64_t mmeUeS1Id, uint16_t cgi, std::list<ns3::EpcS1apSap::ErabSwitchedInUplinkItem, std::allocator<ns3::EpcS1apSap::ErabSwitchedInUplinkItem> > erabToBeSwitchedInUplinkList) [member function]
+    cls.add_method('DoSendPathSwitchRequestAcknowledge', 
+                   'void', 
+                   [param('uint64_t', 'enbUeS1Id'), param('uint64_t', 'mmeUeS1Id'), param('uint16_t', 'cgi'), param('std::list< ns3::EpcS1apSap::ErabSwitchedInUplinkItem >', 'erabToBeSwitchedInUplinkList')], 
                    visibility='protected', is_virtual=True)
     return
 
@@ -15286,8 +17676,10 @@ def register_Ns3EpcTftPacketFilter_methods(root_module, cls):
     cls.add_instance_attribute('direction', 'ns3::EpcTft::Direction', is_const=False)
     ## epc-tft.h (module 'lte'): ns3::EpcTft::PacketFilter::localAddress [variable]
     cls.add_instance_attribute('localAddress', 'ns3::Ipv4Address', is_const=False)
-    ## epc-tft.h (module 'lte'): ns3::EpcTft::PacketFilter::localAddress6 [variable]
-    cls.add_instance_attribute('localAddress6', 'ns3::Ipv6Address', is_const=False)
+    ## epc-tft.h (module 'lte'): ns3::EpcTft::PacketFilter::localIpv6Address [variable]
+    cls.add_instance_attribute('localIpv6Address', 'ns3::Ipv6Address', is_const=False)
+    ## epc-tft.h (module 'lte'): ns3::EpcTft::PacketFilter::localIpv6Prefix [variable]
+    cls.add_instance_attribute('localIpv6Prefix', 'ns3::Ipv6Prefix', is_const=False)
     ## epc-tft.h (module 'lte'): ns3::EpcTft::PacketFilter::localMask [variable]
     cls.add_instance_attribute('localMask', 'ns3::Ipv4Mask', is_const=False)
     ## epc-tft.h (module 'lte'): ns3::EpcTft::PacketFilter::localPortEnd [variable]
@@ -15298,8 +17690,10 @@ def register_Ns3EpcTftPacketFilter_methods(root_module, cls):
     cls.add_instance_attribute('precedence', 'uint8_t', is_const=False)
     ## epc-tft.h (module 'lte'): ns3::EpcTft::PacketFilter::remoteAddress [variable]
     cls.add_instance_attribute('remoteAddress', 'ns3::Ipv4Address', is_const=False)
-    ## epc-tft.h (module 'lte'): ns3::EpcTft::PacketFilter::remoteAddress6 [variable]
-    cls.add_instance_attribute('remoteAddress6', 'ns3::Ipv6Address', is_const=False)
+    ## epc-tft.h (module 'lte'): ns3::EpcTft::PacketFilter::remoteIpv6Address [variable]
+    cls.add_instance_attribute('remoteIpv6Address', 'ns3::Ipv6Address', is_const=False)
+    ## epc-tft.h (module 'lte'): ns3::EpcTft::PacketFilter::remoteIpv6Prefix [variable]
+    cls.add_instance_attribute('remoteIpv6Prefix', 'ns3::Ipv6Prefix', is_const=False)
     ## epc-tft.h (module 'lte'): ns3::EpcTft::PacketFilter::remoteMask [variable]
     cls.add_instance_attribute('remoteMask', 'ns3::Ipv4Mask', is_const=False)
     ## epc-tft.h (module 'lte'): ns3::EpcTft::PacketFilter::remotePortEnd [variable]
@@ -15321,10 +17715,10 @@ def register_Ns3EpcTftClassifier_methods(root_module, cls):
     cls.add_method('Add', 
                    'void', 
                    [param('ns3::Ptr< ns3::EpcTft >', 'tft'), param('uint32_t', 'id')])
-    ## epc-tft-classifier.h (module 'lte'): uint32_t ns3::EpcTftClassifier::Classify(ns3::Ptr<ns3::Packet> p, ns3::EpcTft::Direction direction) [member function]
+    ## epc-tft-classifier.h (module 'lte'): uint32_t ns3::EpcTftClassifier::Classify(ns3::Ptr<ns3::Packet> p, ns3::EpcTft::Direction direction, uint16_t protocolNumber) [member function]
     cls.add_method('Classify', 
                    'uint32_t', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::EpcTft::Direction', 'direction')])
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::EpcTft::Direction', 'direction'), param('uint16_t', 'protocolNumber')])
     ## epc-tft-classifier.h (module 'lte'): void ns3::EpcTftClassifier::Delete(uint32_t id) [member function]
     cls.add_method('Delete', 
                    'void', 
@@ -15348,6 +17742,10 @@ def register_Ns3EpcUeNas_methods(root_module, cls):
     cls.add_method('Connect', 
                    'void', 
                    [param('uint16_t', 'cellId'), param('uint32_t', 'dlEarfcn')])
+    ## epc-ue-nas.h (module 'lte'): void ns3::EpcUeNas::ConnectMc(uint16_t cellId, uint16_t dlEarfcn, uint16_t mmWaveCellId) [member function]
+    cls.add_method('ConnectMc', 
+                   'void', 
+                   [param('uint16_t', 'cellId'), param('uint16_t', 'dlEarfcn'), param('uint16_t', 'mmWaveCellId')])
     ## epc-ue-nas.h (module 'lte'): void ns3::EpcUeNas::Disconnect() [member function]
     cls.add_method('Disconnect', 
                    'void', 
@@ -15376,10 +17774,10 @@ def register_Ns3EpcUeNas_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## epc-ue-nas.h (module 'lte'): bool ns3::EpcUeNas::Send(ns3::Ptr<ns3::Packet> p) [member function]
+    ## epc-ue-nas.h (module 'lte'): bool ns3::EpcUeNas::Send(ns3::Ptr<ns3::Packet> p, uint16_t protocolNumber) [member function]
     cls.add_method('Send', 
                    'bool', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p')])
+                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint16_t', 'protocolNumber')])
     ## epc-ue-nas.h (module 'lte'): void ns3::EpcUeNas::SetAsSapProvider(ns3::LteAsSapProvider * s) [member function]
     cls.add_method('SetAsSapProvider', 
                    'void', 
@@ -15400,6 +17798,10 @@ def register_Ns3EpcUeNas_methods(root_module, cls):
     cls.add_method('SetImsi', 
                    'void', 
                    [param('uint64_t', 'imsi')])
+    ## epc-ue-nas.h (module 'lte'): void ns3::EpcUeNas::SetMmWaveAsSapProvider(ns3::LteAsSapProvider * s) [member function]
+    cls.add_method('SetMmWaveAsSapProvider', 
+                   'void', 
+                   [param('ns3::LteAsSapProvider *', 's')])
     ## epc-ue-nas.h (module 'lte'): void ns3::EpcUeNas::StartCellSelection(uint32_t dlEarfcn) [member function]
     cls.add_method('StartCellSelection', 
                    'void', 
@@ -15420,6 +17822,14 @@ def register_Ns3EpcX2_methods(root_module, cls):
                    'void', 
                    [], 
                    is_virtual=True)
+    ## epc-x2.h (module 'lte'): ns3::EpcX2PdcpProvider * ns3::EpcX2::GetEpcX2PdcpProvider() [member function]
+    cls.add_method('GetEpcX2PdcpProvider', 
+                   'ns3::EpcX2PdcpProvider *', 
+                   [])
+    ## epc-x2.h (module 'lte'): ns3::EpcX2RlcProvider * ns3::EpcX2::GetEpcX2RlcProvider() [member function]
+    cls.add_method('GetEpcX2RlcProvider', 
+                   'ns3::EpcX2RlcProvider *', 
+                   [])
     ## epc-x2.h (module 'lte'): ns3::EpcX2SapProvider * ns3::EpcX2::GetEpcX2SapProvider() [member function]
     cls.add_method('GetEpcX2SapProvider', 
                    'ns3::EpcX2SapProvider *', 
@@ -15441,6 +17851,39 @@ def register_Ns3EpcX2_methods(root_module, cls):
     cls.add_method('SetEpcX2SapUser', 
                    'void', 
                    [param('ns3::EpcX2SapUser *', 's')])
+    ## epc-x2.h (module 'lte'): void ns3::EpcX2::SetMcEpcX2PdcpUser(uint32_t teid, ns3::EpcX2PdcpUser * pdcpUser) [member function]
+    cls.add_method('SetMcEpcX2PdcpUser', 
+                   'void', 
+                   [param('uint32_t', 'teid'), param('ns3::EpcX2PdcpUser *', 'pdcpUser')])
+    ## epc-x2.h (module 'lte'): void ns3::EpcX2::SetMcEpcX2RlcUser(uint32_t teid, ns3::EpcX2RlcUser * rlcUser) [member function]
+    cls.add_method('SetMcEpcX2RlcUser', 
+                   'void', 
+                   [param('uint32_t', 'teid'), param('ns3::EpcX2RlcUser *', 'rlcUser')])
+    ## epc-x2.h (module 'lte'): void ns3::EpcX2::DoAddTeidToBeForwarded(uint32_t teid, uint16_t targetCellId) [member function]
+    cls.add_method('DoAddTeidToBeForwarded', 
+                   'void', 
+                   [param('uint32_t', 'teid'), param('uint16_t', 'targetCellId')], 
+                   visibility='protected', is_virtual=True)
+    ## epc-x2.h (module 'lte'): void ns3::EpcX2::DoNotifyCoordinatorHandoverFailed(ns3::EpcX2Sap::HandoverFailedParams params) [member function]
+    cls.add_method('DoNotifyCoordinatorHandoverFailed', 
+                   'void', 
+                   [param('ns3::EpcX2Sap::HandoverFailedParams', 'params')], 
+                   visibility='protected', is_virtual=True)
+    ## epc-x2.h (module 'lte'): void ns3::EpcX2::DoNotifyLteMmWaveHandoverCompleted(ns3::EpcX2Sap::SecondaryHandoverParams params) [member function]
+    cls.add_method('DoNotifyLteMmWaveHandoverCompleted', 
+                   'void', 
+                   [param('ns3::EpcX2Sap::SecondaryHandoverParams', 'params')], 
+                   visibility='protected', is_virtual=True)
+    ## epc-x2.h (module 'lte'): void ns3::EpcX2::DoReceiveMcPdcpSdu(ns3::EpcX2Sap::UeDataParams params) [member function]
+    cls.add_method('DoReceiveMcPdcpSdu', 
+                   'void', 
+                   [param('ns3::EpcX2Sap::UeDataParams', 'params')], 
+                   visibility='protected', is_virtual=True)
+    ## epc-x2.h (module 'lte'): void ns3::EpcX2::DoRemoveTeidToBeForwarded(uint32_t teid) [member function]
+    cls.add_method('DoRemoveTeidToBeForwarded', 
+                   'void', 
+                   [param('uint32_t', 'teid')], 
+                   visibility='protected', is_virtual=True)
     ## epc-x2.h (module 'lte'): void ns3::EpcX2::DoSendHandoverPreparationFailure(ns3::EpcX2Sap::HandoverPreparationFailureParams params) [member function]
     cls.add_method('DoSendHandoverPreparationFailure', 
                    'void', 
@@ -15461,15 +17904,45 @@ def register_Ns3EpcX2_methods(root_module, cls):
                    'void', 
                    [param('ns3::EpcX2Sap::LoadInformationParams', 'params')], 
                    visibility='protected', is_virtual=True)
+    ## epc-x2.h (module 'lte'): void ns3::EpcX2::DoSendMcHandoverRequest(ns3::EpcX2Sap::SecondaryHandoverParams params) [member function]
+    cls.add_method('DoSendMcHandoverRequest', 
+                   'void', 
+                   [param('ns3::EpcX2Sap::SecondaryHandoverParams', 'params')], 
+                   visibility='protected', is_virtual=True)
+    ## epc-x2.h (module 'lte'): void ns3::EpcX2::DoSendMcPdcpPdu(ns3::EpcX2Sap::UeDataParams params) [member function]
+    cls.add_method('DoSendMcPdcpPdu', 
+                   'void', 
+                   [param('ns3::EpcX2Sap::UeDataParams', 'params')], 
+                   visibility='protected', is_virtual=True)
     ## epc-x2.h (module 'lte'): void ns3::EpcX2::DoSendResourceStatusUpdate(ns3::EpcX2Sap::ResourceStatusUpdateParams params) [member function]
     cls.add_method('DoSendResourceStatusUpdate', 
                    'void', 
                    [param('ns3::EpcX2Sap::ResourceStatusUpdateParams', 'params')], 
                    visibility='protected', is_virtual=True)
+    ## epc-x2.h (module 'lte'): void ns3::EpcX2::DoSendRlcSetupCompleted(ns3::EpcX2Sap::UeDataParams arg0) [member function]
+    cls.add_method('DoSendRlcSetupCompleted', 
+                   'void', 
+                   [param('ns3::EpcX2Sap::UeDataParams', 'arg0')], 
+                   visibility='protected', is_virtual=True)
+    ## epc-x2.h (module 'lte'): void ns3::EpcX2::DoSendRlcSetupRequest(ns3::EpcX2Sap::RlcSetupRequest params) [member function]
+    cls.add_method('DoSendRlcSetupRequest', 
+                   'void', 
+                   [param('ns3::EpcX2Sap::RlcSetupRequest', 'params')], 
+                   visibility='protected', is_virtual=True)
+    ## epc-x2.h (module 'lte'): void ns3::EpcX2::DoSendSecondaryCellHandoverCompleted(ns3::EpcX2Sap::SecondaryHandoverCompletedParams params) [member function]
+    cls.add_method('DoSendSecondaryCellHandoverCompleted', 
+                   'void', 
+                   [param('ns3::EpcX2Sap::SecondaryHandoverCompletedParams', 'params')], 
+                   visibility='protected', is_virtual=True)
     ## epc-x2.h (module 'lte'): void ns3::EpcX2::DoSendSnStatusTransfer(ns3::EpcX2Sap::SnStatusTransferParams params) [member function]
     cls.add_method('DoSendSnStatusTransfer', 
                    'void', 
                    [param('ns3::EpcX2Sap::SnStatusTransferParams', 'params')], 
+                   visibility='protected', is_virtual=True)
+    ## epc-x2.h (module 'lte'): void ns3::EpcX2::DoSendSwitchConnectionToMmWave(ns3::EpcX2Sap::SwitchConnectionParams params) [member function]
+    cls.add_method('DoSendSwitchConnectionToMmWave', 
+                   'void', 
+                   [param('ns3::EpcX2Sap::SwitchConnectionParams', 'params')], 
                    visibility='protected', is_virtual=True)
     ## epc-x2.h (module 'lte'): void ns3::EpcX2::DoSendUeContextRelease(ns3::EpcX2Sap::UeContextReleaseParams params) [member function]
     cls.add_method('DoSendUeContextRelease', 
@@ -15481,6 +17954,85 @@ def register_Ns3EpcX2_methods(root_module, cls):
                    'void', 
                    [param('ns3::EpcX2Sap::UeDataParams', 'params')], 
                    visibility='protected', is_virtual=True)
+    ## epc-x2.h (module 'lte'): void ns3::EpcX2::DoSendUeSinrUpdate(ns3::EpcX2Sap::UeImsiSinrParams params) [member function]
+    cls.add_method('DoSendUeSinrUpdate', 
+                   'void', 
+                   [param('ns3::EpcX2Sap::UeImsiSinrParams', 'params')], 
+                   visibility='protected', is_virtual=True)
+    return
+
+def register_Ns3EpcX2ConnectionSwitchHeader_methods(root_module, cls):
+    ## epc-x2-header.h (module 'lte'): ns3::EpcX2ConnectionSwitchHeader::EpcX2ConnectionSwitchHeader(ns3::EpcX2ConnectionSwitchHeader const & arg0) [constructor]
+    cls.add_constructor([param('ns3::EpcX2ConnectionSwitchHeader const &', 'arg0')])
+    ## epc-x2-header.h (module 'lte'): ns3::EpcX2ConnectionSwitchHeader::EpcX2ConnectionSwitchHeader() [constructor]
+    cls.add_constructor([])
+    ## epc-x2-header.h (module 'lte'): uint32_t ns3::EpcX2ConnectionSwitchHeader::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## epc-x2-header.h (module 'lte'): uint8_t ns3::EpcX2ConnectionSwitchHeader::GetDrbid() const [member function]
+    cls.add_method('GetDrbid', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## epc-x2-header.h (module 'lte'): ns3::TypeId ns3::EpcX2ConnectionSwitchHeader::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-x2-header.h (module 'lte'): uint32_t ns3::EpcX2ConnectionSwitchHeader::GetLengthOfIes() const [member function]
+    cls.add_method('GetLengthOfIes', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## epc-x2-header.h (module 'lte'): uint16_t ns3::EpcX2ConnectionSwitchHeader::GetMmWaveRnti() const [member function]
+    cls.add_method('GetMmWaveRnti', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## epc-x2-header.h (module 'lte'): uint32_t ns3::EpcX2ConnectionSwitchHeader::GetNumberOfIes() const [member function]
+    cls.add_method('GetNumberOfIes', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## epc-x2-header.h (module 'lte'): uint32_t ns3::EpcX2ConnectionSwitchHeader::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-x2-header.h (module 'lte'): static ns3::TypeId ns3::EpcX2ConnectionSwitchHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## epc-x2-header.h (module 'lte'): bool ns3::EpcX2ConnectionSwitchHeader::GetUseMmWaveConnection() const [member function]
+    cls.add_method('GetUseMmWaveConnection', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## epc-x2-header.h (module 'lte'): void ns3::EpcX2ConnectionSwitchHeader::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## epc-x2-header.h (module 'lte'): void ns3::EpcX2ConnectionSwitchHeader::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## epc-x2-header.h (module 'lte'): void ns3::EpcX2ConnectionSwitchHeader::SetDrbid(uint8_t bid) [member function]
+    cls.add_method('SetDrbid', 
+                   'void', 
+                   [param('uint8_t', 'bid')])
+    ## epc-x2-header.h (module 'lte'): void ns3::EpcX2ConnectionSwitchHeader::SetMmWaveRnti(uint16_t rnti) [member function]
+    cls.add_method('SetMmWaveRnti', 
+                   'void', 
+                   [param('uint16_t', 'rnti')])
+    ## epc-x2-header.h (module 'lte'): void ns3::EpcX2ConnectionSwitchHeader::SetUseMmWaveConnection(bool useMmWaveConnection) [member function]
+    cls.add_method('SetUseMmWaveConnection', 
+                   'void', 
+                   [param('bool', 'useMmWaveConnection')])
     return
 
 def register_Ns3EpcX2HandoverPreparationFailureHeader_methods(root_module, cls):
@@ -15665,6 +18217,11 @@ def register_Ns3EpcX2HandoverRequestHeader_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_const=True, is_virtual=True)
+    ## epc-x2-header.h (module 'lte'): bool ns3::EpcX2HandoverRequestHeader::GetIsMc() const [member function]
+    cls.add_method('GetIsMc', 
+                   'bool', 
+                   [], 
+                   is_const=True)
     ## epc-x2-header.h (module 'lte'): uint32_t ns3::EpcX2HandoverRequestHeader::GetLengthOfIes() const [member function]
     cls.add_method('GetLengthOfIes', 
                    'uint32_t', 
@@ -15683,6 +18240,11 @@ def register_Ns3EpcX2HandoverRequestHeader_methods(root_module, cls):
     ## epc-x2-header.h (module 'lte'): uint16_t ns3::EpcX2HandoverRequestHeader::GetOldEnbUeX2apId() const [member function]
     cls.add_method('GetOldEnbUeX2apId', 
                    'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## epc-x2-header.h (module 'lte'): std::vector<ns3::EpcX2Sap::RlcSetupRequest, std::allocator<ns3::EpcX2Sap::RlcSetupRequest> > ns3::EpcX2HandoverRequestHeader::GetRlcSetupRequests() const [member function]
+    cls.add_method('GetRlcSetupRequests', 
+                   'std::vector< ns3::EpcX2Sap::RlcSetupRequest >', 
                    [], 
                    is_const=True)
     ## epc-x2-header.h (module 'lte'): uint32_t ns3::EpcX2HandoverRequestHeader::GetSerializedSize() const [member function]
@@ -15728,6 +18290,10 @@ def register_Ns3EpcX2HandoverRequestHeader_methods(root_module, cls):
     cls.add_method('SetCause', 
                    'void', 
                    [param('uint16_t', 'cause')])
+    ## epc-x2-header.h (module 'lte'): void ns3::EpcX2HandoverRequestHeader::SetIsMc(bool isMc) [member function]
+    cls.add_method('SetIsMc', 
+                   'void', 
+                   [param('bool', 'isMc')])
     ## epc-x2-header.h (module 'lte'): void ns3::EpcX2HandoverRequestHeader::SetMmeUeS1apId(uint32_t mmeUeS1apId) [member function]
     cls.add_method('SetMmeUeS1apId', 
                    'void', 
@@ -15736,6 +18302,10 @@ def register_Ns3EpcX2HandoverRequestHeader_methods(root_module, cls):
     cls.add_method('SetOldEnbUeX2apId', 
                    'void', 
                    [param('uint16_t', 'x2apId')])
+    ## epc-x2-header.h (module 'lte'): void ns3::EpcX2HandoverRequestHeader::SetRlcSetupRequests(std::vector<ns3::EpcX2Sap::RlcSetupRequest, std::allocator<ns3::EpcX2Sap::RlcSetupRequest> > rlcRequests) [member function]
+    cls.add_method('SetRlcSetupRequests', 
+                   'void', 
+                   [param('std::vector< ns3::EpcX2Sap::RlcSetupRequest >', 'rlcRequests')])
     ## epc-x2-header.h (module 'lte'): void ns3::EpcX2HandoverRequestHeader::SetTargetCellId(uint16_t targetCellId) [member function]
     cls.add_method('SetTargetCellId', 
                    'void', 
@@ -15869,6 +18439,154 @@ def register_Ns3EpcX2LoadInformationHeader_methods(root_module, cls):
                    [param('std::vector< ns3::EpcX2Sap::CellInformationItem >', 'cellInformationList')])
     return
 
+def register_Ns3EpcX2McHandoverHeader_methods(root_module, cls):
+    ## epc-x2-header.h (module 'lte'): ns3::EpcX2McHandoverHeader::EpcX2McHandoverHeader(ns3::EpcX2McHandoverHeader const & arg0) [constructor]
+    cls.add_constructor([param('ns3::EpcX2McHandoverHeader const &', 'arg0')])
+    ## epc-x2-header.h (module 'lte'): ns3::EpcX2McHandoverHeader::EpcX2McHandoverHeader() [constructor]
+    cls.add_constructor([])
+    ## epc-x2-header.h (module 'lte'): uint32_t ns3::EpcX2McHandoverHeader::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## epc-x2-header.h (module 'lte'): uint64_t ns3::EpcX2McHandoverHeader::GetImsi() const [member function]
+    cls.add_method('GetImsi', 
+                   'uint64_t', 
+                   [], 
+                   is_const=True)
+    ## epc-x2-header.h (module 'lte'): ns3::TypeId ns3::EpcX2McHandoverHeader::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-x2-header.h (module 'lte'): uint32_t ns3::EpcX2McHandoverHeader::GetLengthOfIes() const [member function]
+    cls.add_method('GetLengthOfIes', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## epc-x2-header.h (module 'lte'): uint32_t ns3::EpcX2McHandoverHeader::GetNumberOfIes() const [member function]
+    cls.add_method('GetNumberOfIes', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## epc-x2-header.h (module 'lte'): uint16_t ns3::EpcX2McHandoverHeader::GetOldCellId() const [member function]
+    cls.add_method('GetOldCellId', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## epc-x2-header.h (module 'lte'): uint32_t ns3::EpcX2McHandoverHeader::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-x2-header.h (module 'lte'): uint16_t ns3::EpcX2McHandoverHeader::GetTargetCellId() const [member function]
+    cls.add_method('GetTargetCellId', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## epc-x2-header.h (module 'lte'): static ns3::TypeId ns3::EpcX2McHandoverHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## epc-x2-header.h (module 'lte'): void ns3::EpcX2McHandoverHeader::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## epc-x2-header.h (module 'lte'): void ns3::EpcX2McHandoverHeader::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## epc-x2-header.h (module 'lte'): void ns3::EpcX2McHandoverHeader::SetImsi(uint64_t imsi) [member function]
+    cls.add_method('SetImsi', 
+                   'void', 
+                   [param('uint64_t', 'imsi')])
+    ## epc-x2-header.h (module 'lte'): void ns3::EpcX2McHandoverHeader::SetOldCellId(uint16_t oldCellId) [member function]
+    cls.add_method('SetOldCellId', 
+                   'void', 
+                   [param('uint16_t', 'oldCellId')])
+    ## epc-x2-header.h (module 'lte'): void ns3::EpcX2McHandoverHeader::SetTargetCellId(uint16_t targetCellId) [member function]
+    cls.add_method('SetTargetCellId', 
+                   'void', 
+                   [param('uint16_t', 'targetCellId')])
+    return
+
+def register_Ns3EpcX2NotifyCoordinatorHandoverFailedHeader_methods(root_module, cls):
+    ## epc-x2-header.h (module 'lte'): ns3::EpcX2NotifyCoordinatorHandoverFailedHeader::EpcX2NotifyCoordinatorHandoverFailedHeader(ns3::EpcX2NotifyCoordinatorHandoverFailedHeader const & arg0) [constructor]
+    cls.add_constructor([param('ns3::EpcX2NotifyCoordinatorHandoverFailedHeader const &', 'arg0')])
+    ## epc-x2-header.h (module 'lte'): ns3::EpcX2NotifyCoordinatorHandoverFailedHeader::EpcX2NotifyCoordinatorHandoverFailedHeader() [constructor]
+    cls.add_constructor([])
+    ## epc-x2-header.h (module 'lte'): uint32_t ns3::EpcX2NotifyCoordinatorHandoverFailedHeader::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## epc-x2-header.h (module 'lte'): uint64_t ns3::EpcX2NotifyCoordinatorHandoverFailedHeader::GetImsi() const [member function]
+    cls.add_method('GetImsi', 
+                   'uint64_t', 
+                   [], 
+                   is_const=True)
+    ## epc-x2-header.h (module 'lte'): ns3::TypeId ns3::EpcX2NotifyCoordinatorHandoverFailedHeader::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-x2-header.h (module 'lte'): uint32_t ns3::EpcX2NotifyCoordinatorHandoverFailedHeader::GetLengthOfIes() const [member function]
+    cls.add_method('GetLengthOfIes', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## epc-x2-header.h (module 'lte'): uint32_t ns3::EpcX2NotifyCoordinatorHandoverFailedHeader::GetNumberOfIes() const [member function]
+    cls.add_method('GetNumberOfIes', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## epc-x2-header.h (module 'lte'): uint32_t ns3::EpcX2NotifyCoordinatorHandoverFailedHeader::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-x2-header.h (module 'lte'): uint16_t ns3::EpcX2NotifyCoordinatorHandoverFailedHeader::GetSourceCellId() const [member function]
+    cls.add_method('GetSourceCellId', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## epc-x2-header.h (module 'lte'): uint16_t ns3::EpcX2NotifyCoordinatorHandoverFailedHeader::GetTargetCellId() const [member function]
+    cls.add_method('GetTargetCellId', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## epc-x2-header.h (module 'lte'): static ns3::TypeId ns3::EpcX2NotifyCoordinatorHandoverFailedHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## epc-x2-header.h (module 'lte'): void ns3::EpcX2NotifyCoordinatorHandoverFailedHeader::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## epc-x2-header.h (module 'lte'): void ns3::EpcX2NotifyCoordinatorHandoverFailedHeader::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## epc-x2-header.h (module 'lte'): void ns3::EpcX2NotifyCoordinatorHandoverFailedHeader::SetImsi(uint64_t imsi) [member function]
+    cls.add_method('SetImsi', 
+                   'void', 
+                   [param('uint64_t', 'imsi')])
+    ## epc-x2-header.h (module 'lte'): void ns3::EpcX2NotifyCoordinatorHandoverFailedHeader::SetSourceCellId(uint16_t oldCellId) [member function]
+    cls.add_method('SetSourceCellId', 
+                   'void', 
+                   [param('uint16_t', 'oldCellId')])
+    ## epc-x2-header.h (module 'lte'): void ns3::EpcX2NotifyCoordinatorHandoverFailedHeader::SetTargetCellId(uint16_t targetCellId) [member function]
+    cls.add_method('SetTargetCellId', 
+                   'void', 
+                   [param('uint16_t', 'targetCellId')])
+    return
+
 def register_Ns3EpcX2ResourceStatusUpdateHeader_methods(root_module, cls):
     ## epc-x2-header.h (module 'lte'): ns3::EpcX2ResourceStatusUpdateHeader::EpcX2ResourceStatusUpdateHeader(ns3::EpcX2ResourceStatusUpdateHeader const & arg0) [constructor]
     cls.add_constructor([param('ns3::EpcX2ResourceStatusUpdateHeader const &', 'arg0')])
@@ -15941,6 +18659,281 @@ def register_Ns3EpcX2ResourceStatusUpdateHeader_methods(root_module, cls):
     cls.add_method('SetEnb2MeasurementId', 
                    'void', 
                    [param('uint16_t', 'enb2MeasurementId')])
+    return
+
+def register_Ns3EpcX2RlcSetupCompletedHeader_methods(root_module, cls):
+    ## epc-x2-header.h (module 'lte'): ns3::EpcX2RlcSetupCompletedHeader::EpcX2RlcSetupCompletedHeader(ns3::EpcX2RlcSetupCompletedHeader const & arg0) [constructor]
+    cls.add_constructor([param('ns3::EpcX2RlcSetupCompletedHeader const &', 'arg0')])
+    ## epc-x2-header.h (module 'lte'): ns3::EpcX2RlcSetupCompletedHeader::EpcX2RlcSetupCompletedHeader() [constructor]
+    cls.add_constructor([])
+    ## epc-x2-header.h (module 'lte'): uint32_t ns3::EpcX2RlcSetupCompletedHeader::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## epc-x2-header.h (module 'lte'): uint32_t ns3::EpcX2RlcSetupCompletedHeader::GetGtpTeid() const [member function]
+    cls.add_method('GetGtpTeid', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## epc-x2-header.h (module 'lte'): ns3::TypeId ns3::EpcX2RlcSetupCompletedHeader::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-x2-header.h (module 'lte'): uint32_t ns3::EpcX2RlcSetupCompletedHeader::GetLengthOfIes() const [member function]
+    cls.add_method('GetLengthOfIes', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## epc-x2-header.h (module 'lte'): uint32_t ns3::EpcX2RlcSetupCompletedHeader::GetNumberOfIes() const [member function]
+    cls.add_method('GetNumberOfIes', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## epc-x2-header.h (module 'lte'): uint32_t ns3::EpcX2RlcSetupCompletedHeader::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-x2-header.h (module 'lte'): uint16_t ns3::EpcX2RlcSetupCompletedHeader::GetSourceCellId() const [member function]
+    cls.add_method('GetSourceCellId', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## epc-x2-header.h (module 'lte'): uint16_t ns3::EpcX2RlcSetupCompletedHeader::GetTargetCellId() const [member function]
+    cls.add_method('GetTargetCellId', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## epc-x2-header.h (module 'lte'): static ns3::TypeId ns3::EpcX2RlcSetupCompletedHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## epc-x2-header.h (module 'lte'): void ns3::EpcX2RlcSetupCompletedHeader::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## epc-x2-header.h (module 'lte'): void ns3::EpcX2RlcSetupCompletedHeader::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## epc-x2-header.h (module 'lte'): void ns3::EpcX2RlcSetupCompletedHeader::SetGtpTeid(uint32_t gtpTeid) [member function]
+    cls.add_method('SetGtpTeid', 
+                   'void', 
+                   [param('uint32_t', 'gtpTeid')])
+    ## epc-x2-header.h (module 'lte'): void ns3::EpcX2RlcSetupCompletedHeader::SetSourceCellId(uint16_t sourceCellId) [member function]
+    cls.add_method('SetSourceCellId', 
+                   'void', 
+                   [param('uint16_t', 'sourceCellId')])
+    ## epc-x2-header.h (module 'lte'): void ns3::EpcX2RlcSetupCompletedHeader::SetTargetCellId(uint16_t targetCellId) [member function]
+    cls.add_method('SetTargetCellId', 
+                   'void', 
+                   [param('uint16_t', 'targetCellId')])
+    return
+
+def register_Ns3EpcX2RlcSetupRequestHeader_methods(root_module, cls):
+    ## epc-x2-header.h (module 'lte'): ns3::EpcX2RlcSetupRequestHeader::EpcX2RlcSetupRequestHeader(ns3::EpcX2RlcSetupRequestHeader const & arg0) [constructor]
+    cls.add_constructor([param('ns3::EpcX2RlcSetupRequestHeader const &', 'arg0')])
+    ## epc-x2-header.h (module 'lte'): ns3::EpcX2RlcSetupRequestHeader::EpcX2RlcSetupRequestHeader() [constructor]
+    cls.add_constructor([])
+    ## epc-x2-header.h (module 'lte'): uint32_t ns3::EpcX2RlcSetupRequestHeader::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## epc-x2-header.h (module 'lte'): uint8_t ns3::EpcX2RlcSetupRequestHeader::GetDrbid() const [member function]
+    cls.add_method('GetDrbid', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## epc-x2-header.h (module 'lte'): uint32_t ns3::EpcX2RlcSetupRequestHeader::GetGtpTeid() const [member function]
+    cls.add_method('GetGtpTeid', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## epc-x2-header.h (module 'lte'): ns3::TypeId ns3::EpcX2RlcSetupRequestHeader::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-x2-header.h (module 'lte'): ns3::LteEnbCmacSapProvider::LcInfo ns3::EpcX2RlcSetupRequestHeader::GetLcInfo() const [member function]
+    cls.add_method('GetLcInfo', 
+                   'ns3::LteEnbCmacSapProvider::LcInfo', 
+                   [], 
+                   is_const=True)
+    ## epc-x2-header.h (module 'lte'): uint32_t ns3::EpcX2RlcSetupRequestHeader::GetLengthOfIes() const [member function]
+    cls.add_method('GetLengthOfIes', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## epc-x2-header.h (module 'lte'): ns3::LteRrcSap::LogicalChannelConfig ns3::EpcX2RlcSetupRequestHeader::GetLogicalChannelConfig() [member function]
+    cls.add_method('GetLogicalChannelConfig', 
+                   'ns3::LteRrcSap::LogicalChannelConfig', 
+                   [])
+    ## epc-x2-header.h (module 'lte'): uint16_t ns3::EpcX2RlcSetupRequestHeader::GetLteRnti() const [member function]
+    cls.add_method('GetLteRnti', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## epc-x2-header.h (module 'lte'): uint16_t ns3::EpcX2RlcSetupRequestHeader::GetMmWaveRnti() const [member function]
+    cls.add_method('GetMmWaveRnti', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## epc-x2-header.h (module 'lte'): uint32_t ns3::EpcX2RlcSetupRequestHeader::GetNumberOfIes() const [member function]
+    cls.add_method('GetNumberOfIes', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## epc-x2-header.h (module 'lte'): ns3::LteRrcSap::RlcConfig ns3::EpcX2RlcSetupRequestHeader::GetRlcConfig() const [member function]
+    cls.add_method('GetRlcConfig', 
+                   'ns3::LteRrcSap::RlcConfig', 
+                   [], 
+                   is_const=True)
+    ## epc-x2-header.h (module 'lte'): uint32_t ns3::EpcX2RlcSetupRequestHeader::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-x2-header.h (module 'lte'): uint16_t ns3::EpcX2RlcSetupRequestHeader::GetSourceCellId() const [member function]
+    cls.add_method('GetSourceCellId', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## epc-x2-header.h (module 'lte'): uint16_t ns3::EpcX2RlcSetupRequestHeader::GetTargetCellId() const [member function]
+    cls.add_method('GetTargetCellId', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## epc-x2-header.h (module 'lte'): static ns3::TypeId ns3::EpcX2RlcSetupRequestHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## epc-x2-header.h (module 'lte'): void ns3::EpcX2RlcSetupRequestHeader::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## epc-x2-header.h (module 'lte'): void ns3::EpcX2RlcSetupRequestHeader::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## epc-x2-header.h (module 'lte'): void ns3::EpcX2RlcSetupRequestHeader::SetDrbid(uint8_t drbid) [member function]
+    cls.add_method('SetDrbid', 
+                   'void', 
+                   [param('uint8_t', 'drbid')])
+    ## epc-x2-header.h (module 'lte'): void ns3::EpcX2RlcSetupRequestHeader::SetGtpTeid(uint32_t gtpTeid) [member function]
+    cls.add_method('SetGtpTeid', 
+                   'void', 
+                   [param('uint32_t', 'gtpTeid')])
+    ## epc-x2-header.h (module 'lte'): void ns3::EpcX2RlcSetupRequestHeader::SetLcInfo(ns3::LteEnbCmacSapProvider::LcInfo lcInfo) [member function]
+    cls.add_method('SetLcInfo', 
+                   'void', 
+                   [param('ns3::LteEnbCmacSapProvider::LcInfo', 'lcInfo')])
+    ## epc-x2-header.h (module 'lte'): void ns3::EpcX2RlcSetupRequestHeader::SetLogicalChannelConfig(ns3::LteRrcSap::LogicalChannelConfig conf) [member function]
+    cls.add_method('SetLogicalChannelConfig', 
+                   'void', 
+                   [param('ns3::LteRrcSap::LogicalChannelConfig', 'conf')])
+    ## epc-x2-header.h (module 'lte'): void ns3::EpcX2RlcSetupRequestHeader::SetLteRnti(uint16_t rnti) [member function]
+    cls.add_method('SetLteRnti', 
+                   'void', 
+                   [param('uint16_t', 'rnti')])
+    ## epc-x2-header.h (module 'lte'): void ns3::EpcX2RlcSetupRequestHeader::SetMmWaveRnti(uint16_t rnti) [member function]
+    cls.add_method('SetMmWaveRnti', 
+                   'void', 
+                   [param('uint16_t', 'rnti')])
+    ## epc-x2-header.h (module 'lte'): void ns3::EpcX2RlcSetupRequestHeader::SetRlcConfig(ns3::LteRrcSap::RlcConfig rlcConfig) [member function]
+    cls.add_method('SetRlcConfig', 
+                   'void', 
+                   [param('ns3::LteRrcSap::RlcConfig', 'rlcConfig')])
+    ## epc-x2-header.h (module 'lte'): void ns3::EpcX2RlcSetupRequestHeader::SetSourceCellId(uint16_t sourceCellId) [member function]
+    cls.add_method('SetSourceCellId', 
+                   'void', 
+                   [param('uint16_t', 'sourceCellId')])
+    ## epc-x2-header.h (module 'lte'): void ns3::EpcX2RlcSetupRequestHeader::SetTargetCellId(uint16_t targetCellId) [member function]
+    cls.add_method('SetTargetCellId', 
+                   'void', 
+                   [param('uint16_t', 'targetCellId')])
+    return
+
+def register_Ns3EpcX2SecondaryCellHandoverCompletedHeader_methods(root_module, cls):
+    ## epc-x2-header.h (module 'lte'): ns3::EpcX2SecondaryCellHandoverCompletedHeader::EpcX2SecondaryCellHandoverCompletedHeader(ns3::EpcX2SecondaryCellHandoverCompletedHeader const & arg0) [constructor]
+    cls.add_constructor([param('ns3::EpcX2SecondaryCellHandoverCompletedHeader const &', 'arg0')])
+    ## epc-x2-header.h (module 'lte'): ns3::EpcX2SecondaryCellHandoverCompletedHeader::EpcX2SecondaryCellHandoverCompletedHeader() [constructor]
+    cls.add_constructor([])
+    ## epc-x2-header.h (module 'lte'): uint32_t ns3::EpcX2SecondaryCellHandoverCompletedHeader::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## epc-x2-header.h (module 'lte'): uint64_t ns3::EpcX2SecondaryCellHandoverCompletedHeader::GetImsi() const [member function]
+    cls.add_method('GetImsi', 
+                   'uint64_t', 
+                   [], 
+                   is_const=True)
+    ## epc-x2-header.h (module 'lte'): ns3::TypeId ns3::EpcX2SecondaryCellHandoverCompletedHeader::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-x2-header.h (module 'lte'): uint32_t ns3::EpcX2SecondaryCellHandoverCompletedHeader::GetLengthOfIes() const [member function]
+    cls.add_method('GetLengthOfIes', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## epc-x2-header.h (module 'lte'): uint16_t ns3::EpcX2SecondaryCellHandoverCompletedHeader::GetMmWaveRnti() const [member function]
+    cls.add_method('GetMmWaveRnti', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## epc-x2-header.h (module 'lte'): uint32_t ns3::EpcX2SecondaryCellHandoverCompletedHeader::GetNumberOfIes() const [member function]
+    cls.add_method('GetNumberOfIes', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## epc-x2-header.h (module 'lte'): uint16_t ns3::EpcX2SecondaryCellHandoverCompletedHeader::GetOldEnbUeX2apId() const [member function]
+    cls.add_method('GetOldEnbUeX2apId', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## epc-x2-header.h (module 'lte'): uint32_t ns3::EpcX2SecondaryCellHandoverCompletedHeader::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-x2-header.h (module 'lte'): static ns3::TypeId ns3::EpcX2SecondaryCellHandoverCompletedHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## epc-x2-header.h (module 'lte'): void ns3::EpcX2SecondaryCellHandoverCompletedHeader::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## epc-x2-header.h (module 'lte'): void ns3::EpcX2SecondaryCellHandoverCompletedHeader::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## epc-x2-header.h (module 'lte'): void ns3::EpcX2SecondaryCellHandoverCompletedHeader::SetImsi(uint64_t imsi) [member function]
+    cls.add_method('SetImsi', 
+                   'void', 
+                   [param('uint64_t', 'imsi')])
+    ## epc-x2-header.h (module 'lte'): void ns3::EpcX2SecondaryCellHandoverCompletedHeader::SetMmWaveRnti(uint16_t mmWaveRnti) [member function]
+    cls.add_method('SetMmWaveRnti', 
+                   'void', 
+                   [param('uint16_t', 'mmWaveRnti')])
+    ## epc-x2-header.h (module 'lte'): void ns3::EpcX2SecondaryCellHandoverCompletedHeader::SetOldEnbUeX2apId(uint16_t oldEnbUeX2apId) [member function]
+    cls.add_method('SetOldEnbUeX2apId', 
+                   'void', 
+                   [param('uint16_t', 'oldEnbUeX2apId')])
     return
 
 def register_Ns3EpcX2SnStatusTransferHeader_methods(root_module, cls):
@@ -16080,6 +19073,71 @@ def register_Ns3EpcX2UeContextReleaseHeader_methods(root_module, cls):
     cls.add_method('SetOldEnbUeX2apId', 
                    'void', 
                    [param('uint16_t', 'x2apId')])
+    return
+
+def register_Ns3EpcX2UeImsiSinrUpdateHeader_methods(root_module, cls):
+    ## epc-x2-header.h (module 'lte'): ns3::EpcX2UeImsiSinrUpdateHeader::EpcX2UeImsiSinrUpdateHeader(ns3::EpcX2UeImsiSinrUpdateHeader const & arg0) [constructor]
+    cls.add_constructor([param('ns3::EpcX2UeImsiSinrUpdateHeader const &', 'arg0')])
+    ## epc-x2-header.h (module 'lte'): ns3::EpcX2UeImsiSinrUpdateHeader::EpcX2UeImsiSinrUpdateHeader() [constructor]
+    cls.add_constructor([])
+    ## epc-x2-header.h (module 'lte'): uint32_t ns3::EpcX2UeImsiSinrUpdateHeader::Deserialize(ns3::Buffer::Iterator start) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_virtual=True)
+    ## epc-x2-header.h (module 'lte'): ns3::TypeId ns3::EpcX2UeImsiSinrUpdateHeader::GetInstanceTypeId() const [member function]
+    cls.add_method('GetInstanceTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-x2-header.h (module 'lte'): uint32_t ns3::EpcX2UeImsiSinrUpdateHeader::GetLengthOfIes() const [member function]
+    cls.add_method('GetLengthOfIes', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## epc-x2-header.h (module 'lte'): uint32_t ns3::EpcX2UeImsiSinrUpdateHeader::GetNumberOfIes() const [member function]
+    cls.add_method('GetNumberOfIes', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True)
+    ## epc-x2-header.h (module 'lte'): uint32_t ns3::EpcX2UeImsiSinrUpdateHeader::GetSerializedSize() const [member function]
+    cls.add_method('GetSerializedSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## epc-x2-header.h (module 'lte'): uint16_t ns3::EpcX2UeImsiSinrUpdateHeader::GetSourceCellId() const [member function]
+    cls.add_method('GetSourceCellId', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## epc-x2-header.h (module 'lte'): static ns3::TypeId ns3::EpcX2UeImsiSinrUpdateHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## epc-x2-header.h (module 'lte'): std::map<unsigned long, double, std::less<unsigned long>, std::allocator<std::pair<const unsigned long, double> > > ns3::EpcX2UeImsiSinrUpdateHeader::GetUeImsiSinrMap() const [member function]
+    cls.add_method('GetUeImsiSinrMap', 
+                   'std::map< unsigned long, double >', 
+                   [], 
+                   is_const=True)
+    ## epc-x2-header.h (module 'lte'): void ns3::EpcX2UeImsiSinrUpdateHeader::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## epc-x2-header.h (module 'lte'): void ns3::EpcX2UeImsiSinrUpdateHeader::Serialize(ns3::Buffer::Iterator start) const [member function]
+    cls.add_method('Serialize', 
+                   'void', 
+                   [param('ns3::Buffer::Iterator', 'start')], 
+                   is_const=True, is_virtual=True)
+    ## epc-x2-header.h (module 'lte'): void ns3::EpcX2UeImsiSinrUpdateHeader::SetSourceCellId(uint16_t sourceCellId) [member function]
+    cls.add_method('SetSourceCellId', 
+                   'void', 
+                   [param('uint16_t', 'sourceCellId')])
+    ## epc-x2-header.h (module 'lte'): void ns3::EpcX2UeImsiSinrUpdateHeader::SetUeImsiSinrMap(std::map<unsigned long, double, std::less<unsigned long>, std::allocator<std::pair<const unsigned long, double> > > map) [member function]
+    cls.add_method('SetUeImsiSinrMap', 
+                   'void', 
+                   [param('std::map< unsigned long, double >', 'map')])
     return
 
 def register_Ns3ErlangRandomVariable_methods(root_module, cls):
@@ -17371,6 +20429,11 @@ def register_Ns3LteEnbComponentCarrierManager_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## lte-enb-component-carrier-manager.h (module 'lte'): void ns3::LteEnbComponentCarrierManager::SetBandwidthMap(std::map<unsigned char, double, std::less<unsigned char>, std::allocator<std::pair<const unsigned char, double> > > bandwidthMap) [member function]
+    cls.add_method('SetBandwidthMap', 
+                   'void', 
+                   [param('std::map< unsigned char, double >', 'bandwidthMap')], 
+                   is_virtual=True)
     ## lte-enb-component-carrier-manager.h (module 'lte'): bool ns3::LteEnbComponentCarrierManager::SetCcmMacSapProviders(uint8_t componentCarrierId, ns3::LteCcmMacSapProvider * sap) [member function]
     cls.add_method('SetCcmMacSapProviders', 
                    'bool', 
@@ -17390,11 +20453,6 @@ def register_Ns3LteEnbComponentCarrierManager_methods(root_module, cls):
     cls.add_method('SetNumberOfComponentCarriers', 
                    'void', 
                    [param('uint16_t', 'noOfComponentCarriers')], 
-                   is_virtual=True)
-    ## lte-enb-component-carrier-manager.h (module 'lte'): void ns3::LteEnbComponentCarrierManager::SetRrc(ns3::Ptr<ns3::LteEnbRrc> const rrc) [member function]
-    cls.add_method('SetRrc', 
-                   'void', 
-                   [param('ns3::Ptr< ns3::LteEnbRrc > const', 'rrc')], 
                    is_virtual=True)
     ## lte-enb-component-carrier-manager.h (module 'lte'): void ns3::LteEnbComponentCarrierManager::DoDispose() [member function]
     cls.add_method('DoDispose', 
@@ -17510,6 +20568,14 @@ def register_Ns3LteEnbRrc_methods(root_module, cls):
     cls.add_method('ConfigureCell', 
                    'void', 
                    [param('std::map< unsigned char, ns3::Ptr< ns3::ComponentCarrierEnb > >', 'ccPhyConf')])
+    ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::ConfigureCell(std::map<unsigned char, ns3::LteEnbRrc::MmWaveComponentCarrierConf, std::less<unsigned char>, std::allocator<std::pair<const unsigned char, ns3::LteEnbRrc::MmWaveComponentCarrierConf> > > ccPhyConf) [member function]
+    cls.add_method('ConfigureCell', 
+                   'void', 
+                   [param('std::map< unsigned char, ns3::LteEnbRrc::MmWaveComponentCarrierConf >', 'ccPhyConf')])
+    ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::ConfigureMmWaveCarriers(std::map<unsigned char, ns3::LteEnbRrc::MmWaveComponentCarrierConf, std::less<unsigned char>, std::allocator<std::pair<const unsigned char, ns3::LteEnbRrc::MmWaveComponentCarrierConf> > > ccPhyConf) [member function]
+    cls.add_method('ConfigureMmWaveCarriers', 
+                   'void', 
+                   [param('std::map< unsigned char, ns3::LteEnbRrc::MmWaveComponentCarrierConf >', 'ccPhyConf')])
     ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::ConnectionRejectedTimeout(uint16_t rnti) [member function]
     cls.add_method('ConnectionRejectedTimeout', 
                    'void', 
@@ -17526,10 +20592,29 @@ def register_Ns3LteEnbRrc_methods(root_module, cls):
     cls.add_method('DoSendReleaseDataRadioBearer', 
                    'void', 
                    [param('uint64_t', 'imsi'), param('uint16_t', 'rnti'), param('uint8_t', 'bearerId')])
+    ## lte-enb-rrc.h (module 'lte'): uint16_t ns3::LteEnbRrc::GetCellId() const [member function]
+    cls.add_method('GetCellId', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## lte-enb-rrc.h (module 'lte'): ns3::EpcX2PdcpProvider * ns3::LteEnbRrc::GetEpcX2PdcpProvider() const [member function]
+    cls.add_method('GetEpcX2PdcpProvider', 
+                   'ns3::EpcX2PdcpProvider *', 
+                   [], 
+                   is_const=True)
+    ## lte-enb-rrc.h (module 'lte'): ns3::EpcX2RlcProvider * ns3::LteEnbRrc::GetEpcX2RlcProvider() const [member function]
+    cls.add_method('GetEpcX2RlcProvider', 
+                   'ns3::EpcX2RlcProvider *', 
+                   [], 
+                   is_const=True)
     ## lte-enb-rrc.h (module 'lte'): ns3::EpcX2SapUser * ns3::LteEnbRrc::GetEpcX2SapUser() [member function]
     cls.add_method('GetEpcX2SapUser', 
                    'ns3::EpcX2SapUser *', 
                    [])
+    ## lte-enb-rrc.h (module 'lte'): uint64_t ns3::LteEnbRrc::GetImsiFromRnti(uint16_t rnti) [member function]
+    cls.add_method('GetImsiFromRnti', 
+                   'uint64_t', 
+                   [param('uint16_t', 'rnti')])
     ## lte-enb-rrc.h (module 'lte'): ns3::LteAnrSapUser * ns3::LteEnbRrc::GetLteAnrSapUser() [member function]
     cls.add_method('GetLteAnrSapUser', 
                    'ns3::LteAnrSapUser *', 
@@ -17570,6 +20655,10 @@ def register_Ns3LteEnbRrc_methods(root_module, cls):
     cls.add_method('GetLteHandoverManagementSapUser', 
                    'ns3::LteHandoverManagementSapUser *', 
                    [])
+    ## lte-enb-rrc.h (module 'lte'): uint16_t ns3::LteEnbRrc::GetRntiFromImsi(uint64_t imsi) [member function]
+    cls.add_method('GetRntiFromImsi', 
+                   'uint16_t', 
+                   [param('uint64_t', 'imsi')])
     ## lte-enb-rrc.h (module 'lte'): ns3::EpcEnbS1SapUser * ns3::LteEnbRrc::GetS1SapUser() [member function]
     cls.add_method('GetS1SapUser', 
                    'ns3::EpcEnbS1SapUser *', 
@@ -17601,6 +20690,10 @@ def register_Ns3LteEnbRrc_methods(root_module, cls):
                    'bool', 
                    [param('uint16_t', 'rnti')], 
                    is_const=True)
+    ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::RegisterImsiToRnti(uint64_t imsi, uint16_t rnti) [member function]
+    cls.add_method('RegisterImsiToRnti', 
+                   'void', 
+                   [param('uint64_t', 'imsi'), param('uint16_t', 'rnti')])
     ## lte-enb-rrc.h (module 'lte'): bool ns3::LteEnbRrc::SendData(ns3::Ptr<ns3::Packet> p) [member function]
     cls.add_method('SendData', 
                    'bool', 
@@ -17617,10 +20710,22 @@ def register_Ns3LteEnbRrc_methods(root_module, cls):
     cls.add_method('SetCellId', 
                    'void', 
                    [param('uint16_t', 'm_cellId'), param('uint8_t', 'ccIndex')])
+    ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::SetClosestLteCellId(uint16_t cellId) [member function]
+    cls.add_method('SetClosestLteCellId', 
+                   'void', 
+                   [param('uint16_t', 'cellId')])
     ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::SetCsgId(uint32_t csgId, bool csgIndication) [member function]
     cls.add_method('SetCsgId', 
                    'void', 
                    [param('uint32_t', 'csgId'), param('bool', 'csgIndication')])
+    ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::SetEpcX2PdcpProvider(ns3::EpcX2PdcpProvider * s) [member function]
+    cls.add_method('SetEpcX2PdcpProvider', 
+                   'void', 
+                   [param('ns3::EpcX2PdcpProvider *', 's')])
+    ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::SetEpcX2RlcProvider(ns3::EpcX2RlcProvider * s) [member function]
+    cls.add_method('SetEpcX2RlcProvider', 
+                   'void', 
+                   [param('ns3::EpcX2RlcProvider *', 's')])
     ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::SetEpcX2SapProvider(ns3::EpcX2SapProvider * s) [member function]
     cls.add_method('SetEpcX2SapProvider', 
                    'void', 
@@ -17629,6 +20734,10 @@ def register_Ns3LteEnbRrc_methods(root_module, cls):
     cls.add_method('SetForwardUpCallback', 
                    'void', 
                    [param('ns3::Callback< void, ns3::Ptr< ns3::Packet >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'cb')])
+    ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::SetInterRatHoMode() [member function]
+    cls.add_method('SetInterRatHoMode', 
+                   'void', 
+                   [])
     ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::SetLteAnrSapProvider(ns3::LteAnrSapProvider * s) [member function]
     cls.add_method('SetLteAnrSapProvider', 
                    'void', 
@@ -17673,10 +20782,6 @@ def register_Ns3LteEnbRrc_methods(root_module, cls):
     cls.add_method('SetLteMacSapProvider', 
                    'void', 
                    [param('ns3::LteMacSapProvider *', 's')])
-    ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::SetNumberOfComponentCarriers(uint16_t numberOfComponentCarriers) [member function]
-    cls.add_method('SetNumberOfComponentCarriers', 
-                   'void', 
-                   [param('uint16_t', 'numberOfComponentCarriers')])
     ## lte-enb-rrc.h (module 'lte'): void ns3::LteEnbRrc::SetS1SapProvider(ns3::EpcEnbS1SapProvider * s) [member function]
     cls.add_method('SetS1SapProvider', 
                    'void', 
@@ -17690,6 +20795,32 @@ def register_Ns3LteEnbRrc_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
+    return
+
+def register_Ns3LteEnbRrcHandoverEventInfo_methods(root_module, cls):
+    ## lte-enb-rrc.h (module 'lte'): ns3::LteEnbRrc::HandoverEventInfo::HandoverEventInfo() [constructor]
+    cls.add_constructor([])
+    ## lte-enb-rrc.h (module 'lte'): ns3::LteEnbRrc::HandoverEventInfo::HandoverEventInfo(ns3::LteEnbRrc::HandoverEventInfo const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteEnbRrc::HandoverEventInfo const &', 'arg0')])
+    ## lte-enb-rrc.h (module 'lte'): ns3::LteEnbRrc::HandoverEventInfo::scheduledHandoverEvent [variable]
+    cls.add_instance_attribute('scheduledHandoverEvent', 'ns3::EventId', is_const=False)
+    ## lte-enb-rrc.h (module 'lte'): ns3::LteEnbRrc::HandoverEventInfo::sourceCellId [variable]
+    cls.add_instance_attribute('sourceCellId', 'uint16_t', is_const=False)
+    ## lte-enb-rrc.h (module 'lte'): ns3::LteEnbRrc::HandoverEventInfo::targetCellId [variable]
+    cls.add_instance_attribute('targetCellId', 'uint16_t', is_const=False)
+    return
+
+def register_Ns3LteEnbRrcMmWaveComponentCarrierConf_methods(root_module, cls):
+    ## lte-enb-rrc.h (module 'lte'): ns3::LteEnbRrc::MmWaveComponentCarrierConf::MmWaveComponentCarrierConf() [constructor]
+    cls.add_constructor([])
+    ## lte-enb-rrc.h (module 'lte'): ns3::LteEnbRrc::MmWaveComponentCarrierConf::MmWaveComponentCarrierConf(ns3::LteEnbRrc::MmWaveComponentCarrierConf const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteEnbRrc::MmWaveComponentCarrierConf const &', 'arg0')])
+    ## lte-enb-rrc.h (module 'lte'): ns3::LteEnbRrc::MmWaveComponentCarrierConf::m_bandwidth [variable]
+    cls.add_instance_attribute('m_bandwidth', 'uint32_t', is_const=False)
+    ## lte-enb-rrc.h (module 'lte'): ns3::LteEnbRrc::MmWaveComponentCarrierConf::m_ccId [variable]
+    cls.add_instance_attribute('m_ccId', 'uint8_t', is_const=False)
+    ## lte-enb-rrc.h (module 'lte'): ns3::LteEnbRrc::MmWaveComponentCarrierConf::m_cellId [variable]
+    cls.add_instance_attribute('m_cellId', 'uint16_t', is_const=False)
     return
 
 def register_Ns3LteEnbRrcProtocolIdeal_methods(root_module, cls):
@@ -19165,9 +22296,9 @@ def register_Ns3LtePhy_methods(root_module, cls):
     cls.add_method('GetControlMessages', 
                    'std::list< ns3::Ptr< ns3::LteControlMessage > >', 
                    [])
-    ## lte-phy.h (module 'lte'): ns3::Ptr<ns3::LteNetDevice> ns3::LtePhy::GetDevice() const [member function]
+    ## lte-phy.h (module 'lte'): ns3::Ptr<ns3::NetDevice> ns3::LtePhy::GetDevice() const [member function]
     cls.add_method('GetDevice', 
-                   'ns3::Ptr< ns3::LteNetDevice >', 
+                   'ns3::Ptr< ns3::NetDevice >', 
                    [], 
                    is_const=True)
     ## lte-phy.h (module 'lte'): ns3::Ptr<ns3::LteSpectrumPhy> ns3::LtePhy::GetDownlinkSpectrumPhy() [member function]
@@ -19225,10 +22356,10 @@ def register_Ns3LtePhy_methods(root_module, cls):
     cls.add_method('SetControlMessages', 
                    'void', 
                    [param('ns3::Ptr< ns3::LteControlMessage >', 'm')])
-    ## lte-phy.h (module 'lte'): void ns3::LtePhy::SetDevice(ns3::Ptr<ns3::LteNetDevice> d) [member function]
+    ## lte-phy.h (module 'lte'): void ns3::LtePhy::SetDevice(ns3::Ptr<ns3::NetDevice> d) [member function]
     cls.add_method('SetDevice', 
                    'void', 
-                   [param('ns3::Ptr< ns3::LteNetDevice >', 'd')])
+                   [param('ns3::Ptr< ns3::NetDevice >', 'd')])
     ## lte-phy.h (module 'lte'): void ns3::LtePhy::SetDownlinkChannel(ns3::Ptr<ns3::SpectrumChannel> c) [member function]
     cls.add_method('SetDownlinkChannel', 
                    'void', 
@@ -19273,6 +22404,10 @@ def register_Ns3LteRlc_methods(root_module, cls):
                    'void', 
                    [], 
                    is_virtual=True)
+    ## lte-rlc.h (module 'lte'): ns3::EpcX2RlcUser * ns3::LteRlc::GetEpcX2RlcUser() [member function]
+    cls.add_method('GetEpcX2RlcUser', 
+                   'ns3::EpcX2RlcUser *', 
+                   [])
     ## lte-rlc.h (module 'lte'): ns3::LteMacSapUser * ns3::LteRlc::GetLteMacSapUser() [member function]
     cls.add_method('GetLteMacSapUser', 
                    'ns3::LteMacSapUser *', 
@@ -19286,6 +22421,10 @@ def register_Ns3LteRlc_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## lte-rlc.h (module 'lte'): void ns3::LteRlc::SetEpcX2RlcProvider(ns3::EpcX2RlcProvider * s) [member function]
+    cls.add_method('SetEpcX2RlcProvider', 
+                   'void', 
+                   [param('ns3::EpcX2RlcProvider *', 's')])
     ## lte-rlc.h (module 'lte'): void ns3::LteRlc::SetLcId(uint8_t lcId) [member function]
     cls.add_method('SetLcId', 
                    'void', 
@@ -19302,20 +22441,34 @@ def register_Ns3LteRlc_methods(root_module, cls):
     cls.add_method('SetRnti', 
                    'void', 
                    [param('uint16_t', 'rnti')])
+    ## lte-rlc.h (module 'lte'): void ns3::LteRlc::SetUeDataParams(ns3::EpcX2Sap::UeDataParams params) [member function]
+    cls.add_method('SetUeDataParams', 
+                   'void', 
+                   [param('ns3::EpcX2Sap::UeDataParams', 'params')])
     ## lte-rlc.h (module 'lte'): void ns3::LteRlc::DoNotifyHarqDeliveryFailure() [member function]
     cls.add_method('DoNotifyHarqDeliveryFailure', 
                    'void', 
                    [], 
                    is_pure_virtual=True, visibility='protected', is_virtual=True)
-    ## lte-rlc.h (module 'lte'): void ns3::LteRlc::DoNotifyTxOpportunity(uint32_t bytes, uint8_t layer, uint8_t harqId, uint8_t componentCarrierId, uint16_t rnti, uint8_t lcid) [member function]
+    ## lte-rlc.h (module 'lte'): void ns3::LteRlc::DoNotifyHarqDeliveryFailure(uint8_t harqId) [member function]
+    cls.add_method('DoNotifyHarqDeliveryFailure', 
+                   'void', 
+                   [param('uint8_t', 'harqId')], 
+                   visibility='protected', is_virtual=True)
+    ## lte-rlc.h (module 'lte'): void ns3::LteRlc::DoNotifyTxOpportunity(ns3::LteMacSapUser::TxOpportunityParameters params) [member function]
     cls.add_method('DoNotifyTxOpportunity', 
                    'void', 
-                   [param('uint32_t', 'bytes'), param('uint8_t', 'layer'), param('uint8_t', 'harqId'), param('uint8_t', 'componentCarrierId'), param('uint16_t', 'rnti'), param('uint8_t', 'lcid')], 
+                   [param('ns3::LteMacSapUser::TxOpportunityParameters', 'params')], 
                    is_pure_virtual=True, visibility='protected', is_virtual=True)
-    ## lte-rlc.h (module 'lte'): void ns3::LteRlc::DoReceivePdu(ns3::Ptr<ns3::Packet> p, uint16_t rnti, uint8_t lcid) [member function]
+    ## lte-rlc.h (module 'lte'): void ns3::LteRlc::DoReceivePdu(ns3::LteMacSapUser::ReceivePduParameters params) [member function]
     cls.add_method('DoReceivePdu', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint16_t', 'rnti'), param('uint8_t', 'lcid')], 
+                   [param('ns3::LteMacSapUser::ReceivePduParameters', 'params')], 
+                   is_pure_virtual=True, visibility='protected', is_virtual=True)
+    ## lte-rlc.h (module 'lte'): void ns3::LteRlc::DoSendMcPdcpSdu(ns3::EpcX2Sap::UeDataParams params) [member function]
+    cls.add_method('DoSendMcPdcpSdu', 
+                   'void', 
+                   [param('ns3::EpcX2Sap::UeDataParams', 'params')], 
                    is_pure_virtual=True, visibility='protected', is_virtual=True)
     ## lte-rlc.h (module 'lte'): void ns3::LteRlc::DoTransmitPdcpPdu(ns3::Ptr<ns3::Packet> p) [member function]
     cls.add_method('DoTransmitPdcpPdu', 
@@ -19325,8 +22478,6 @@ def register_Ns3LteRlc_methods(root_module, cls):
     return
 
 def register_Ns3LteRlcAm_methods(root_module, cls):
-    ## lte-rlc-am.h (module 'lte'): ns3::LteRlcAm::LteRlcAm(ns3::LteRlcAm const & arg0) [constructor]
-    cls.add_constructor([param('ns3::LteRlcAm const &', 'arg0')])
     ## lte-rlc-am.h (module 'lte'): ns3::LteRlcAm::LteRlcAm() [constructor]
     cls.add_constructor([])
     ## lte-rlc-am.h (module 'lte'): void ns3::LteRlcAm::DoDispose() [member function]
@@ -19334,31 +22485,101 @@ def register_Ns3LteRlcAm_methods(root_module, cls):
                    'void', 
                    [], 
                    is_virtual=True)
+    ## lte-rlc-am.h (module 'lte'): void ns3::LteRlcAm::DoNotifyDlHarqDeliveryFailure(uint8_t harqId) [member function]
+    cls.add_method('DoNotifyDlHarqDeliveryFailure', 
+                   'void', 
+                   [param('uint8_t', 'harqId')], 
+                   is_virtual=True)
     ## lte-rlc-am.h (module 'lte'): void ns3::LteRlcAm::DoNotifyHarqDeliveryFailure() [member function]
     cls.add_method('DoNotifyHarqDeliveryFailure', 
                    'void', 
                    [], 
                    is_virtual=True)
-    ## lte-rlc-am.h (module 'lte'): void ns3::LteRlcAm::DoNotifyTxOpportunity(uint32_t bytes, uint8_t layer, uint8_t harqId, uint8_t componentCarrierId, uint16_t rnti, uint8_t lcid) [member function]
+    ## lte-rlc-am.h (module 'lte'): void ns3::LteRlcAm::DoNotifyTxOpportunity(ns3::LteMacSapUser::TxOpportunityParameters txOpParams) [member function]
     cls.add_method('DoNotifyTxOpportunity', 
                    'void', 
-                   [param('uint32_t', 'bytes'), param('uint8_t', 'layer'), param('uint8_t', 'harqId'), param('uint8_t', 'componentCarrierId'), param('uint16_t', 'rnti'), param('uint8_t', 'lcid')], 
+                   [param('ns3::LteMacSapUser::TxOpportunityParameters', 'txOpParams')], 
                    is_virtual=True)
-    ## lte-rlc-am.h (module 'lte'): void ns3::LteRlcAm::DoReceivePdu(ns3::Ptr<ns3::Packet> p, uint16_t rnti, uint8_t lcid) [member function]
+    ## lte-rlc-am.h (module 'lte'): void ns3::LteRlcAm::DoNotifyUlHarqDeliveryFailure(uint8_t harqId) [member function]
+    cls.add_method('DoNotifyUlHarqDeliveryFailure', 
+                   'void', 
+                   [param('uint8_t', 'harqId')], 
+                   is_virtual=True)
+    ## lte-rlc-am.h (module 'lte'): void ns3::LteRlcAm::DoReceivePdu(ns3::LteMacSapUser::ReceivePduParameters rxPduParams) [member function]
     cls.add_method('DoReceivePdu', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint16_t', 'rnti'), param('uint8_t', 'lcid')], 
+                   [param('ns3::LteMacSapUser::ReceivePduParameters', 'rxPduParams')], 
+                   is_virtual=True)
+    ## lte-rlc-am.h (module 'lte'): void ns3::LteRlcAm::DoSendMcPdcpSdu(ns3::EpcX2Sap::UeDataParams params) [member function]
+    cls.add_method('DoSendMcPdcpSdu', 
+                   'void', 
+                   [param('ns3::EpcX2Sap::UeDataParams', 'params')], 
                    is_virtual=True)
     ## lte-rlc-am.h (module 'lte'): void ns3::LteRlcAm::DoTransmitPdcpPdu(ns3::Ptr<ns3::Packet> p) [member function]
     cls.add_method('DoTransmitPdcpPdu', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'p')], 
                    is_virtual=True)
+    ## lte-rlc-am.h (module 'lte'): std::vector<ns3::LteRlcAm::RetxPdu, std::allocator<ns3::LteRlcAm::RetxPdu> > ns3::LteRlcAm::GetRetxBuffer() [member function]
+    cls.add_method('GetRetxBuffer', 
+                   'std::vector< ns3::LteRlcAm::RetxPdu >', 
+                   [])
+    ## lte-rlc-am.h (module 'lte'): uint32_t ns3::LteRlcAm::GetRetxBufferSize() [member function]
+    cls.add_method('GetRetxBufferSize', 
+                   'uint32_t', 
+                   [])
+    ## lte-rlc-am.h (module 'lte'): ns3::Ptr<ns3::Packet> ns3::LteRlcAm::GetSegmentedRlcsdu() [member function]
+    cls.add_method('GetSegmentedRlcsdu', 
+                   'ns3::Ptr< ns3::Packet >', 
+                   [])
+    ## lte-rlc-am.h (module 'lte'): std::map<unsigned int, ns3::Ptr<ns3::Packet>, std::less<unsigned int>, std::allocator<std::pair<const unsigned int, ns3::Ptr<ns3::Packet> > > > ns3::LteRlcAm::GetTransmittingRlcSduBuffer() [member function]
+    cls.add_method('GetTransmittingRlcSduBuffer', 
+                   'std::map< unsigned int, ns3::Ptr< ns3::Packet > >', 
+                   [])
+    ## lte-rlc-am.h (module 'lte'): uint32_t ns3::LteRlcAm::GetTransmittingRlcSduBufferSize() [member function]
+    cls.add_method('GetTransmittingRlcSduBufferSize', 
+                   'uint32_t', 
+                   [])
+    ## lte-rlc-am.h (module 'lte'): std::vector<ns3::Ptr<ns3::Packet>, std::allocator<ns3::Ptr<ns3::Packet> > > ns3::LteRlcAm::GetTxBuffer() [member function]
+    cls.add_method('GetTxBuffer', 
+                   'std::vector< ns3::Ptr< ns3::Packet > >', 
+                   [])
+    ## lte-rlc-am.h (module 'lte'): uint32_t ns3::LteRlcAm::GetTxBufferSize() [member function]
+    cls.add_method('GetTxBufferSize', 
+                   'uint32_t', 
+                   [])
+    ## lte-rlc-am.h (module 'lte'): std::vector<ns3::LteRlcAm::RetxPdu, std::allocator<ns3::LteRlcAm::RetxPdu> > ns3::LteRlcAm::GetTxedBuffer() [member function]
+    cls.add_method('GetTxedBuffer', 
+                   'std::vector< ns3::LteRlcAm::RetxPdu >', 
+                   [])
+    ## lte-rlc-am.h (module 'lte'): uint32_t ns3::LteRlcAm::GetTxedBufferSize() [member function]
+    cls.add_method('GetTxedBufferSize', 
+                   'uint32_t', 
+                   [])
+    ## lte-rlc-am.h (module 'lte'): std::vector<ns3::Ptr<ns3::Packet>, std::allocator<ns3::Ptr<ns3::Packet> > > ns3::LteRlcAm::GetTxedRlcSduBuffer() [member function]
+    cls.add_method('GetTxedRlcSduBuffer', 
+                   'std::vector< ns3::Ptr< ns3::Packet > >', 
+                   [])
     ## lte-rlc-am.h (module 'lte'): static ns3::TypeId ns3::LteRlcAm::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
+    ## lte-rlc-am.h (module 'lte'): void ns3::LteRlcAm::RlcPdusToRlcSdus(std::vector<ns3::LteRlcAm::RetxPdu, std::allocator<ns3::LteRlcAm::RetxPdu> > Pdus) [member function]
+    cls.add_method('RlcPdusToRlcSdus', 
+                   'void', 
+                   [param('std::vector< ns3::LteRlcAm::RetxPdu >', 'Pdus')])
+    return
+
+def register_Ns3LteRlcAmRetxPdu_methods(root_module, cls):
+    ## lte-rlc-am.h (module 'lte'): ns3::LteRlcAm::RetxPdu::RetxPdu() [constructor]
+    cls.add_constructor([])
+    ## lte-rlc-am.h (module 'lte'): ns3::LteRlcAm::RetxPdu::RetxPdu(ns3::LteRlcAm::RetxPdu const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRlcAm::RetxPdu const &', 'arg0')])
+    ## lte-rlc-am.h (module 'lte'): ns3::LteRlcAm::RetxPdu::m_pdu [variable]
+    cls.add_instance_attribute('m_pdu', 'ns3::Ptr< ns3::Packet >', is_const=False)
+    ## lte-rlc-am.h (module 'lte'): ns3::LteRlcAm::RetxPdu::m_retxCount [variable]
+    cls.add_instance_attribute('m_retxCount', 'uint16_t', is_const=False)
     return
 
 def register_Ns3LteRlcSm_methods(root_module, cls):
@@ -19381,15 +22602,20 @@ def register_Ns3LteRlcSm_methods(root_module, cls):
                    'void', 
                    [], 
                    is_virtual=True)
-    ## lte-rlc.h (module 'lte'): void ns3::LteRlcSm::DoNotifyTxOpportunity(uint32_t bytes, uint8_t layer, uint8_t harqId, uint8_t componentCarrierId, uint16_t rnti, uint8_t lcid) [member function]
+    ## lte-rlc.h (module 'lte'): void ns3::LteRlcSm::DoNotifyTxOpportunity(ns3::LteMacSapUser::TxOpportunityParameters txOpParams) [member function]
     cls.add_method('DoNotifyTxOpportunity', 
                    'void', 
-                   [param('uint32_t', 'bytes'), param('uint8_t', 'layer'), param('uint8_t', 'harqId'), param('uint8_t', 'componentCarrierId'), param('uint16_t', 'rnti'), param('uint8_t', 'lcid')], 
+                   [param('ns3::LteMacSapUser::TxOpportunityParameters', 'txOpParams')], 
                    is_virtual=True)
-    ## lte-rlc.h (module 'lte'): void ns3::LteRlcSm::DoReceivePdu(ns3::Ptr<ns3::Packet> p, uint16_t rnti, uint8_t lcid) [member function]
+    ## lte-rlc.h (module 'lte'): void ns3::LteRlcSm::DoReceivePdu(ns3::LteMacSapUser::ReceivePduParameters rxPduParams) [member function]
     cls.add_method('DoReceivePdu', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint16_t', 'rnti'), param('uint8_t', 'lcid')], 
+                   [param('ns3::LteMacSapUser::ReceivePduParameters', 'rxPduParams')], 
+                   is_virtual=True)
+    ## lte-rlc.h (module 'lte'): void ns3::LteRlcSm::DoSendMcPdcpSdu(ns3::EpcX2Sap::UeDataParams params) [member function]
+    cls.add_method('DoSendMcPdcpSdu', 
+                   'void', 
+                   [param('ns3::EpcX2Sap::UeDataParams', 'params')], 
                    is_virtual=True)
     ## lte-rlc.h (module 'lte'): void ns3::LteRlcSm::DoTransmitPdcpPdu(ns3::Ptr<ns3::Packet> p) [member function]
     cls.add_method('DoTransmitPdcpPdu', 
@@ -19418,15 +22644,20 @@ def register_Ns3LteRlcTm_methods(root_module, cls):
                    'void', 
                    [], 
                    is_virtual=True)
-    ## lte-rlc-tm.h (module 'lte'): void ns3::LteRlcTm::DoNotifyTxOpportunity(uint32_t bytes, uint8_t layer, uint8_t harqId, uint8_t componentCarrierId, uint16_t rnti, uint8_t lcid) [member function]
+    ## lte-rlc-tm.h (module 'lte'): void ns3::LteRlcTm::DoNotifyTxOpportunity(ns3::LteMacSapUser::TxOpportunityParameters txOpParams) [member function]
     cls.add_method('DoNotifyTxOpportunity', 
                    'void', 
-                   [param('uint32_t', 'bytes'), param('uint8_t', 'layer'), param('uint8_t', 'harqId'), param('uint8_t', 'componentCarrierId'), param('uint16_t', 'rnti'), param('uint8_t', 'lcid')], 
+                   [param('ns3::LteMacSapUser::TxOpportunityParameters', 'txOpParams')], 
                    is_virtual=True)
-    ## lte-rlc-tm.h (module 'lte'): void ns3::LteRlcTm::DoReceivePdu(ns3::Ptr<ns3::Packet> p, uint16_t rnti, uint8_t lcid) [member function]
+    ## lte-rlc-tm.h (module 'lte'): void ns3::LteRlcTm::DoReceivePdu(ns3::LteMacSapUser::ReceivePduParameters rxPduParams) [member function]
     cls.add_method('DoReceivePdu', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint16_t', 'rnti'), param('uint8_t', 'lcid')], 
+                   [param('ns3::LteMacSapUser::ReceivePduParameters', 'rxPduParams')], 
+                   is_virtual=True)
+    ## lte-rlc-tm.h (module 'lte'): void ns3::LteRlcTm::DoSendMcPdcpSdu(ns3::EpcX2Sap::UeDataParams params) [member function]
+    cls.add_method('DoSendMcPdcpSdu', 
+                   'void', 
+                   [param('ns3::EpcX2Sap::UeDataParams', 'params')], 
                    is_virtual=True)
     ## lte-rlc-tm.h (module 'lte'): void ns3::LteRlcTm::DoTransmitPdcpPdu(ns3::Ptr<ns3::Packet> p) [member function]
     cls.add_method('DoTransmitPdcpPdu', 
@@ -19455,22 +22686,89 @@ def register_Ns3LteRlcUm_methods(root_module, cls):
                    'void', 
                    [], 
                    is_virtual=True)
-    ## lte-rlc-um.h (module 'lte'): void ns3::LteRlcUm::DoNotifyTxOpportunity(uint32_t bytes, uint8_t layer, uint8_t harqId, uint8_t componentCarrierId, uint16_t rnti, uint8_t lcid) [member function]
+    ## lte-rlc-um.h (module 'lte'): void ns3::LteRlcUm::DoNotifyTxOpportunity(ns3::LteMacSapUser::TxOpportunityParameters txOpParams) [member function]
     cls.add_method('DoNotifyTxOpportunity', 
                    'void', 
-                   [param('uint32_t', 'bytes'), param('uint8_t', 'layer'), param('uint8_t', 'harqId'), param('uint8_t', 'componentCarrierId'), param('uint16_t', 'rnti'), param('uint8_t', 'lcid')], 
+                   [param('ns3::LteMacSapUser::TxOpportunityParameters', 'txOpParams')], 
                    is_virtual=True)
-    ## lte-rlc-um.h (module 'lte'): void ns3::LteRlcUm::DoReceivePdu(ns3::Ptr<ns3::Packet> p, uint16_t rnti, uint8_t lcid) [member function]
+    ## lte-rlc-um.h (module 'lte'): void ns3::LteRlcUm::DoReceivePdu(ns3::LteMacSapUser::ReceivePduParameters rxPduParams) [member function]
     cls.add_method('DoReceivePdu', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint16_t', 'rnti'), param('uint8_t', 'lcid')], 
+                   [param('ns3::LteMacSapUser::ReceivePduParameters', 'rxPduParams')], 
+                   is_virtual=True)
+    ## lte-rlc-um.h (module 'lte'): void ns3::LteRlcUm::DoSendMcPdcpSdu(ns3::EpcX2Sap::UeDataParams params) [member function]
+    cls.add_method('DoSendMcPdcpSdu', 
+                   'void', 
+                   [param('ns3::EpcX2Sap::UeDataParams', 'params')], 
                    is_virtual=True)
     ## lte-rlc-um.h (module 'lte'): void ns3::LteRlcUm::DoTransmitPdcpPdu(ns3::Ptr<ns3::Packet> p) [member function]
     cls.add_method('DoTransmitPdcpPdu', 
                    'void', 
                    [param('ns3::Ptr< ns3::Packet >', 'p')], 
                    is_virtual=True)
+    ## lte-rlc-um.h (module 'lte'): uint32_t ns3::LteRlcUm::GetMaxBuff() [member function]
+    cls.add_method('GetMaxBuff', 
+                   'uint32_t', 
+                   [])
+    ## lte-rlc-um.h (module 'lte'): std::vector<ns3::Ptr<ns3::Packet>, std::allocator<ns3::Ptr<ns3::Packet> > > ns3::LteRlcUm::GetTxBuffer() [member function]
+    cls.add_method('GetTxBuffer', 
+                   'std::vector< ns3::Ptr< ns3::Packet > >', 
+                   [])
+    ## lte-rlc-um.h (module 'lte'): uint32_t ns3::LteRlcUm::GetTxBufferSize() [member function]
+    cls.add_method('GetTxBufferSize', 
+                   'uint32_t', 
+                   [])
     ## lte-rlc-um.h (module 'lte'): static ns3::TypeId ns3::LteRlcUm::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    return
+
+def register_Ns3LteRlcUmLowLat_methods(root_module, cls):
+    ## lte-rlc-um-lowlat.h (module 'lte'): ns3::LteRlcUmLowLat::LteRlcUmLowLat(ns3::LteRlcUmLowLat const & arg0) [constructor]
+    cls.add_constructor([param('ns3::LteRlcUmLowLat const &', 'arg0')])
+    ## lte-rlc-um-lowlat.h (module 'lte'): ns3::LteRlcUmLowLat::LteRlcUmLowLat() [constructor]
+    cls.add_constructor([])
+    ## lte-rlc-um-lowlat.h (module 'lte'): void ns3::LteRlcUmLowLat::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## lte-rlc-um-lowlat.h (module 'lte'): void ns3::LteRlcUmLowLat::DoNotifyHarqDeliveryFailure() [member function]
+    cls.add_method('DoNotifyHarqDeliveryFailure', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## lte-rlc-um-lowlat.h (module 'lte'): void ns3::LteRlcUmLowLat::DoNotifyTxOpportunity(ns3::LteMacSapUser::TxOpportunityParameters params) [member function]
+    cls.add_method('DoNotifyTxOpportunity', 
+                   'void', 
+                   [param('ns3::LteMacSapUser::TxOpportunityParameters', 'params')], 
+                   is_virtual=True)
+    ## lte-rlc-um-lowlat.h (module 'lte'): void ns3::LteRlcUmLowLat::DoReceivePdu(ns3::LteMacSapUser::ReceivePduParameters params) [member function]
+    cls.add_method('DoReceivePdu', 
+                   'void', 
+                   [param('ns3::LteMacSapUser::ReceivePduParameters', 'params')], 
+                   is_virtual=True)
+    ## lte-rlc-um-lowlat.h (module 'lte'): void ns3::LteRlcUmLowLat::DoSendMcPdcpSdu(ns3::EpcX2Sap::UeDataParams params) [member function]
+    cls.add_method('DoSendMcPdcpSdu', 
+                   'void', 
+                   [param('ns3::EpcX2Sap::UeDataParams', 'params')], 
+                   is_virtual=True)
+    ## lte-rlc-um-lowlat.h (module 'lte'): void ns3::LteRlcUmLowLat::DoTransmitPdcpPdu(ns3::Ptr<ns3::Packet> p) [member function]
+    cls.add_method('DoTransmitPdcpPdu', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p')], 
+                   is_virtual=True)
+    ## lte-rlc-um-lowlat.h (module 'lte'): std::vector<ns3::Ptr<ns3::Packet>, std::allocator<ns3::Ptr<ns3::Packet> > > ns3::LteRlcUmLowLat::GetTxBuffer() [member function]
+    cls.add_method('GetTxBuffer', 
+                   'std::vector< ns3::Ptr< ns3::Packet > >', 
+                   [])
+    ## lte-rlc-um-lowlat.h (module 'lte'): uint32_t ns3::LteRlcUmLowLat::GetTxBufferSize() [member function]
+    cls.add_method('GetTxBufferSize', 
+                   'uint32_t', 
+                   [])
+    ## lte-rlc-um-lowlat.h (module 'lte'): static ns3::TypeId ns3::LteRlcUmLowLat::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
                    [], 
@@ -19590,6 +22888,10 @@ def register_Ns3LteSpectrumPhy_methods(root_module, cls):
     cls.add_method('StartTxUlSrsFrame', 
                    'bool', 
                    [])
+    ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::SetLtePhyTxEndCallback(ns3::LtePhyTxEndCallback c) [member function]
+    cls.add_method('SetLtePhyTxEndCallback', 
+                   'void', 
+                   [param('ns3::Callback< void, ns3::Ptr< ns3::Packet const >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty >', 'c')])
     ## lte-spectrum-phy.h (module 'lte'): void ns3::LteSpectrumPhy::SetLtePhyRxDataEndErrorCallback(ns3::LtePhyRxDataEndErrorCallback c) [member function]
     cls.add_method('SetLtePhyRxDataEndErrorCallback', 
                    'void', 
@@ -19841,7 +23143,7 @@ def register_Ns3LteUeComponentCarrierManager_methods(root_module, cls):
     cls.add_method('GetLteCcmRrcSapProvider', 
                    'ns3::LteUeCcmRrcSapProvider *', 
                    [], 
-                   is_pure_virtual=True, is_virtual=True)
+                   is_virtual=True)
     ## lte-ue-component-carrier-manager.h (module 'lte'): ns3::LteMacSapProvider * ns3::LteUeComponentCarrierManager::GetLteMacSapProvider() [member function]
     cls.add_method('GetLteMacSapProvider', 
                    'ns3::LteMacSapProvider *', 
@@ -19860,7 +23162,7 @@ def register_Ns3LteUeComponentCarrierManager_methods(root_module, cls):
     cls.add_method('SetLteCcmRrcSapUser', 
                    'void', 
                    [param('ns3::LteUeCcmRrcSapUser *', 's')], 
-                   is_pure_virtual=True, is_virtual=True)
+                   is_virtual=True)
     ## lte-ue-component-carrier-manager.h (module 'lte'): void ns3::LteUeComponentCarrierManager::SetNumberOfComponentCarriers(uint8_t noOfComponentCarriers) [member function]
     cls.add_method('SetNumberOfComponentCarriers', 
                    'void', 
@@ -20189,6 +23491,10 @@ def register_Ns3LteUePowerControl_methods(root_module, cls):
     cls.add_method('SetRsrp', 
                    'void', 
                    [param('double', 'value')])
+    ## lte-ue-power-control.h (module 'lte'): void ns3::LteUePowerControl::SetRsrpFilterCoefficient(uint8_t rsrpFilterCoefficient) [member function]
+    cls.add_method('SetRsrpFilterCoefficient', 
+                   'void', 
+                   [param('uint8_t', 'rsrpFilterCoefficient')])
     ## lte-ue-power-control.h (module 'lte'): void ns3::LteUePowerControl::SetTxPower(double value) [member function]
     cls.add_method('SetTxPower', 
                    'void', 
@@ -20200,6 +23506,14 @@ def register_Ns3LteUeRrc_methods(root_module, cls):
     cls.add_constructor([param('ns3::LteUeRrc const &', 'arg0')])
     ## lte-ue-rrc.h (module 'lte'): ns3::LteUeRrc::LteUeRrc() [constructor]
     cls.add_constructor([])
+    ## lte-ue-rrc.h (module 'lte'): void ns3::LteUeRrc::AddLteCellId(uint16_t cellId) [member function]
+    cls.add_method('AddLteCellId', 
+                   'void', 
+                   [param('uint16_t', 'cellId')])
+    ## lte-ue-rrc.h (module 'lte'): void ns3::LteUeRrc::AddMmWaveCellId(uint16_t cellId) [member function]
+    cls.add_method('AddMmWaveCellId', 
+                   'void', 
+                   [param('uint16_t', 'cellId')])
     ## lte-ue-rrc.h (module 'lte'): ns3::LteAsSapProvider * ns3::LteUeRrc::GetAsSapProvider() [member function]
     cls.add_method('GetAsSapProvider', 
                    'ns3::LteAsSapProvider *', 
@@ -20313,12 +23627,34 @@ def register_Ns3LteUeRrc_methods(root_module, cls):
     cls.add_method('SetLteUeRrcSapUser', 
                    'void', 
                    [param('ns3::LteUeRrcSapUser *', 's')])
+    ## lte-ue-rrc.h (module 'lte'): void ns3::LteUeRrc::SetMmWaveMacSapProvider(ns3::LteMacSapProvider * s) [member function]
+    cls.add_method('SetMmWaveMacSapProvider', 
+                   'void', 
+                   [param('ns3::LteMacSapProvider *', 's')])
+    ## lte-ue-rrc.h (module 'lte'): void ns3::LteUeRrc::SetMmWaveUeCmacSapProvider(ns3::LteUeCmacSapProvider * s) [member function]
+    cls.add_method('SetMmWaveUeCmacSapProvider', 
+                   'void', 
+                   [param('ns3::LteUeCmacSapProvider *', 's')])
+    ## lte-ue-rrc.h (module 'lte'): void ns3::LteUeRrc::SetMmWaveUeCmacSapProvider(ns3::LteUeCmacSapProvider * s, uint8_t index) [member function]
+    cls.add_method('SetMmWaveUeCmacSapProvider', 
+                   'void', 
+                   [param('ns3::LteUeCmacSapProvider *', 's'), param('uint8_t', 'index')])
+    ## lte-ue-rrc.h (module 'lte'): void ns3::LteUeRrc::SetMmWaveUeCphySapProvider(ns3::LteUeCphySapProvider * s) [member function]
+    cls.add_method('SetMmWaveUeCphySapProvider', 
+                   'void', 
+                   [param('ns3::LteUeCphySapProvider *', 's')])
     ## lte-ue-rrc.h (module 'lte'): void ns3::LteUeRrc::SetUseRlcSm(bool val) [member function]
     cls.add_method('SetUseRlcSm', 
                    'void', 
                    [param('bool', 'val')])
+    ## lte-ue-rrc.h (module 'lte'): bool ns3::LteUeRrc::SwitchLowerLayerProviders(uint16_t cellId) [member function]
+    cls.add_method('SwitchLowerLayerProviders', 
+                   'bool', 
+                   [param('uint16_t', 'cellId')])
     ## lte-ue-rrc.h (module 'lte'): ns3::LteUeRrc::m_numberOfComponentCarriers [variable]
     cls.add_instance_attribute('m_numberOfComponentCarriers', 'uint16_t', is_const=False)
+    ## lte-ue-rrc.h (module 'lte'): ns3::LteUeRrc::m_numberOfMmWaveComponentCarriers [variable]
+    cls.add_instance_attribute('m_numberOfMmWaveComponentCarriers', 'uint16_t', is_const=False)
     ## lte-ue-rrc.h (module 'lte'): void ns3::LteUeRrc::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
@@ -20515,6 +23851,37 @@ def register_Ns3MacStatsCalculator_methods(root_module, cls):
                    is_static=True)
     return
 
+def register_Ns3MacTxStatsCalculator_methods(root_module, cls):
+    ## mac-tx-stats-calculator.h (module 'lte'): ns3::MacTxStatsCalculator::MacTxStatsCalculator() [constructor]
+    cls.add_constructor([])
+    ## mac-tx-stats-calculator.h (module 'lte'): static ns3::TypeId ns3::MacTxStatsCalculator::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## mac-tx-stats-calculator.h (module 'lte'): void ns3::MacTxStatsCalculator::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## mac-tx-stats-calculator.h (module 'lte'): void ns3::MacTxStatsCalculator::RegisterMacTxDl(uint16_t rnti, uint16_t cellId, uint32_t packetSize, uint8_t numRetx) [member function]
+    cls.add_method('RegisterMacTxDl', 
+                   'void', 
+                   [param('uint16_t', 'rnti'), param('uint16_t', 'cellId'), param('uint32_t', 'packetSize'), param('uint8_t', 'numRetx')])
+    ## mac-tx-stats-calculator.h (module 'lte'): void ns3::MacTxStatsCalculator::RegisterMacTxUl(uint16_t rnti, uint16_t cellId, uint32_t packetSize, uint8_t numRetx) [member function]
+    cls.add_method('RegisterMacTxUl', 
+                   'void', 
+                   [param('uint16_t', 'rnti'), param('uint16_t', 'cellId'), param('uint32_t', 'packetSize'), param('uint8_t', 'numRetx')])
+    ## mac-tx-stats-calculator.h (module 'lte'): ns3::MacTxStatsCalculator::m_retxDlFile [variable]
+    cls.add_instance_attribute('m_retxDlFile', 'std::ofstream', is_const=False)
+    ## mac-tx-stats-calculator.h (module 'lte'): ns3::MacTxStatsCalculator::m_retxDlFilename [variable]
+    cls.add_instance_attribute('m_retxDlFilename', 'std::string', is_const=False)
+    ## mac-tx-stats-calculator.h (module 'lte'): ns3::MacTxStatsCalculator::m_retxUlFile [variable]
+    cls.add_instance_attribute('m_retxUlFile', 'std::ofstream', is_const=False)
+    ## mac-tx-stats-calculator.h (module 'lte'): ns3::MacTxStatsCalculator::m_retxUlFilename [variable]
+    cls.add_instance_attribute('m_retxUlFilename', 'std::string', is_const=False)
+    return
+
 def register_Ns3MatrixPropagationLossModel_methods(root_module, cls):
     ## propagation-loss-model.h (module 'propagation'): static ns3::TypeId ns3::MatrixPropagationLossModel::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
@@ -20541,6 +23908,192 @@ def register_Ns3MatrixPropagationLossModel_methods(root_module, cls):
                    'int64_t', 
                    [param('int64_t', 'stream')], 
                    visibility='private', is_virtual=True)
+    return
+
+def register_Ns3McEnbPdcp_methods(root_module, cls):
+    ## mc-enb-pdcp.h (module 'lte'): ns3::McEnbPdcp::McEnbPdcp(ns3::McEnbPdcp const & arg0) [constructor]
+    cls.add_constructor([param('ns3::McEnbPdcp const &', 'arg0')])
+    ## mc-enb-pdcp.h (module 'lte'): ns3::McEnbPdcp::McEnbPdcp() [constructor]
+    cls.add_constructor([])
+    ## mc-enb-pdcp.h (module 'lte'): void ns3::McEnbPdcp::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## mc-enb-pdcp.h (module 'lte'): ns3::EpcX2PdcpUser * ns3::McEnbPdcp::GetEpcX2PdcpUser() [member function]
+    cls.add_method('GetEpcX2PdcpUser', 
+                   'ns3::EpcX2PdcpUser *', 
+                   [])
+    ## mc-enb-pdcp.h (module 'lte'): ns3::LtePdcpSapProvider * ns3::McEnbPdcp::GetLtePdcpSapProvider() [member function]
+    cls.add_method('GetLtePdcpSapProvider', 
+                   'ns3::LtePdcpSapProvider *', 
+                   [])
+    ## mc-enb-pdcp.h (module 'lte'): ns3::LteRlcSapUser * ns3::McEnbPdcp::GetLteRlcSapUser() [member function]
+    cls.add_method('GetLteRlcSapUser', 
+                   'ns3::LteRlcSapUser *', 
+                   [])
+    ## mc-enb-pdcp.h (module 'lte'): ns3::McEnbPdcp::Status ns3::McEnbPdcp::GetStatus() [member function]
+    cls.add_method('GetStatus', 
+                   'ns3::McEnbPdcp::Status', 
+                   [])
+    ## mc-enb-pdcp.h (module 'lte'): static ns3::TypeId ns3::McEnbPdcp::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## mc-enb-pdcp.h (module 'lte'): bool ns3::McEnbPdcp::GetUseMmWaveConnection() const [member function]
+    cls.add_method('GetUseMmWaveConnection', 
+                   'bool', 
+                   [], 
+                   is_const=True)
+    ## mc-enb-pdcp.h (module 'lte'): void ns3::McEnbPdcp::SetEpcX2PdcpProvider(ns3::EpcX2PdcpProvider * s) [member function]
+    cls.add_method('SetEpcX2PdcpProvider', 
+                   'void', 
+                   [param('ns3::EpcX2PdcpProvider *', 's')])
+    ## mc-enb-pdcp.h (module 'lte'): void ns3::McEnbPdcp::SetLcId(uint8_t lcId) [member function]
+    cls.add_method('SetLcId', 
+                   'void', 
+                   [param('uint8_t', 'lcId')])
+    ## mc-enb-pdcp.h (module 'lte'): void ns3::McEnbPdcp::SetLtePdcpSapUser(ns3::LtePdcpSapUser * s) [member function]
+    cls.add_method('SetLtePdcpSapUser', 
+                   'void', 
+                   [param('ns3::LtePdcpSapUser *', 's')])
+    ## mc-enb-pdcp.h (module 'lte'): void ns3::McEnbPdcp::SetLteRlcSapProvider(ns3::LteRlcSapProvider * s) [member function]
+    cls.add_method('SetLteRlcSapProvider', 
+                   'void', 
+                   [param('ns3::LteRlcSapProvider *', 's')])
+    ## mc-enb-pdcp.h (module 'lte'): void ns3::McEnbPdcp::SetMmWaveRnti(uint16_t rnti) [member function]
+    cls.add_method('SetMmWaveRnti', 
+                   'void', 
+                   [param('uint16_t', 'rnti')])
+    ## mc-enb-pdcp.h (module 'lte'): void ns3::McEnbPdcp::SetRnti(uint16_t rnti) [member function]
+    cls.add_method('SetRnti', 
+                   'void', 
+                   [param('uint16_t', 'rnti')])
+    ## mc-enb-pdcp.h (module 'lte'): void ns3::McEnbPdcp::SetStatus(ns3::McEnbPdcp::Status s) [member function]
+    cls.add_method('SetStatus', 
+                   'void', 
+                   [param('ns3::McEnbPdcp::Status', 's')])
+    ## mc-enb-pdcp.h (module 'lte'): void ns3::McEnbPdcp::SetUeDataParams(ns3::EpcX2Sap::UeDataParams params) [member function]
+    cls.add_method('SetUeDataParams', 
+                   'void', 
+                   [param('ns3::EpcX2Sap::UeDataParams', 'params')])
+    ## mc-enb-pdcp.h (module 'lte'): void ns3::McEnbPdcp::SwitchConnection(bool useMmWaveConnection) [member function]
+    cls.add_method('SwitchConnection', 
+                   'void', 
+                   [param('bool', 'useMmWaveConnection')])
+    ## mc-enb-pdcp.h (module 'lte'): ns3::McEnbPdcp::MAX_PDCP_SN [variable]
+    cls.add_static_attribute('MAX_PDCP_SN', 'uint16_t const', is_const=True)
+    ## mc-enb-pdcp.h (module 'lte'): void ns3::McEnbPdcp::DoReceiveMcPdcpPdu(ns3::EpcX2Sap::UeDataParams params) [member function]
+    cls.add_method('DoReceiveMcPdcpPdu', 
+                   'void', 
+                   [param('ns3::EpcX2Sap::UeDataParams', 'params')], 
+                   visibility='protected', is_virtual=True)
+    ## mc-enb-pdcp.h (module 'lte'): void ns3::McEnbPdcp::DoReceivePdu(ns3::Ptr<ns3::Packet> p) [member function]
+    cls.add_method('DoReceivePdu', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p')], 
+                   visibility='protected', is_virtual=True)
+    ## mc-enb-pdcp.h (module 'lte'): void ns3::McEnbPdcp::DoTransmitPdcpSdu(ns3::Ptr<ns3::Packet> p) [member function]
+    cls.add_method('DoTransmitPdcpSdu', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p')], 
+                   visibility='protected', is_virtual=True)
+    return
+
+def register_Ns3McEnbPdcpStatus_methods(root_module, cls):
+    ## mc-enb-pdcp.h (module 'lte'): ns3::McEnbPdcp::Status::Status() [constructor]
+    cls.add_constructor([])
+    ## mc-enb-pdcp.h (module 'lte'): ns3::McEnbPdcp::Status::Status(ns3::McEnbPdcp::Status const & arg0) [constructor]
+    cls.add_constructor([param('ns3::McEnbPdcp::Status const &', 'arg0')])
+    ## mc-enb-pdcp.h (module 'lte'): ns3::McEnbPdcp::Status::rxSn [variable]
+    cls.add_instance_attribute('rxSn', 'uint16_t', is_const=False)
+    ## mc-enb-pdcp.h (module 'lte'): ns3::McEnbPdcp::Status::txSn [variable]
+    cls.add_instance_attribute('txSn', 'uint16_t', is_const=False)
+    return
+
+def register_Ns3McUePdcp_methods(root_module, cls):
+    ## mc-ue-pdcp.h (module 'lte'): ns3::McUePdcp::McUePdcp(ns3::McUePdcp const & arg0) [constructor]
+    cls.add_constructor([param('ns3::McUePdcp const &', 'arg0')])
+    ## mc-ue-pdcp.h (module 'lte'): ns3::McUePdcp::McUePdcp() [constructor]
+    cls.add_constructor([])
+    ## mc-ue-pdcp.h (module 'lte'): void ns3::McUePdcp::DoDispose() [member function]
+    cls.add_method('DoDispose', 
+                   'void', 
+                   [], 
+                   is_virtual=True)
+    ## mc-ue-pdcp.h (module 'lte'): ns3::LtePdcpSapProvider * ns3::McUePdcp::GetLtePdcpSapProvider() [member function]
+    cls.add_method('GetLtePdcpSapProvider', 
+                   'ns3::LtePdcpSapProvider *', 
+                   [])
+    ## mc-ue-pdcp.h (module 'lte'): ns3::LteRlcSapUser * ns3::McUePdcp::GetLteRlcSapUser() [member function]
+    cls.add_method('GetLteRlcSapUser', 
+                   'ns3::LteRlcSapUser *', 
+                   [])
+    ## mc-ue-pdcp.h (module 'lte'): ns3::McUePdcp::Status ns3::McUePdcp::GetStatus() [member function]
+    cls.add_method('GetStatus', 
+                   'ns3::McUePdcp::Status', 
+                   [])
+    ## mc-ue-pdcp.h (module 'lte'): static ns3::TypeId ns3::McUePdcp::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## mc-ue-pdcp.h (module 'lte'): void ns3::McUePdcp::SetLcId(uint8_t lcId) [member function]
+    cls.add_method('SetLcId', 
+                   'void', 
+                   [param('uint8_t', 'lcId')])
+    ## mc-ue-pdcp.h (module 'lte'): void ns3::McUePdcp::SetLtePdcpSapUser(ns3::LtePdcpSapUser * s) [member function]
+    cls.add_method('SetLtePdcpSapUser', 
+                   'void', 
+                   [param('ns3::LtePdcpSapUser *', 's')])
+    ## mc-ue-pdcp.h (module 'lte'): void ns3::McUePdcp::SetLteRlcSapProvider(ns3::LteRlcSapProvider * s) [member function]
+    cls.add_method('SetLteRlcSapProvider', 
+                   'void', 
+                   [param('ns3::LteRlcSapProvider *', 's')])
+    ## mc-ue-pdcp.h (module 'lte'): void ns3::McUePdcp::SetMmWaveRlcSapProvider(ns3::LteRlcSapProvider * s) [member function]
+    cls.add_method('SetMmWaveRlcSapProvider', 
+                   'void', 
+                   [param('ns3::LteRlcSapProvider *', 's')])
+    ## mc-ue-pdcp.h (module 'lte'): void ns3::McUePdcp::SetMmWaveRnti(uint16_t rnti) [member function]
+    cls.add_method('SetMmWaveRnti', 
+                   'void', 
+                   [param('uint16_t', 'rnti')])
+    ## mc-ue-pdcp.h (module 'lte'): void ns3::McUePdcp::SetRnti(uint16_t rnti) [member function]
+    cls.add_method('SetRnti', 
+                   'void', 
+                   [param('uint16_t', 'rnti')])
+    ## mc-ue-pdcp.h (module 'lte'): void ns3::McUePdcp::SetStatus(ns3::McUePdcp::Status s) [member function]
+    cls.add_method('SetStatus', 
+                   'void', 
+                   [param('ns3::McUePdcp::Status', 's')])
+    ## mc-ue-pdcp.h (module 'lte'): void ns3::McUePdcp::SwitchConnection(bool useMmWaveConnection) [member function]
+    cls.add_method('SwitchConnection', 
+                   'void', 
+                   [param('bool', 'useMmWaveConnection')])
+    ## mc-ue-pdcp.h (module 'lte'): ns3::McUePdcp::MAX_PDCP_SN [variable]
+    cls.add_static_attribute('MAX_PDCP_SN', 'uint16_t const', is_const=True)
+    ## mc-ue-pdcp.h (module 'lte'): void ns3::McUePdcp::DoReceivePdu(ns3::Ptr<ns3::Packet> p) [member function]
+    cls.add_method('DoReceivePdu', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p')], 
+                   visibility='protected', is_virtual=True)
+    ## mc-ue-pdcp.h (module 'lte'): void ns3::McUePdcp::DoTransmitPdcpSdu(ns3::Ptr<ns3::Packet> p) [member function]
+    cls.add_method('DoTransmitPdcpSdu', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::Packet >', 'p')], 
+                   visibility='protected', is_virtual=True)
+    return
+
+def register_Ns3McUePdcpStatus_methods(root_module, cls):
+    ## mc-ue-pdcp.h (module 'lte'): ns3::McUePdcp::Status::Status() [constructor]
+    cls.add_constructor([])
+    ## mc-ue-pdcp.h (module 'lte'): ns3::McUePdcp::Status::Status(ns3::McUePdcp::Status const & arg0) [constructor]
+    cls.add_constructor([param('ns3::McUePdcp::Status const &', 'arg0')])
+    ## mc-ue-pdcp.h (module 'lte'): ns3::McUePdcp::Status::rxSn [variable]
+    cls.add_instance_attribute('rxSn', 'uint16_t', is_const=False)
+    ## mc-ue-pdcp.h (module 'lte'): ns3::McUePdcp::Status::txSn [variable]
+    cls.add_instance_attribute('txSn', 'uint16_t', is_const=False)
     return
 
 def register_Ns3MibLteControlMessage_methods(root_module, cls):
@@ -21005,15 +24558,15 @@ def register_Ns3NoOpComponentCarrierManager_methods(root_module, cls):
                    'void', 
                    [param('double', 'prbOccupancy'), param('uint8_t', 'componentCarrierId')], 
                    visibility='protected', is_virtual=True)
-    ## no-op-component-carrier-manager.h (module 'lte'): void ns3::NoOpComponentCarrierManager::DoNotifyTxOpportunity(uint32_t bytes, uint8_t layer, uint8_t harqId, uint8_t componentCarrierId, uint16_t rnti, uint8_t lcid) [member function]
+    ## no-op-component-carrier-manager.h (module 'lte'): void ns3::NoOpComponentCarrierManager::DoNotifyTxOpportunity(ns3::LteMacSapUser::TxOpportunityParameters txOpParams) [member function]
     cls.add_method('DoNotifyTxOpportunity', 
                    'void', 
-                   [param('uint32_t', 'bytes'), param('uint8_t', 'layer'), param('uint8_t', 'harqId'), param('uint8_t', 'componentCarrierId'), param('uint16_t', 'rnti'), param('uint8_t', 'lcid')], 
+                   [param('ns3::LteMacSapUser::TxOpportunityParameters', 'txOpParams')], 
                    visibility='protected', is_virtual=True)
-    ## no-op-component-carrier-manager.h (module 'lte'): void ns3::NoOpComponentCarrierManager::DoReceivePdu(ns3::Ptr<ns3::Packet> p, uint16_t rnti, uint8_t lcid) [member function]
+    ## no-op-component-carrier-manager.h (module 'lte'): void ns3::NoOpComponentCarrierManager::DoReceivePdu(ns3::LteMacSapUser::ReceivePduParameters rxPduParams) [member function]
     cls.add_method('DoReceivePdu', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint16_t', 'rnti'), param('uint8_t', 'lcid')], 
+                   [param('ns3::LteMacSapUser::ReceivePduParameters', 'rxPduParams')], 
                    visibility='protected', is_virtual=True)
     ## no-op-component-carrier-manager.h (module 'lte'): std::vector<unsigned char, std::allocator<unsigned char> > ns3::NoOpComponentCarrierManager::DoReleaseDataRadioBearer(uint16_t rnti, uint8_t lcid) [member function]
     cls.add_method('DoReleaseDataRadioBearer', 
@@ -21468,7 +25021,7 @@ def register_Ns3ParetoRandomVariable_methods(root_module, cls):
     cls.add_method('GetMean', 
                    'double', 
                    [], 
-                   is_const=True)
+                   deprecated=True, is_const=True)
     ## random-variable-stream.h (module 'core'): double ns3::ParetoRandomVariable::GetScale() const [member function]
     cls.add_method('GetScale', 
                    'double', 
@@ -21720,6 +25273,11 @@ def register_Ns3PointToPointEpcHelper_methods(root_module, cls):
                    'uint8_t', 
                    [param('ns3::Ptr< ns3::NetDevice >', 'ueLteDevice'), param('uint64_t', 'imsi'), param('ns3::Ptr< ns3::EpcTft >', 'tft'), param('ns3::EpsBearer', 'bearer')], 
                    is_virtual=True)
+    ## point-to-point-epc-helper.h (module 'lte'): uint8_t ns3::PointToPointEpcHelper::ActivateEpsBearer(ns3::Ptr<ns3::NetDevice> ueLteDevice, ns3::Ptr<ns3::EpcUeNas> ueNas, uint64_t imsi, ns3::Ptr<ns3::EpcTft> tft, ns3::EpsBearer bearer) [member function]
+    cls.add_method('ActivateEpsBearer', 
+                   'uint8_t', 
+                   [param('ns3::Ptr< ns3::NetDevice >', 'ueLteDevice'), param('ns3::Ptr< ns3::EpcUeNas >', 'ueNas'), param('uint64_t', 'imsi'), param('ns3::Ptr< ns3::EpcTft >', 'tft'), param('ns3::EpsBearer', 'bearer')], 
+                   is_virtual=True)
     ## point-to-point-epc-helper.h (module 'lte'): void ns3::PointToPointEpcHelper::AddEnb(ns3::Ptr<ns3::Node> enbNode, ns3::Ptr<ns3::NetDevice> lteEnbNetDevice, uint16_t cellId) [member function]
     cls.add_method('AddEnb', 
                    'void', 
@@ -21755,6 +25313,11 @@ def register_Ns3PointToPointEpcHelper_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_const=True, is_virtual=True)
+    ## point-to-point-epc-helper.h (module 'lte'): ns3::Ptr<ns3::Node> ns3::PointToPointEpcHelper::GetMmeNode() [member function]
+    cls.add_method('GetMmeNode', 
+                   'ns3::Ptr< ns3::Node >', 
+                   [], 
+                   is_virtual=True)
     ## point-to-point-epc-helper.h (module 'lte'): ns3::Ptr<ns3::Node> ns3::PointToPointEpcHelper::GetPgwNode() [member function]
     cls.add_method('GetPgwNode', 
                    'ns3::Ptr< ns3::Node >', 
@@ -21871,6 +25434,72 @@ def register_Ns3PssFfMacScheduler_methods(root_module, cls):
     cls.add_method('TransmissionModeConfigurationUpdate', 
                    'void', 
                    [param('uint16_t', 'rnti'), param('uint8_t', 'txMode')])
+    return
+
+def register_Ns3QueueItem_methods(root_module, cls):
+    cls.add_output_stream_operator()
+    ## queue-item.h (module 'network'): ns3::QueueItem::QueueItem(ns3::Ptr<ns3::Packet> p) [constructor]
+    cls.add_constructor([param('ns3::Ptr< ns3::Packet >', 'p')])
+    ## queue-item.h (module 'network'): ns3::Ptr<ns3::Packet> ns3::QueueItem::GetPacket() const [member function]
+    cls.add_method('GetPacket', 
+                   'ns3::Ptr< ns3::Packet >', 
+                   [], 
+                   is_const=True)
+    ## queue-item.h (module 'network'): uint32_t ns3::QueueItem::GetSize() const [member function]
+    cls.add_method('GetSize', 
+                   'uint32_t', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## queue-item.h (module 'network'): bool ns3::QueueItem::GetUint8Value(ns3::QueueItem::Uint8Values field, uint8_t & value) const [member function]
+    cls.add_method('GetUint8Value', 
+                   'bool', 
+                   [param('ns3::QueueItem::Uint8Values', 'field'), param('uint8_t &', 'value')], 
+                   is_const=True, is_virtual=True)
+    ## queue-item.h (module 'network'): void ns3::QueueItem::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    return
+
+def register_Ns3QueueSizeChecker_methods(root_module, cls):
+    ## queue-size.h (module 'network'): ns3::QueueSizeChecker::QueueSizeChecker() [constructor]
+    cls.add_constructor([])
+    ## queue-size.h (module 'network'): ns3::QueueSizeChecker::QueueSizeChecker(ns3::QueueSizeChecker const & arg0) [constructor]
+    cls.add_constructor([param('ns3::QueueSizeChecker const &', 'arg0')])
+    return
+
+def register_Ns3QueueSizeValue_methods(root_module, cls):
+    ## queue-size.h (module 'network'): ns3::QueueSizeValue::QueueSizeValue() [constructor]
+    cls.add_constructor([])
+    ## queue-size.h (module 'network'): ns3::QueueSizeValue::QueueSizeValue(ns3::QueueSize const & value) [constructor]
+    cls.add_constructor([param('ns3::QueueSize const &', 'value')])
+    ## queue-size.h (module 'network'): ns3::QueueSizeValue::QueueSizeValue(ns3::QueueSizeValue const & arg0) [constructor]
+    cls.add_constructor([param('ns3::QueueSizeValue const &', 'arg0')])
+    ## queue-size.h (module 'network'): ns3::Ptr<ns3::AttributeValue> ns3::QueueSizeValue::Copy() const [member function]
+    cls.add_method('Copy', 
+                   'ns3::Ptr< ns3::AttributeValue >', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## queue-size.h (module 'network'): bool ns3::QueueSizeValue::DeserializeFromString(std::string value, ns3::Ptr<const ns3::AttributeChecker> checker) [member function]
+    cls.add_method('DeserializeFromString', 
+                   'bool', 
+                   [param('std::string', 'value'), param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_virtual=True)
+    ## queue-size.h (module 'network'): ns3::QueueSize ns3::QueueSizeValue::Get() const [member function]
+    cls.add_method('Get', 
+                   'ns3::QueueSize', 
+                   [], 
+                   is_const=True)
+    ## queue-size.h (module 'network'): std::string ns3::QueueSizeValue::SerializeToString(ns3::Ptr<const ns3::AttributeChecker> checker) const [member function]
+    cls.add_method('SerializeToString', 
+                   'std::string', 
+                   [param('ns3::Ptr< ns3::AttributeChecker const >', 'checker')], 
+                   is_const=True, is_virtual=True)
+    ## queue-size.h (module 'network'): void ns3::QueueSizeValue::Set(ns3::QueueSize const & value) [member function]
+    cls.add_method('Set', 
+                   'void', 
+                   [param('ns3::QueueSize const &', 'value')])
     return
 
 def register_Ns3RachPreambleLteControlMessage_methods(root_module, cls):
@@ -22601,6 +26230,28 @@ def register_Ns3RrcUlDcchMessage_methods(root_module, cls):
                    is_const=True, visibility='protected')
     return
 
+def register_Ns3S1apConnectionInfo_methods(root_module, cls):
+    ## epc-s1ap.h (module 'lte'): ns3::S1apConnectionInfo::S1apConnectionInfo(ns3::S1apConnectionInfo const & arg0) [constructor]
+    cls.add_constructor([param('ns3::S1apConnectionInfo const &', 'arg0')])
+    ## epc-s1ap.h (module 'lte'): ns3::S1apConnectionInfo::S1apConnectionInfo(uint16_t enbId, uint16_t mmeId) [constructor]
+    cls.add_constructor([param('uint16_t', 'enbId'), param('uint16_t', 'mmeId')])
+    ## epc-s1ap.h (module 'lte'): ns3::S1apConnectionInfo::m_enbId [variable]
+    cls.add_instance_attribute('m_enbId', 'uint16_t', is_const=False)
+    ## epc-s1ap.h (module 'lte'): ns3::S1apConnectionInfo::m_mmeId [variable]
+    cls.add_instance_attribute('m_mmeId', 'uint16_t', is_const=False)
+    return
+
+def register_Ns3S1apIfaceInfo_methods(root_module, cls):
+    ## epc-s1ap.h (module 'lte'): ns3::S1apIfaceInfo::S1apIfaceInfo(ns3::S1apIfaceInfo const & arg0) [constructor]
+    cls.add_constructor([param('ns3::S1apIfaceInfo const &', 'arg0')])
+    ## epc-s1ap.h (module 'lte'): ns3::S1apIfaceInfo::S1apIfaceInfo(ns3::Ipv4Address remoteIpAddr, ns3::Ptr<ns3::Socket> localCtrlPlaneSocket) [constructor]
+    cls.add_constructor([param('ns3::Ipv4Address', 'remoteIpAddr'), param('ns3::Ptr< ns3::Socket >', 'localCtrlPlaneSocket')])
+    ## epc-s1ap.h (module 'lte'): ns3::S1apIfaceInfo::m_localCtrlPlaneSocket [variable]
+    cls.add_instance_attribute('m_localCtrlPlaneSocket', 'ns3::Ptr< ns3::Socket >', is_const=False)
+    ## epc-s1ap.h (module 'lte'): ns3::S1apIfaceInfo::m_remoteIpAddr [variable]
+    cls.add_instance_attribute('m_remoteIpAddr', 'ns3::Ipv4Address', is_const=False)
+    return
+
 def register_Ns3Sib1LteControlMessage_methods(root_module, cls):
     ## lte-control-messages.h (module 'lte'): ns3::Sib1LteControlMessage::Sib1LteControlMessage(ns3::Sib1LteControlMessage const & arg0) [constructor]
     cls.add_constructor([param('ns3::Sib1LteControlMessage const &', 'arg0')])
@@ -22622,11 +26273,6 @@ def register_Ns3SimpleUeComponentCarrierManager_methods(root_module, cls):
     cls.add_constructor([param('ns3::SimpleUeComponentCarrierManager const &', 'arg0')])
     ## simple-ue-component-carrier-manager.h (module 'lte'): ns3::SimpleUeComponentCarrierManager::SimpleUeComponentCarrierManager() [constructor]
     cls.add_constructor([])
-    ## simple-ue-component-carrier-manager.h (module 'lte'): ns3::LteUeCcmRrcSapProvider * ns3::SimpleUeComponentCarrierManager::GetLteCcmRrcSapProvider() [member function]
-    cls.add_method('GetLteCcmRrcSapProvider', 
-                   'ns3::LteUeCcmRrcSapProvider *', 
-                   [], 
-                   is_virtual=True)
     ## simple-ue-component-carrier-manager.h (module 'lte'): ns3::LteMacSapProvider * ns3::SimpleUeComponentCarrierManager::GetLteMacSapProvider() [member function]
     cls.add_method('GetLteMacSapProvider', 
                    'ns3::LteMacSapProvider *', 
@@ -22637,11 +26283,6 @@ def register_Ns3SimpleUeComponentCarrierManager_methods(root_module, cls):
                    'ns3::TypeId', 
                    [], 
                    is_static=True)
-    ## simple-ue-component-carrier-manager.h (module 'lte'): void ns3::SimpleUeComponentCarrierManager::SetLteCcmRrcSapUser(ns3::LteUeCcmRrcSapUser * s) [member function]
-    cls.add_method('SetLteCcmRrcSapUser', 
-                   'void', 
-                   [param('ns3::LteUeCcmRrcSapUser *', 's')], 
-                   is_virtual=True)
     ## simple-ue-component-carrier-manager.h (module 'lte'): std::vector<ns3::LteUeCcmRrcSapProvider::LcsConfig, std::allocator<ns3::LteUeCcmRrcSapProvider::LcsConfig> > ns3::SimpleUeComponentCarrierManager::DoAddLc(uint8_t lcId, ns3::LteUeCmacSapProvider::LogicalChannelConfig lcConfig, ns3::LteMacSapUser * msu) [member function]
     cls.add_method('DoAddLc', 
                    'std::vector< ns3::LteUeCcmRrcSapProvider::LcsConfig >', 
@@ -22662,25 +26303,20 @@ def register_Ns3SimpleUeComponentCarrierManager_methods(root_module, cls):
                    'void', 
                    [], 
                    visibility='protected', is_virtual=True)
-    ## simple-ue-component-carrier-manager.h (module 'lte'): void ns3::SimpleUeComponentCarrierManager::DoNotifyConnectionReconfigurationMsg() [member function]
-    cls.add_method('DoNotifyConnectionReconfigurationMsg', 
-                   'void', 
-                   [], 
-                   visibility='protected')
     ## simple-ue-component-carrier-manager.h (module 'lte'): void ns3::SimpleUeComponentCarrierManager::DoNotifyHarqDeliveryFailure() [member function]
     cls.add_method('DoNotifyHarqDeliveryFailure', 
                    'void', 
                    [], 
                    visibility='protected')
-    ## simple-ue-component-carrier-manager.h (module 'lte'): void ns3::SimpleUeComponentCarrierManager::DoNotifyTxOpportunity(uint32_t bytes, uint8_t layer, uint8_t harqId, uint8_t componentCarrierId, uint16_t rnti, uint8_t lcid) [member function]
+    ## simple-ue-component-carrier-manager.h (module 'lte'): void ns3::SimpleUeComponentCarrierManager::DoNotifyTxOpportunity(ns3::LteMacSapUser::TxOpportunityParameters txOpParams) [member function]
     cls.add_method('DoNotifyTxOpportunity', 
                    'void', 
-                   [param('uint32_t', 'bytes'), param('uint8_t', 'layer'), param('uint8_t', 'harqId'), param('uint8_t', 'componentCarrierId'), param('uint16_t', 'rnti'), param('uint8_t', 'lcid')], 
+                   [param('ns3::LteMacSapUser::TxOpportunityParameters', 'txOpParams')], 
                    visibility='protected')
-    ## simple-ue-component-carrier-manager.h (module 'lte'): void ns3::SimpleUeComponentCarrierManager::DoReceivePdu(ns3::Ptr<ns3::Packet> p, uint16_t rnti, uint8_t lcid) [member function]
+    ## simple-ue-component-carrier-manager.h (module 'lte'): void ns3::SimpleUeComponentCarrierManager::DoReceivePdu(ns3::LteMacSapUser::ReceivePduParameters rxPduParams) [member function]
     cls.add_method('DoReceivePdu', 
                    'void', 
-                   [param('ns3::Ptr< ns3::Packet >', 'p'), param('uint16_t', 'rnti'), param('uint8_t', 'lcid')], 
+                   [param('ns3::LteMacSapUser::ReceivePduParameters', 'rxPduParams')], 
                    visibility='protected')
     ## simple-ue-component-carrier-manager.h (module 'lte'): std::vector<unsigned short, std::allocator<unsigned short> > ns3::SimpleUeComponentCarrierManager::DoRemoveLc(uint8_t lcid) [member function]
     cls.add_method('DoRemoveLc', 
@@ -22696,6 +26332,11 @@ def register_Ns3SimpleUeComponentCarrierManager_methods(root_module, cls):
     cls.add_method('DoReportUeMeas', 
                    'void', 
                    [param('uint16_t', 'rnti'), param('ns3::LteRrcSap::MeasResults', 'measResults')], 
+                   visibility='protected')
+    ## simple-ue-component-carrier-manager.h (module 'lte'): void ns3::SimpleUeComponentCarrierManager::DoReset() [member function]
+    cls.add_method('DoReset', 
+                   'void', 
+                   [], 
                    visibility='protected')
     ## simple-ue-component-carrier-manager.h (module 'lte'): void ns3::SimpleUeComponentCarrierManager::DoTransmitPdu(ns3::LteMacSapProvider::TransmitPduParameters params) [member function]
     cls.add_method('DoTransmitPdu', 
@@ -23599,6 +27240,28 @@ def register_Ns3CallbackImpl__Ns3ObjectBase___star___Ns3Empty_Ns3Empty_Ns3Empty_
                    is_pure_virtual=True, is_virtual=True, custom_name=u'__call__')
     return
 
+def register_Ns3CallbackImpl__Void_Bool_Bool_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, bool, bool, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl() [constructor]
+    cls.add_constructor([])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, bool, bool, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl(ns3::CallbackImpl<void, bool, bool, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> const & arg0) [constructor]
+    cls.add_constructor([param('ns3::CallbackImpl< void, bool, bool, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty > const &', 'arg0')])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImpl<void, bool, bool, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::DoGetTypeid() [member function]
+    cls.add_method('DoGetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True)
+    ## callback.h (module 'core'): std::string ns3::CallbackImpl<void, bool, bool, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::GetTypeid() const [member function]
+    cls.add_method('GetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## callback.h (module 'core'): void ns3::CallbackImpl<void, bool, bool, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(bool arg0, bool arg1) [member operator]
+    cls.add_method('operator()', 
+                   'void', 
+                   [param('bool', 'arg0'), param('bool', 'arg1')], 
+                   is_pure_virtual=True, is_virtual=True, custom_name=u'__call__')
+    return
+
 def register_Ns3CallbackImpl__Void_Const_ns3SpectrumValue___amp___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
     ## callback.h (module 'core'): ns3::CallbackImpl<void, const ns3::SpectrumValue &, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl() [constructor]
     cls.add_constructor([])
@@ -23794,6 +27457,50 @@ def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3PacketBurst__gt___Ns3Emp
     cls.add_method('operator()', 
                    'void', 
                    [param('ns3::Ptr< ns3::PacketBurst const >', 'arg0')], 
+                   is_pure_virtual=True, is_virtual=True, custom_name=u'__call__')
+    return
+
+def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3QueueDiscItem__gt___Const_char___star___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::QueueDiscItem>, const char *, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl() [constructor]
+    cls.add_constructor([])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::QueueDiscItem>, const char *, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl(ns3::CallbackImpl<void, ns3::Ptr<const ns3::QueueDiscItem>, const char *, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> const & arg0) [constructor]
+    cls.add_constructor([param('ns3::CallbackImpl< void, ns3::Ptr< ns3::QueueDiscItem const >, char const *, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty > const &', 'arg0')])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImpl<void, ns3::Ptr<const ns3::QueueDiscItem>, const char *, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::DoGetTypeid() [member function]
+    cls.add_method('DoGetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True)
+    ## callback.h (module 'core'): std::string ns3::CallbackImpl<void, ns3::Ptr<const ns3::QueueDiscItem>, const char *, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::GetTypeid() const [member function]
+    cls.add_method('GetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::Ptr<const ns3::QueueDiscItem>, const char *, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::Ptr<const ns3::QueueDiscItem> arg0, char const * arg1) [member operator]
+    cls.add_method('operator()', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::QueueDiscItem const >', 'arg0'), param('char const *', 'arg1')], 
+                   is_pure_virtual=True, is_virtual=True, custom_name=u'__call__')
+    return
+
+def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__const_ns3QueueDiscItem__gt___Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::QueueDiscItem>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl() [constructor]
+    cls.add_constructor([])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Ptr<const ns3::QueueDiscItem>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl(ns3::CallbackImpl<void, ns3::Ptr<const ns3::QueueDiscItem>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> const & arg0) [constructor]
+    cls.add_constructor([param('ns3::CallbackImpl< void, ns3::Ptr< ns3::QueueDiscItem const >, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty > const &', 'arg0')])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImpl<void, ns3::Ptr<const ns3::QueueDiscItem>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::DoGetTypeid() [member function]
+    cls.add_method('DoGetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True)
+    ## callback.h (module 'core'): std::string ns3::CallbackImpl<void, ns3::Ptr<const ns3::QueueDiscItem>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::GetTypeid() const [member function]
+    cls.add_method('GetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::Ptr<const ns3::QueueDiscItem>, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::Ptr<const ns3::QueueDiscItem> arg0) [member operator]
+    cls.add_method('operator()', 
+                   'void', 
+                   [param('ns3::Ptr< ns3::QueueDiscItem const >', 'arg0')], 
                    is_pure_virtual=True, is_virtual=True, custom_name=u'__call__')
     return
 
@@ -23996,6 +27703,28 @@ def register_Ns3CallbackImpl__Void_Ns3Ptr__lt__ns3SpectrumSignalParameters__gt__
                    is_pure_virtual=True, is_virtual=True, custom_name=u'__call__')
     return
 
+def register_Ns3CallbackImpl__Void_Ns3Time_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Time, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl() [constructor]
+    cls.add_constructor([])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::Time, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl(ns3::CallbackImpl<void, ns3::Time, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> const & arg0) [constructor]
+    cls.add_constructor([param('ns3::CallbackImpl< void, ns3::Time, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty > const &', 'arg0')])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImpl<void, ns3::Time, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::DoGetTypeid() [member function]
+    cls.add_method('DoGetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True)
+    ## callback.h (module 'core'): std::string ns3::CallbackImpl<void, ns3::Time, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::GetTypeid() const [member function]
+    cls.add_method('GetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## callback.h (module 'core'): void ns3::CallbackImpl<void, ns3::Time, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(ns3::Time arg0) [member operator]
+    cls.add_method('operator()', 
+                   'void', 
+                   [param('ns3::Time', 'arg0')], 
+                   is_pure_virtual=True, is_virtual=True, custom_name=u'__call__')
+    return
+
 def register_Ns3CallbackImpl__Void_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
     ## callback.h (module 'core'): ns3::CallbackImpl<void, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl() [constructor]
     cls.add_constructor([])
@@ -24018,6 +27747,28 @@ def register_Ns3CallbackImpl__Void_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_
                    is_pure_virtual=True, is_virtual=True, custom_name=u'__call__')
     return
 
+def register_Ns3CallbackImpl__Void_Unsigned_int_Unsigned_int_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned int, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl() [constructor]
+    cls.add_constructor([])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned int, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl(ns3::CallbackImpl<void, unsigned int, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> const & arg0) [constructor]
+    cls.add_constructor([param('ns3::CallbackImpl< void, unsigned int, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty > const &', 'arg0')])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImpl<void, unsigned int, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::DoGetTypeid() [member function]
+    cls.add_method('DoGetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True)
+    ## callback.h (module 'core'): std::string ns3::CallbackImpl<void, unsigned int, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::GetTypeid() const [member function]
+    cls.add_method('GetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## callback.h (module 'core'): void ns3::CallbackImpl<void, unsigned int, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(unsigned int arg0, unsigned int arg1) [member operator]
+    cls.add_method('operator()', 
+                   'void', 
+                   [param('unsigned int', 'arg0'), param('unsigned int', 'arg1')], 
+                   is_pure_virtual=True, is_virtual=True, custom_name=u'__call__')
+    return
+
 def register_Ns3CallbackImpl__Void_Unsigned_int_Unsigned_int_Unsigned_short_Unsigned_char_Unsigned_short_Unsigned_char_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
     ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned int, unsigned int, unsigned short, unsigned char, unsigned short, unsigned char, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl() [constructor]
     cls.add_constructor([])
@@ -24037,6 +27788,28 @@ def register_Ns3CallbackImpl__Void_Unsigned_int_Unsigned_int_Unsigned_short_Unsi
     cls.add_method('operator()', 
                    'void', 
                    [param('unsigned int', 'arg0'), param('unsigned int', 'arg1'), param('short unsigned int', 'arg2'), param('unsigned char', 'arg3'), param('short unsigned int', 'arg4'), param('unsigned char', 'arg5')], 
+                   is_pure_virtual=True, is_virtual=True, custom_name=u'__call__')
+    return
+
+def register_Ns3CallbackImpl__Void_Unsigned_long_Unsigned_short_Long_double_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned long, unsigned short, long double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl() [constructor]
+    cls.add_constructor([])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned long, unsigned short, long double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl(ns3::CallbackImpl<void, unsigned long, unsigned short, long double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> const & arg0) [constructor]
+    cls.add_constructor([param('ns3::CallbackImpl< void, unsigned long, unsigned short, long double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty > const &', 'arg0')])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImpl<void, unsigned long, unsigned short, long double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::DoGetTypeid() [member function]
+    cls.add_method('DoGetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True)
+    ## callback.h (module 'core'): std::string ns3::CallbackImpl<void, unsigned long, unsigned short, long double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::GetTypeid() const [member function]
+    cls.add_method('GetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## callback.h (module 'core'): void ns3::CallbackImpl<void, unsigned long, unsigned short, long double, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(long unsigned int arg0, short unsigned int arg1, long double arg2) [member operator]
+    cls.add_method('operator()', 
+                   'void', 
+                   [param('long unsigned int', 'arg0'), param('short unsigned int', 'arg1'), param('long double', 'arg2')], 
                    is_pure_virtual=True, is_virtual=True, custom_name=u'__call__')
     return
 
@@ -24216,6 +27989,28 @@ def register_Ns3CallbackImpl__Void_Unsigned_short_Unsigned_char_Unsigned_int_Ns3
                    is_pure_virtual=True, is_virtual=True, custom_name=u'__call__')
     return
 
+def register_Ns3CallbackImpl__Void_Unsigned_short_Unsigned_char_Unsigned_int_Unsigned_int_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned short, unsigned char, unsigned int, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl() [constructor]
+    cls.add_constructor([])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned short, unsigned char, unsigned int, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl(ns3::CallbackImpl<void, unsigned short, unsigned char, unsigned int, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty> const & arg0) [constructor]
+    cls.add_constructor([param('ns3::CallbackImpl< void, unsigned short, unsigned char, unsigned int, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty > const &', 'arg0')])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImpl<void, unsigned short, unsigned char, unsigned int, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::DoGetTypeid() [member function]
+    cls.add_method('DoGetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True)
+    ## callback.h (module 'core'): std::string ns3::CallbackImpl<void, unsigned short, unsigned char, unsigned int, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::GetTypeid() const [member function]
+    cls.add_method('GetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## callback.h (module 'core'): void ns3::CallbackImpl<void, unsigned short, unsigned char, unsigned int, unsigned int, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(short unsigned int arg0, unsigned char arg1, unsigned int arg2, unsigned int arg3) [member operator]
+    cls.add_method('operator()', 
+                   'void', 
+                   [param('short unsigned int', 'arg0'), param('unsigned char', 'arg1'), param('unsigned int', 'arg2'), param('unsigned int', 'arg3')], 
+                   is_pure_virtual=True, is_virtual=True, custom_name=u'__call__')
+    return
+
 def register_Ns3CallbackImpl__Void_Unsigned_short_Unsigned_char_Unsigned_int_Unsigned_long_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
     ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned short, unsigned char, unsigned int, unsigned long, ns3::empty, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl() [constructor]
     cls.add_constructor([])
@@ -24370,6 +28165,28 @@ def register_Ns3CallbackImpl__Void_Unsigned_short_Unsigned_short_Ns3Empty_Ns3Emp
                    is_pure_virtual=True, is_virtual=True, custom_name=u'__call__')
     return
 
+def register_Ns3CallbackImpl__Void_Unsigned_short_Unsigned_short_Unsigned_int_Unsigned_long_Bool_Ns3Empty_Ns3Empty_Ns3Empty_Ns3Empty_methods(root_module, cls):
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned short, unsigned short, unsigned int, unsigned long, bool, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl() [constructor]
+    cls.add_constructor([])
+    ## callback.h (module 'core'): ns3::CallbackImpl<void, unsigned short, unsigned short, unsigned int, unsigned long, bool, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::CallbackImpl(ns3::CallbackImpl<void, unsigned short, unsigned short, unsigned int, unsigned long, bool, ns3::empty, ns3::empty, ns3::empty, ns3::empty> const & arg0) [constructor]
+    cls.add_constructor([param('ns3::CallbackImpl< void, unsigned short, unsigned short, unsigned int, unsigned long, bool, ns3::empty, ns3::empty, ns3::empty, ns3::empty > const &', 'arg0')])
+    ## callback.h (module 'core'): static std::string ns3::CallbackImpl<void, unsigned short, unsigned short, unsigned int, unsigned long, bool, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::DoGetTypeid() [member function]
+    cls.add_method('DoGetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_static=True)
+    ## callback.h (module 'core'): std::string ns3::CallbackImpl<void, unsigned short, unsigned short, unsigned int, unsigned long, bool, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::GetTypeid() const [member function]
+    cls.add_method('GetTypeid', 
+                   'std::string', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## callback.h (module 'core'): void ns3::CallbackImpl<void, unsigned short, unsigned short, unsigned int, unsigned long, bool, ns3::empty, ns3::empty, ns3::empty, ns3::empty>::operator()(short unsigned int arg0, short unsigned int arg1, unsigned int arg2, long unsigned int arg3, bool arg4) [member operator]
+    cls.add_method('operator()', 
+                   'void', 
+                   [param('short unsigned int', 'arg0'), param('short unsigned int', 'arg1'), param('unsigned int', 'arg2'), param('long unsigned int', 'arg3'), param('bool', 'arg4')], 
+                   is_pure_virtual=True, is_virtual=True, custom_name=u'__call__')
+    return
+
 def register_Ns3CqaFfMacScheduler_methods(root_module, cls):
     ## cqa-ff-mac-scheduler.h (module 'lte'): ns3::CqaFfMacScheduler::CqaFfMacScheduler(ns3::CqaFfMacScheduler const & arg0) [constructor]
     cls.add_constructor([param('ns3::CqaFfMacScheduler const &', 'arg0')])
@@ -24475,6 +28292,11 @@ def register_Ns3EmuEpcHelper_methods(root_module, cls):
     cls.add_method('ActivateEpsBearer', 
                    'uint8_t', 
                    [param('ns3::Ptr< ns3::NetDevice >', 'ueLteDevice'), param('uint64_t', 'imsi'), param('ns3::Ptr< ns3::EpcTft >', 'tft'), param('ns3::EpsBearer', 'bearer')], 
+                   is_virtual=True)
+    ## emu-epc-helper.h (module 'lte'): uint8_t ns3::EmuEpcHelper::ActivateEpsBearer(ns3::Ptr<ns3::NetDevice> ueLteDevice, ns3::Ptr<ns3::EpcUeNas> ueNas, uint64_t imsi, ns3::Ptr<ns3::EpcTft> tft, ns3::EpsBearer bearer) [member function]
+    cls.add_method('ActivateEpsBearer', 
+                   'uint8_t', 
+                   [param('ns3::Ptr< ns3::NetDevice >', 'ueLteDevice'), param('ns3::Ptr< ns3::EpcUeNas >', 'ueNas'), param('uint64_t', 'imsi'), param('ns3::Ptr< ns3::EpcTft >', 'tft'), param('ns3::EpsBearer', 'bearer')], 
                    is_virtual=True)
     ## emu-epc-helper.h (module 'lte'): void ns3::EmuEpcHelper::AddEnb(ns3::Ptr<ns3::Node> enbNode, ns3::Ptr<ns3::NetDevice> lteEnbNetDevice, uint16_t cellId) [member function]
     cls.add_method('AddEnb', 
@@ -24745,12 +28567,16 @@ def register_Ns3LteDataRadioBearerInfo_methods(root_module, cls):
     cls.add_instance_attribute('m_epsBearerIdentity', 'uint8_t', is_const=False)
     ## lte-radio-bearer-info.h (module 'lte'): ns3::LteDataRadioBearerInfo::m_gtpTeid [variable]
     cls.add_instance_attribute('m_gtpTeid', 'uint32_t', is_const=False)
+    ## lte-radio-bearer-info.h (module 'lte'): ns3::LteDataRadioBearerInfo::m_isMc [variable]
+    cls.add_instance_attribute('m_isMc', 'bool', is_const=False)
     ## lte-radio-bearer-info.h (module 'lte'): ns3::LteDataRadioBearerInfo::m_logicalChannelConfig [variable]
     cls.add_instance_attribute('m_logicalChannelConfig', 'ns3::LteRrcSap::LogicalChannelConfig', is_const=False)
     ## lte-radio-bearer-info.h (module 'lte'): ns3::LteDataRadioBearerInfo::m_logicalChannelIdentity [variable]
     cls.add_instance_attribute('m_logicalChannelIdentity', 'uint8_t', is_const=False)
     ## lte-radio-bearer-info.h (module 'lte'): ns3::LteDataRadioBearerInfo::m_rlcConfig [variable]
     cls.add_instance_attribute('m_rlcConfig', 'ns3::LteRrcSap::RlcConfig', is_const=False)
+    ## lte-radio-bearer-info.h (module 'lte'): ns3::LteDataRadioBearerInfo::m_rlcSetupRequest [variable]
+    cls.add_instance_attribute('m_rlcSetupRequest', 'ns3::EpcX2Sap::RlcSetupRequest', is_const=False)
     ## lte-radio-bearer-info.h (module 'lte'): ns3::LteDataRadioBearerInfo::m_transportLayerAddress [variable]
     cls.add_instance_attribute('m_transportLayerAddress', 'ns3::Ipv4Address', is_const=False)
     return
@@ -25209,6 +29035,95 @@ def register_Ns3MeasurementReportHeader_methods(root_module, cls):
                    [param('ns3::LteRrcSap::MeasurementReport', 'msg')])
     return
 
+def register_Ns3QueueDiscItem_methods(root_module, cls):
+    ## queue-item.h (module 'network'): ns3::QueueDiscItem::QueueDiscItem(ns3::Ptr<ns3::Packet> p, ns3::Address const & addr, uint16_t protocol) [constructor]
+    cls.add_constructor([param('ns3::Ptr< ns3::Packet >', 'p'), param('ns3::Address const &', 'addr'), param('uint16_t', 'protocol')])
+    ## queue-item.h (module 'network'): ns3::Address ns3::QueueDiscItem::GetAddress() const [member function]
+    cls.add_method('GetAddress', 
+                   'ns3::Address', 
+                   [], 
+                   is_const=True)
+    ## queue-item.h (module 'network'): uint16_t ns3::QueueDiscItem::GetProtocol() const [member function]
+    cls.add_method('GetProtocol', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## queue-item.h (module 'network'): uint8_t ns3::QueueDiscItem::GetTxQueueIndex() const [member function]
+    cls.add_method('GetTxQueueIndex', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## queue-item.h (module 'network'): void ns3::QueueDiscItem::SetTxQueueIndex(uint8_t txq) [member function]
+    cls.add_method('SetTxQueueIndex', 
+                   'void', 
+                   [param('uint8_t', 'txq')])
+    ## queue-item.h (module 'network'): ns3::Time ns3::QueueDiscItem::GetTimeStamp() const [member function]
+    cls.add_method('GetTimeStamp', 
+                   'ns3::Time', 
+                   [], 
+                   is_const=True)
+    ## queue-item.h (module 'network'): void ns3::QueueDiscItem::SetTimeStamp(ns3::Time t) [member function]
+    cls.add_method('SetTimeStamp', 
+                   'void', 
+                   [param('ns3::Time', 't')])
+    ## queue-item.h (module 'network'): void ns3::QueueDiscItem::AddHeader() [member function]
+    cls.add_method('AddHeader', 
+                   'void', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## queue-item.h (module 'network'): void ns3::QueueDiscItem::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## queue-item.h (module 'network'): bool ns3::QueueDiscItem::Mark() [member function]
+    cls.add_method('Mark', 
+                   'bool', 
+                   [], 
+                   is_pure_virtual=True, is_virtual=True)
+    ## queue-item.h (module 'network'): uint32_t ns3::QueueDiscItem::Hash(uint32_t perturbation=0) const [member function]
+    cls.add_method('Hash', 
+                   'uint32_t', 
+                   [param('uint32_t', 'perturbation', default_value='0')], 
+                   is_const=True, is_virtual=True)
+    return
+
+def register_Ns3RrcConnectToMmWaveHeader_methods(root_module, cls):
+    ## lte-rrc-header.h (module 'lte'): ns3::RrcConnectToMmWaveHeader::RrcConnectToMmWaveHeader(ns3::RrcConnectToMmWaveHeader const & arg0) [constructor]
+    cls.add_constructor([param('ns3::RrcConnectToMmWaveHeader const &', 'arg0')])
+    ## lte-rrc-header.h (module 'lte'): ns3::RrcConnectToMmWaveHeader::RrcConnectToMmWaveHeader() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-header.h (module 'lte'): uint32_t ns3::RrcConnectToMmWaveHeader::Deserialize(ns3::Buffer::Iterator bIterator) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'bIterator')], 
+                   is_virtual=True)
+    ## lte-rrc-header.h (module 'lte'): uint16_t ns3::RrcConnectToMmWaveHeader::GetMessage() const [member function]
+    cls.add_method('GetMessage', 
+                   'uint16_t', 
+                   [], 
+                   is_const=True)
+    ## lte-rrc-header.h (module 'lte'): static ns3::TypeId ns3::RrcConnectToMmWaveHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## lte-rrc-header.h (module 'lte'): void ns3::RrcConnectToMmWaveHeader::PreSerialize() const [member function]
+    cls.add_method('PreSerialize', 
+                   'void', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## lte-rrc-header.h (module 'lte'): void ns3::RrcConnectToMmWaveHeader::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## lte-rrc-header.h (module 'lte'): void ns3::RrcConnectToMmWaveHeader::SetMessage(uint16_t mmWaveId) [member function]
+    cls.add_method('SetMessage', 
+                   'void', 
+                   [param('uint16_t', 'mmWaveId')])
+    return
+
 def register_Ns3RrcConnectionReconfigurationCompleteHeader_methods(root_module, cls):
     ## lte-rrc-header.h (module 'lte'): ns3::RrcConnectionReconfigurationCompleteHeader::RrcConnectionReconfigurationCompleteHeader(ns3::RrcConnectionReconfigurationCompleteHeader const & arg0) [constructor]
     cls.add_constructor([param('ns3::RrcConnectionReconfigurationCompleteHeader const &', 'arg0')])
@@ -25564,6 +29479,11 @@ def register_Ns3RrcConnectionRequestHeader_methods(root_module, cls):
                    'uint32_t', 
                    [param('ns3::Buffer::Iterator', 'bIterator')], 
                    is_virtual=True)
+    ## lte-rrc-header.h (module 'lte'): std::bitset<1> ns3::RrcConnectionRequestHeader::GetIsMc() const [member function]
+    cls.add_method('GetIsMc', 
+                   'std::bitset< 1 >', 
+                   [], 
+                   is_const=True)
     ## lte-rrc-header.h (module 'lte'): ns3::LteRrcSap::RrcConnectionRequest ns3::RrcConnectionRequestHeader::GetMessage() const [member function]
     cls.add_method('GetMessage', 
                    'ns3::LteRrcSap::RrcConnectionRequest', 
@@ -25700,6 +29620,83 @@ def register_Ns3RrcConnectionSetupHeader_methods(root_module, cls):
     cls.add_method('SetMessage', 
                    'void', 
                    [param('ns3::LteRrcSap::RrcConnectionSetup', 'msg')])
+    return
+
+def register_Ns3RrcConnectionSwitchHeader_methods(root_module, cls):
+    ## lte-rrc-header.h (module 'lte'): ns3::RrcConnectionSwitchHeader::RrcConnectionSwitchHeader(ns3::RrcConnectionSwitchHeader const & arg0) [constructor]
+    cls.add_constructor([param('ns3::RrcConnectionSwitchHeader const &', 'arg0')])
+    ## lte-rrc-header.h (module 'lte'): ns3::RrcConnectionSwitchHeader::RrcConnectionSwitchHeader() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-header.h (module 'lte'): uint32_t ns3::RrcConnectionSwitchHeader::Deserialize(ns3::Buffer::Iterator bIterator) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'bIterator')], 
+                   is_virtual=True)
+    ## lte-rrc-header.h (module 'lte'): ns3::LteRrcSap::RrcConnectionSwitch ns3::RrcConnectionSwitchHeader::GetMessage() const [member function]
+    cls.add_method('GetMessage', 
+                   'ns3::LteRrcSap::RrcConnectionSwitch', 
+                   [], 
+                   is_const=True)
+    ## lte-rrc-header.h (module 'lte'): uint8_t ns3::RrcConnectionSwitchHeader::GetRrcTransactionIdentifier() const [member function]
+    cls.add_method('GetRrcTransactionIdentifier', 
+                   'uint8_t', 
+                   [], 
+                   is_const=True)
+    ## lte-rrc-header.h (module 'lte'): static ns3::TypeId ns3::RrcConnectionSwitchHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## lte-rrc-header.h (module 'lte'): void ns3::RrcConnectionSwitchHeader::PreSerialize() const [member function]
+    cls.add_method('PreSerialize', 
+                   'void', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## lte-rrc-header.h (module 'lte'): void ns3::RrcConnectionSwitchHeader::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## lte-rrc-header.h (module 'lte'): void ns3::RrcConnectionSwitchHeader::SetMessage(ns3::LteRrcSap::RrcConnectionSwitch msg) [member function]
+    cls.add_method('SetMessage', 
+                   'void', 
+                   [param('ns3::LteRrcSap::RrcConnectionSwitch', 'msg')])
+    return
+
+def register_Ns3RrcNotifySecondaryConnectedHeader_methods(root_module, cls):
+    ## lte-rrc-header.h (module 'lte'): ns3::RrcNotifySecondaryConnectedHeader::RrcNotifySecondaryConnectedHeader(ns3::RrcNotifySecondaryConnectedHeader const & arg0) [constructor]
+    cls.add_constructor([param('ns3::RrcNotifySecondaryConnectedHeader const &', 'arg0')])
+    ## lte-rrc-header.h (module 'lte'): ns3::RrcNotifySecondaryConnectedHeader::RrcNotifySecondaryConnectedHeader() [constructor]
+    cls.add_constructor([])
+    ## lte-rrc-header.h (module 'lte'): uint32_t ns3::RrcNotifySecondaryConnectedHeader::Deserialize(ns3::Buffer::Iterator bIterator) [member function]
+    cls.add_method('Deserialize', 
+                   'uint32_t', 
+                   [param('ns3::Buffer::Iterator', 'bIterator')], 
+                   is_virtual=True)
+    ## lte-rrc-header.h (module 'lte'): std::pair<unsigned short, unsigned short> ns3::RrcNotifySecondaryConnectedHeader::GetMessage() const [member function]
+    cls.add_method('GetMessage', 
+                   'std::pair< unsigned short, unsigned short >', 
+                   [], 
+                   is_const=True)
+    ## lte-rrc-header.h (module 'lte'): static ns3::TypeId ns3::RrcNotifySecondaryConnectedHeader::GetTypeId() [member function]
+    cls.add_method('GetTypeId', 
+                   'ns3::TypeId', 
+                   [], 
+                   is_static=True)
+    ## lte-rrc-header.h (module 'lte'): void ns3::RrcNotifySecondaryConnectedHeader::PreSerialize() const [member function]
+    cls.add_method('PreSerialize', 
+                   'void', 
+                   [], 
+                   is_const=True, is_virtual=True)
+    ## lte-rrc-header.h (module 'lte'): void ns3::RrcNotifySecondaryConnectedHeader::Print(std::ostream & os) const [member function]
+    cls.add_method('Print', 
+                   'void', 
+                   [param('std::ostream &', 'os')], 
+                   is_const=True, is_virtual=True)
+    ## lte-rrc-header.h (module 'lte'): void ns3::RrcNotifySecondaryConnectedHeader::SetMessage(uint16_t mmWaveId, uint16_t mmWaveRnti) [member function]
+    cls.add_method('SetMessage', 
+                   'void', 
+                   [param('uint16_t', 'mmWaveId'), param('uint16_t', 'mmWaveRnti')])
     return
 
 def register_Ns3LteEnbNetDevice_methods(root_module, cls):
@@ -25993,11 +29990,11 @@ def register_Ns3HashFunctionMurmur3_methods(root_module, cls):
 
 def register_functions(root_module):
     module = root_module
-    register_functions_ns3_Config(module.get_submodule('Config'), root_module)
-    register_functions_ns3_FatalImpl(module.get_submodule('FatalImpl'), root_module)
-    register_functions_ns3_Hash(module.get_submodule('Hash'), root_module)
-    register_functions_ns3_TracedValueCallback(module.get_submodule('TracedValueCallback'), root_module)
-    register_functions_ns3_internal(module.get_submodule('internal'), root_module)
+    register_functions_ns3_Config(module.add_cpp_namespace('Config'), root_module)
+    register_functions_ns3_FatalImpl(module.add_cpp_namespace('FatalImpl'), root_module)
+    register_functions_ns3_Hash(module.add_cpp_namespace('Hash'), root_module)
+    register_functions_ns3_TracedValueCallback(module.add_cpp_namespace('TracedValueCallback'), root_module)
+    register_functions_ns3_internal(module.add_cpp_namespace('internal'), root_module)
     return
 
 def register_functions_ns3_Config(module, root_module):
@@ -26007,7 +30004,7 @@ def register_functions_ns3_FatalImpl(module, root_module):
     return
 
 def register_functions_ns3_Hash(module, root_module):
-    register_functions_ns3_Hash_Function(module.get_submodule('Function'), root_module)
+    register_functions_ns3_Hash_Function(module.add_cpp_namespace('Function'), root_module)
     return
 
 def register_functions_ns3_Hash_Function(module, root_module):

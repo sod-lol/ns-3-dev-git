@@ -66,11 +66,13 @@ std::ostream& operator<< (std::ostream& os, EpcTft::PacketFilter& f)
 {
   os << " direction: " << f.direction
       << " remoteAddress: "  << f.remoteAddress
-      << " remoteAddress6: "  << f.remoteAddress6
       << " remoteMask: "  << f.remoteMask
+      << " remoteIpv6Address: "  << f.remoteIpv6Address
+      << " remoteIpv6Prefix: "  << f.remoteIpv6Prefix
       << " localAddress: "  << f.localAddress
-      << " localAddress6: "  << f.localAddress6
       << " localMask: "  << f.localMask
+      << " localIpv6Address: "  << f.localIpv6Address
+      << " localIpv6Prefix: "  << f.localIpv6Prefix
       << " remotePortStart: "   << f.remotePortStart
       << " remotePortEnd: "   << f.remotePortEnd
       << " localPortStart: "   << f.localPortStart
@@ -112,27 +114,31 @@ EpcTft::PacketFilter::Matches (Direction d,
           NS_LOG_LOGIC ("ra matches");
           if (localMask.IsMatch (localAddress, la))
             {
-              NS_LOG_LOGIC ("ls matches");
-              if (rp >= remotePortStart)
+              NS_LOG_LOGIC ("la matches");
+              if (remotePortStart <= rp && rp <= remotePortEnd)
                 {
-                  NS_LOG_LOGIC ("rps matches");
-                  if (rp <= remotePortEnd)
+                  NS_LOG_LOGIC ("rp matches");
+                  if (localPortStart <= lp && lp <= localPortEnd)
                     {
-                      NS_LOG_LOGIC ("rpe matches");
-                      if (lp >= localPortStart)
+                      NS_LOG_LOGIC ("lp matches");
+                      if ((tos & typeOfServiceMask) == (typeOfService & typeOfServiceMask))
                         {
-                          NS_LOG_LOGIC ("lps matches");
-                          if (lp <= localPortEnd)
-                            {
-                              NS_LOG_LOGIC ("lpe matches");
-                              if ((tos & typeOfServiceMask) == (typeOfService & typeOfServiceMask))
-                                {
-                                  NS_LOG_LOGIC ("tos matches --> have match!");
-                                  return true;
-                                }
-                            }
+                          NS_LOG_LOGIC ("tos matches --> have match!");
+                          return true;
+                        }
+                      else
+                        {
+                          NS_LOG_LOGIC ("tos doesn't match: tos=" << tos << " f.tos=" << typeOfService << " f.tosmask=" << typeOfServiceMask);
                         }
                     }
+                  else
+                    {
+                      NS_LOG_LOGIC ("lp doesn't match: lp=" << lp << " f.lps=" << localPortStart << " f.lpe=" << localPortEnd);
+                    }
+                }
+              else
+                {
+                  NS_LOG_LOGIC ("rp doesn't match: rp=" << rp << " f.rps=" << remotePortStart << " f.lpe=" << remotePortEnd);
                 }
             }
           else
@@ -149,7 +155,7 @@ EpcTft::PacketFilter::Matches (Direction d,
     {
       NS_LOG_LOGIC ("d doesn't match: d=0x" << std::hex << d << " f.d=0x" << std::hex << direction << std::dec);
     }
-  return false;      
+  return false;
 }
 
 bool 
@@ -164,47 +170,57 @@ EpcTft::PacketFilter::Matches (Direction d,
   if (d & direction)
     {
       NS_LOG_LOGIC ("d matches");
-      if (rp >= remotePortStart)
+      if (remoteIpv6Prefix.IsMatch (remoteIpv6Address, ra))
         {
-          NS_LOG_LOGIC ("rps matches");
-          if (rp <= remotePortEnd)
+          NS_LOG_LOGIC ("ra matches");
+          if (localIpv6Prefix.IsMatch (localIpv6Address, la))
             {
-              NS_LOG_LOGIC ("rpe matches");
-              if (lp >= localPortStart)
+              NS_LOG_LOGIC ("la matches");
+              if (remotePortStart <= rp && rp <= remotePortEnd)
                 {
-                  NS_LOG_LOGIC ("lps matches");
-                  if (lp <= localPortEnd)
+                  NS_LOG_LOGIC ("rp matches");
+                  if (localPortStart <= lp && lp <= localPortEnd)
                     {
-                      NS_LOG_LOGIC ("lpe matches");
+                      NS_LOG_LOGIC ("lp matches");
                       if ((tos & typeOfServiceMask) == (typeOfService & typeOfServiceMask))
                         {
                           NS_LOG_LOGIC ("tos matches --> have match!");
                           return true;
                         }
+                      else
+                        {
+                          NS_LOG_LOGIC ("tos doesn't match: tos=" << tos << " f.tos=" << typeOfService << " f.tosmask=" << typeOfServiceMask);
+                        }
+                    }
+                  else
+                    {
+                      NS_LOG_LOGIC ("lp doesn't match: lp=" << lp << " f.lps=" << localPortStart << " f.lpe=" << localPortEnd);
                     }
                 }
+              else
+                {
+                  NS_LOG_LOGIC ("rp doesn't match: rp=" << rp << " f.rps=" << remotePortStart << " f.lpe=" << remotePortEnd);
+                }
             }
-
-
           else
             {
-              NS_LOG_LOGIC ("la doesn't match: la=" << la << " f.la=" << localAddress << " f.lmask=" << localMask);
+              NS_LOG_LOGIC ("la doesn't match: la=" << la << " f.la=" << localIpv6Address << " f.lprefix=" << localIpv6Prefix);
             }
         }
       else
         {
-          NS_LOG_LOGIC ("ra doesn't match: ra=" << ra << " f.ra=" << remoteAddress << " f.rmask=" << remoteMask);
+          NS_LOG_LOGIC ("ra doesn't match: ra=" << ra << " f.ra=" << remoteIpv6Address << " f.rprefix=" << remoteIpv6Prefix);
         }
     }
   else
     {
       NS_LOG_LOGIC ("d doesn't match: d=0x" << std::hex << d << " f.d=0x" << std::hex << direction << std::dec);
     }
-  return false;      
+  return false;
 }
 
 
-Ptr<EpcTft> 
+Ptr<EpcTft>
 EpcTft::Default ()
 {
   Ptr<EpcTft> tft = Create<EpcTft> ();
@@ -220,7 +236,7 @@ EpcTft::EpcTft ()
   NS_LOG_FUNCTION (this);
 }
 
-uint8_t 
+uint8_t
 EpcTft::Add (PacketFilter f)
 {
   NS_LOG_FUNCTION (this << f);
@@ -231,13 +247,13 @@ EpcTft::Add (PacketFilter f)
       (it != m_filters.end ()) && (it->precedence <= f.precedence);
       ++it)
     {
-    }  
-  m_filters.insert (it, f);  
+    }
+  m_filters.insert (it, f);
   ++m_numFilters;
   return (m_numFilters - 1);
 }
 
-bool 
+bool
 EpcTft::Matches (Direction direction,
                  Ipv4Address remoteAddress,
                  Ipv4Address localAddress,
@@ -254,11 +270,11 @@ EpcTft::Matches (Direction direction,
         {
           return true;
         }
-    }  
+    }
   return false;
 }
 
-bool 
+bool
 EpcTft::Matches (Direction direction,
                  Ipv6Address remoteAddress,
                  Ipv6Address localAddress,
@@ -275,7 +291,7 @@ EpcTft::Matches (Direction direction,
         {
           return true;
         }
-    }  
+    }
   return false;
 }
 

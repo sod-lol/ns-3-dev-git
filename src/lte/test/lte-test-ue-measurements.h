@@ -62,8 +62,8 @@ public:
  * \ingroup lte-test
  * \ingroup tests
  *
- * \brief Test that UE measurements calculation works properly in a scenario 
- * with 2 eNodeBs and 2UEs. Test that RSRP and RSRQ of the serving cell and of 
+ * \brief Test that UE measurements calculation works properly in a scenario
+ * with 2 eNodeBs and 2UEs. Test that RSRP and RSRQ of the serving cell and of
  * the neighbor cell correspond to the reference values.
  */
 class LteUeMeasurementsTestCase : public TestCase
@@ -138,17 +138,17 @@ public:
  * \ingroup tests
  *
  * \brief Testing UE measurements in LTE with simulation of 1 eNodeB and 1 UE in
- *        piecewise configuration and 120 ms report interval. During the simulation 
- *        the placement of UE is being changed several times. Four different 
- *        cases are considered: UE is very near to eNodeB, UE is near to eNodeB, 
- *        UE is far from eNodeB and UE is very far from eNodeB. Test checks 
- *        if the measurments correspond to the real conditions of the UE, i.e. 
- *        wnen the signal from serving cell becomes weak, the measurements should 
- *        also start to correspond to the new channel conditions. Additionally, it 
- *        is checked if UE detects some neighboring signal, if it does the test 
- *        fails because there is no neighbor in this configuration. Also, test 
- *        checks if the reporting occurs at intervals that it should according to 
- *        the measurements configuration. If it occurs in some different time 
+ *        piecewise configuration and 120 ms report interval. During the simulation
+ *        the placement of UE is being changed several times. Four different
+ *        cases are considered: UE is very near to eNodeB, UE is near to eNodeB,
+ *        UE is far from eNodeB and UE is very far from eNodeB. Test checks
+ *        if the measurments correspond to the real conditions of the UE, i.e.
+ *        wnen the signal from serving cell becomes weak, the measurements should
+ *        also start to correspond to the new channel conditions. Additionally, it
+ *        is checked if UE detects some neighboring signal, if it does the test
+ *        fails because there is no neighbor in this configuration. Also, test
+ *        checks if the reporting occurs at intervals that it should according to
+ *        the measurements configuration. If it occurs in some different time
  *        stamp the test will fail.
  */
 class LteUeMeasurementsPiecewiseTestCase1 : public TestCase
@@ -279,16 +279,16 @@ public:
  * \brief Testing UE measurements in LTE with simulation of 2 eNodeB and 1 UE in
  *        piecewise configuration and 240 ms report interval.
  *        Here is intenisvely test events A1 and A2. A1 event should be triggered
- *        when the serving cell becomes better than a given threshold. A2 shall 
- *        be triggered when the serving cell becomes worse than threshold. A3 
+ *        when the serving cell becomes better than a given threshold. A2 shall
+ *        be triggered when the serving cell becomes worse than threshold. A3
  *        event is triggered when the neighbour becomes offset better than the PCell.
- *        In this test UE is being transported several times during the simulation 
- *        duration. Then the test checks if measurement report contains correct 
- *        RSRP and RSRQ result, than if CQI info is correctly generated, if the 
- *        reporting occurs at the correct time stamp in the simulation and according 
- *        to the measurements configuration. It also checks if the reported values 
+ *        In this test UE is being transported several times during the simulation
+ *        duration. Then the test checks if measurement report contains correct
+ *        RSRP and RSRQ result, than if CQI info is correctly generated, if the
+ *        reporting occurs at the correct time stamp in the simulation and according
+ *        to the measurements configuration. It also checks if the reported values
  *        of RSRP and RSRQ are equal to expected reference values.
- *        
+ *
  */
 class LteUeMeasurementsPiecewiseTestCase2 : public TestCase
 {
@@ -392,143 +392,6 @@ private:
 
 }; // end of class LteUeMeasurementsPiecewiseTestCase2
 
-// ===== LTE-UE-MEASUREMENTS-PIECEWISE-3 TEST SUITE ======================== //
-
-
-/**
- * \ingroup lte-test
- * \ingroup tests
- *
- * \brief Test suite for generating calls to UE measurements test case
- *        ns3::LteUeMeasurementsPiecewiseTestCase3.
- */
-class LteUeMeasurementsPiecewiseTestSuite3 : public TestSuite
-{
-public:
-  LteUeMeasurementsPiecewiseTestSuite3 ();
-};
-
-
-/**
- * \ingroup lte-test
- * \ingroup tests
- *
- * \brief Testing UE measurements in LTE with simulation of 3 eNodeB and 1 UE in
- *        piecewise configuration and 240 ms report interval.
- *        This test is to cover a corner case using event A4, which is not
- *        covered by LteUeMeasurementsPiecewiseTestCase1 and
- *        LteUeMeasurementsPiecewiseTestCase2. In this case, we test that the UE
- *        measurements at eNB are arriving 240 ms apart. Please note, the
- *        scenario simulated is engineered to specifically test the corner case
- *        in which whenever a new neighbour fulfils the entry condition
- *        for event A4, the UE RRC calls VarMeasReportListAdd method to include
- *        the new cell id in cellsTriggeredList, and then it schedules the
- *        SendMeasurementReport for periodic reporting. However, if the UE has
- *        already started the periodic reporting, scheduling the
- *        SendMeasurementReport method again causes following buggy behaviors:
- *
- *        1. It generates an intermediate measurement event, which then leads
- *        to parallel intermediate measurement reports from a UE to its eNB.
- *
- *        2. The old EvenId is overwritten by the new EventId stored in
- *        VarMeasReportList. This makes us lose control over the old EventId
- *        and it is impossible to cancel its events later on.
- *
- *        These buggy behaviors generated an issue reported in
- *        https://gitlab.com/nsnam/ns-3-dev/-/issues/224, where a UE try to
- *        send measurement reports after the RLF, even though all the measurement
- *        events are properly cancelled upon detecting RLF.
- *
- *        The correct behaviour should be that if a UE has already started the
- *        periodic reporting, and once a new neighbour fulfils the entry
- *        condition, we just need to add its cell id in cellsTriggeredList,
- *        without scheduling a new periodic event.
- *
- */
-class LteUeMeasurementsPiecewiseTestCase3 : public TestCase
-{
-public:
-  /**
-   * Constructor
-   *
-   * \param name the reference name
-   * \param config LteRrcSap::ReportConfigEutra
-   * \param expectedTime the expected time
-   */
-  LteUeMeasurementsPiecewiseTestCase3 (std::string name,
-                                       LteRrcSap::ReportConfigEutra config,
-                                       std::vector<Time> expectedTime);
-
-  virtual ~LteUeMeasurementsPiecewiseTestCase3 ();
-
-  /**
-   * \brief Triggers when eNodeB receives measurement report from UE, then
-   *        perform verification on it.
-   *
-   * The trigger is set up beforehand by connecting to the
-   * `LteUeRrc::RecvMeasurementReport` trace source.
-   *
-   * Verification consists of checking whether the report carries the right
-   * value of RSRP or not, and whether it occurs at the expected time or not.
-   *
-   * \param context the context
-   * \param imsi the IMSI
-   * \param cellId the cell ID
-   * \param rnti  the RNTI
-   * \param report LteRrcSap::MeasurementReport
-   */
-  void RecvMeasurementReportCallback (std::string context, uint64_t imsi,
-                                      uint16_t cellId, uint16_t rnti,
-                                      LteRrcSap::MeasurementReport report);
-
-private:
-  /**
-   * \brief Setup the simulation with the intended UE measurement reporting
-   *        configuration, run it, and connect the
-   *        `RecvMeasurementReportCallback` function to the
-   *        `LteUeRrc::RecvMeasurementReport` trace source.
-   */
-  virtual void DoRun ();
-
-  /**
-   * \brief Runs at the end of the simulation, verifying that all expected
-   *        measurement reports have been examined.
-   */
-  virtual void DoTeardown ();
-
-
-  /// Teleport the eNb near function
-  void TeleportEnbNear ();
-
-  /**
-   * \brief The active report triggering configuration.
-   */
-  LteRrcSap::ReportConfigEutra m_config;
-
-  /**
-   * \brief The list of expected time when measurement reports are received by
-   *        eNodeB.
-   */
-  std::vector<Time> m_expectedTime;
-
-  /**
-   * \brief Pointer to the element of `m_expectedTime` which is expected to
-   *        occur next in the simulation.
-   */
-  std::vector<Time>::iterator m_itExpectedTime;
-
-  /**
-   * \brief The measurement identity being tested. Measurement reports with
-   *        different measurement identity (e.g. from handover algorithm) will
-   *        be ignored.
-   */
-  uint8_t m_expectedMeasId;
-
-  Ptr<MobilityModel> m_enbMobility; ///< the mobility model
-
-}; // end of class LteUeMeasurementsPiecewiseTestCase3
-
-
 
 
 // ===== LTE-UE-MEASUREMENTS-HANDOVER TEST SUITE =========================== //
@@ -556,15 +419,15 @@ public:
  *        a handover configuration.
  *
  * The simulation will run for the specified duration, while the handover
- * command will be issued exactly at the middle of simulation. Handover 
- * test covers four different scenarios: switch from event A1 to event A2, 
- * from event A2 to event A1, from event A3 to event A4, from event A4 to event 
- * A3, from event A2 to event A3, from event A3 to event A2, from event A4 to 
- * event A5, from event A5 to event A4. Additionally, it tests different 
+ * command will be issued exactly at the middle of simulation. Handover
+ * test covers four different scenarios: switch from event A1 to event A2,
+ * from event A2 to event A1, from event A3 to event A4, from event A4 to event
+ * A3, from event A2 to event A3, from event A3 to event A2, from event A4 to
+ * event A5, from event A5 to event A4. Additionally, it tests different
  * handover threshold configurations, A2 threshold difference, A3 offset difference,
- * A4 and A5 threshold difference. Finally, different handover is tested for 
+ * A4 and A5 threshold difference. Finally, different handover is tested for
  * different time-to-trigger (TTT) configurations.
- * 
+ *
  */
 class LteUeMeasurementsHandoverTestCase : public TestCase
 {

@@ -942,10 +942,8 @@ TdMtFfMacScheduler::DoSchedDlTriggerReq (const struct FfMacSchedSapProvider::Sch
             } // end for RBG free
 
         } // end for RBGs
-      if (tempMap.size() > 0)
-        {
-          allocationMap.insert (std::pair <uint16_t, std::vector <uint16_t> > ((*itMax), tempMap));
-        }
+
+      allocationMap.insert (std::pair <uint16_t, std::vector <uint16_t> > ((*itMax), tempMap));
     }
 
   // generate the transmission opportunities by grouping the RBGs of the same RNTI and

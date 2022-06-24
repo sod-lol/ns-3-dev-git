@@ -1,6 +1,7 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2011,2012 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
+ * Copyright (c) 2016, University of Padova, Dep. of Information Engineering, SIGNET lab
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -17,12 +18,16 @@
  *
  * Author: Manuel Requena <manuel.requena@cttc.es>
  *         Nicola Baldo <nbaldo@cttc.es>
+ *
+ * Modified by: Michele Polese <michele.polese@gmail.com>
+ *          Dual Connectivity functionalities
  */
 
 #include "ns3/simulator.h"
 #include "ns3/log.h"
 
 #include "ns3/lte-rlc-tm.h"
+#include "ns3/lte-rlc-tag.h"
 
 namespace ns3 {
 
@@ -80,8 +85,12 @@ LteRlcTm::DoTransmitPdcpPdu (Ptr<Packet> p)
 
   if (m_txBufferSize + p->GetSize () <= m_maxTxBufferSize)
     {
+      /** Store arrival time */
+      RlcTag timeTag (Simulator::Now ());
+      p->AddPacketTag (timeTag);
+
       NS_LOG_LOGIC ("Tx Buffer: New packet added");
-      m_txBuffer.push_back (TxPdu (p, Simulator::Now ()));
+      m_txBuffer.push_back (p);
       m_txBufferSize += p->GetSize ();
       NS_LOG_LOGIC ("NumOfBuffers = " << m_txBuffer.size() );
       NS_LOG_LOGIC ("txBufferSize = " << m_txBufferSize);
@@ -100,6 +109,12 @@ LteRlcTm::DoTransmitPdcpPdu (Ptr<Packet> p)
   m_rbsTimer.Cancel ();
 }
 
+void
+LteRlcTm::DoSendMcPdcpSdu(EpcX2Sap::UeDataParams params)
+{
+  NS_LOG_FUNCTION(this);
+  DoTransmitPdcpPdu(params.ueData);
+}
 
 /**
  * MAC SAP
@@ -110,7 +125,7 @@ LteRlcTm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
 {
   NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << txOpParams.bytes  << (uint32_t) txOpParams.layer << (uint32_t) txOpParams.harqId);
 
-  // 5.1.1.1 Transmit operations 
+  // 5.1.1.1 Transmit operations
   // 5.1.1.1.1 General
   // When submitting a new TMD PDU to lower layer, the transmitting TM RLC entity shall:
   // - submit a RLC SDU without any modification to lower layer.
@@ -122,18 +137,20 @@ LteRlcTm::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpPara
       return;
     }
 
-  Ptr<Packet> packet = m_txBuffer.begin ()->m_pdu->Copy ();
+  Ptr<Packet> packet = (*(m_txBuffer.begin ()))->Copy ();
 
   if (txOpParams.bytes < packet->GetSize ())
     {
-      NS_LOG_WARN ("TX opportunity too small = " << txOpParams.bytes <<
-                   " (PDU size: " << packet->GetSize () << ")");
+      NS_LOG_WARN ("TX opportunity too small = " << txOpParams.bytes << " (PDU size: " << packet->GetSize () << ")");
       return;
     }
 
-  m_txBufferSize -= packet->GetSize ();
+  m_txBufferSize -= (*(m_txBuffer.begin()))->GetSize ();
   m_txBuffer.erase (m_txBuffer.begin ());
 
+  // Sender timestamp
+  RlcTag rlcTag (Simulator::Now ());
+  packet->AddByteTag (rlcTag);
   m_txPdu (m_rnti, m_lcid, packet->GetSize ());
 
   // Send RLC PDU to MAC layer
@@ -165,9 +182,16 @@ LteRlcTm::DoReceivePdu (LteMacSapUser::ReceivePduParameters rxPduParams)
 {
   NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << rxPduParams.p->GetSize ());
 
-  m_rxPdu (m_rnti, m_lcid, rxPduParams.p->GetSize (), 0);
+  // Receiver timestamp
+  RlcTag rlcTag;
+  Time delay;
+  if (rxPduParams.p->FindFirstMatchingByteTag (rlcTag))
+    {
+      delay = Simulator::Now() - rlcTag.GetSenderTimestamp ();
+    }
+  m_rxPdu (m_rnti, m_lcid, rxPduParams.p->GetSize (), delay.GetNanoSeconds ());
 
-  // 5.1.1.2 Receive operations 
+  // 5.1.1.2 Receive operations
   // 5.1.1.2.1  General
   // When receiving a new TMD PDU from lower layer, the receiving TM RLC entity shall:
   // - deliver the TMD PDU without any modification to upper layer.
@@ -184,7 +208,9 @@ LteRlcTm::DoReportBufferStatus (void)
 
   if (! m_txBuffer.empty ())
     {
-      holDelay = Simulator::Now () - m_txBuffer.front ().m_waitingSince;
+      RlcTag holTimeTag;
+      m_txBuffer.front ()->PeekPacketTag (holTimeTag);
+      holDelay = Simulator::Now () - holTimeTag.GetSenderTimestamp ();
 
       queueSize = m_txBufferSize; // just data in tx queue (no header overhead for RLC TM)
     }
@@ -197,6 +223,20 @@ LteRlcTm::DoReportBufferStatus (void)
   r.retxQueueSize = 0;
   r.retxQueueHolDelay = 0;
   r.statusPduSize = 0;
+
+  // from UM low lat
+  for (unsigned i = 0; i < m_txBuffer.size(); i++)
+  {
+    if (i == 20)  // only include up to the first 20 packets
+    {
+      break;
+    }
+    r.txPacketSizes.push_back (m_txBuffer[i]->GetSize ());
+    RlcTag holTimeTag;
+    m_txBuffer[i]->PeekPacketTag (holTimeTag);
+    holDelay = Simulator::Now () - holTimeTag.GetSenderTimestamp ();
+    r.txPacketDelays.push_back (holDelay.GetMicroSeconds ());
+  }
 
   NS_LOG_LOGIC ("Send ReportBufferStatus = " << r.txQueueSize << ", " << r.txQueueHolDelay );
   m_macSapProvider->ReportBufferStatus (r);

@@ -155,7 +155,7 @@ LtePdcp::GetLteRlcSapUser ()
   return m_rlcSapUser;
 }
 
-LtePdcp::Status 
+LtePdcp::Status
 LtePdcp::GetStatus ()
 {
   Status s;
@@ -164,7 +164,7 @@ LtePdcp::GetStatus ()
   return s;
 }
 
-void 
+void
 LtePdcp::SetStatus (Status s)
 {
   m_txSequenceNumber = s.txSn;
@@ -174,13 +174,9 @@ LtePdcp::SetStatus (Status s)
 ////////////////////////////////////////
 
 void
-LtePdcp::DoTransmitPdcpSdu (LtePdcpSapProvider::TransmitPdcpSduParameters params)
+LtePdcp::DoTransmitPdcpSdu (Ptr<Packet> p)
 {
-  NS_LOG_FUNCTION (this << m_rnti << static_cast <uint16_t> (m_lcid) << params.pdcpSdu->GetSize ());
-  Ptr<Packet> p = params.pdcpSdu;
-
-  // Sender timestamp
-  PdcpTag pdcpTag (Simulator::Now ());
+  NS_LOG_FUNCTION (this << m_rnti << (uint32_t) m_lcid << p->GetSize ());
 
   LtePdcpHeader pdcpHeader;
   pdcpHeader.SetSequenceNumber (m_txSequenceNumber);
@@ -195,16 +191,18 @@ LtePdcp::DoTransmitPdcpSdu (LtePdcpSapProvider::TransmitPdcpSduParameters params
 
   NS_LOG_LOGIC ("PDCP header: " << pdcpHeader);
   p->AddHeader (pdcpHeader);
-  p->AddByteTag (pdcpTag, 1, pdcpHeader.GetSerializedSize ());
 
+  // Sender timestamp
+  PdcpTag pdcpTag (Simulator::Now ());
+  p->AddByteTag (pdcpTag);
   m_txPdu (m_rnti, m_lcid, p->GetSize ());
 
-  LteRlcSapProvider::TransmitPdcpPduParameters txParams;
-  txParams.rnti = m_rnti;
-  txParams.lcid = m_lcid;
-  txParams.pdcpPdu = p;
+  LteRlcSapProvider::TransmitPdcpPduParameters params;
+  params.rnti = m_rnti;
+  params.lcid = m_lcid;
+  params.pdcpPdu = p;
 
-  m_rlcSapProvider->TransmitPdcpPdu (txParams);
+  m_rlcSapProvider->TransmitPdcpPdu (params);
 }
 
 void
@@ -215,8 +213,10 @@ LtePdcp::DoReceivePdu (Ptr<Packet> p)
   // Receiver timestamp
   PdcpTag pdcpTag;
   Time delay;
-  p->FindFirstMatchingByteTag (pdcpTag);
-  delay = Simulator::Now() - pdcpTag.GetSenderTimestamp ();
+  if (p->FindFirstMatchingByteTag (pdcpTag))
+    {
+      delay = Simulator::Now() - pdcpTag.GetSenderTimestamp ();
+    }
   m_rxPdu(m_rnti, m_lcid, p->GetSize (), delay.GetNanoSeconds ());
 
   LtePdcpHeader pdcpHeader;

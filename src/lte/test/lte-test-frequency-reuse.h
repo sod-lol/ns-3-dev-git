@@ -47,7 +47,7 @@ public:
  * \ingroup lte-test
  * \ingroup tests
  *
- * \brief Test frequency reuse algorithm. Test fails if the muted frequencies 
+ * \brief Test frequency reuse algorithm. Test fails if the muted frequencies
  *  are being used.
  */
 class LteFrTestCase : public TestCase
@@ -64,7 +64,7 @@ public:
    * \param availableUlRb the available UL per RB
    */
   LteFrTestCase (std::string name,
-                 uint32_t userNum,uint16_t dlBandwidth,uint16_t ulBandwidth,
+                 uint32_t userNum,uint8_t dlBandwidth,uint8_t ulBandwidth,
                  std::vector<bool> availableDlRb, std::vector<bool> availableUlRb);
   virtual ~LteFrTestCase ();
 
@@ -83,8 +83,8 @@ protected:
   virtual void DoRun (void);
 
   uint32_t m_userNum; ///< the number of UE nodes
-  uint16_t m_dlBandwidth; ///< the DL bandwidth
-  uint16_t m_ulBandwidth; ///< the UL bandwidth
+  uint8_t m_dlBandwidth; ///< the DL bandwidth
+  uint8_t m_ulBandwidth; ///< the UL bandwidth
 
   std::vector<bool> m_availableDlRb; ///< the available DL for each RB
   bool m_usedMutedDlRbg; ///< used muted DL RBG?
@@ -98,7 +98,7 @@ protected:
  * \ingroup lte-test
  * \ingroup tests
  *
- * \brief Test hard frequency reuse algorithm. Test fails if the muted 
+ * \brief Test hard frequency reuse algorithm. Test fails if the muted
  *  frequencies are being used.
  */
 class LteHardFrTestCase : public LteFrTestCase
@@ -121,9 +121,9 @@ public:
    */
   LteHardFrTestCase (std::string name, uint32_t userNum,
                      std::string schedulerType,
-                     uint16_t dlBandwidth, uint16_t ulBandwidth,
-                     uint8_t dlSubBandOffset, uint16_t dlSubBandwidth,
-                     uint8_t ulSubBandOffset, uint16_t ulSubBandwidth,
+                     uint8_t dlBandwidth, uint8_t ulBandwidth,
+                     uint8_t dlSubBandOffset, uint8_t dlSubBandwidth,
+                     uint8_t ulSubBandOffset, uint8_t ulSubBandwidth,
                      std::vector<bool> availableDlRb, std::vector<bool> availableUlRb);
   virtual ~LteHardFrTestCase ();
 
@@ -143,7 +143,7 @@ private:
  * \ingroup lte-test
  * \ingroup tests
  *
- * \brief Test stric frequency reuse algorithm. Test fails if the muted frequencies 
+ * \brief Test stric frequency reuse algorithm. Test fails if the muted frequencies
  *  are being used.
  */
 class LteStrictFrTestCase : public LteFrTestCase
@@ -168,9 +168,9 @@ public:
    */
   LteStrictFrTestCase (std::string name, uint32_t userNum,
                        std::string schedulerType,
-                       uint16_t dlBandwidth, uint16_t ulBandwidth,
-                       uint16_t dlCommonSubBandwidth, uint8_t dlEdgeSubBandOffset, uint16_t dlEdgeSubBandwidth,
-                       uint16_t ulCommonSubBandwidth, uint8_t ulEdgeSubBandOffset, uint16_t ulEdgeSubBandwidth,
+                       uint8_t dlBandwidth, uint8_t ulBandwidth,
+                       uint8_t dlCommonSubBandwidth, uint8_t dlEdgeSubBandOffset, uint8_t dlEdgeSubBandwidth,
+                       uint8_t ulCommonSubBandwidth, uint8_t ulEdgeSubBandOffset, uint8_t ulEdgeSubBandwidth,
                        std::vector<bool> availableDlRb, std::vector<bool> availableUlRb);
   virtual ~LteStrictFrTestCase ();
 
@@ -179,22 +179,22 @@ private:
 
   std::string m_schedulerType; ///< scheduler type
 
-  uint16_t m_dlCommonSubBandwidth; ///< DL common subbandwidth
+  uint8_t m_dlCommonSubBandwidth; ///< DL common subbandwidth
   uint8_t m_dlEdgeSubBandOffset; ///< DL edge subband offset
-  uint16_t m_dlEdgeSubBandwidth; ///< DL edge subbandwidth
+  uint8_t m_dlEdgeSubBandwidth; ///< DL edge subbandwidth
 
-  uint16_t m_ulCommonSubBandwidth; ///< UL common subbandwidth
+  uint8_t m_ulCommonSubBandwidth; ///< UL common subbandwidth
   uint8_t m_ulEdgeSubBandOffset; ///< UL edge subband offset
-  uint16_t m_ulEdgeSubBandwidth; ///< UL edge subbandwidth
+  uint8_t m_ulEdgeSubBandwidth; ///< UL edge subbandwidth
 };
 
 /**
  * \ingroup lte-test
  * \ingroup tests
  *
- * \brief Test frequency reuse algorithm by teleporing UEs to different 
- * parts of area and checking if the frequency is used according to the 
- * frequency pattern for different parts of area. Test fails if the muted 
+ * \brief Test frequency reuse algorithm by teleporing UEs to different
+ * parts of area and checking if the frequency is used according to the
+ * frequency pattern for different parts of area. Test fails if the muted
  * frequencies for a given part of area are being used by UE.
  */
 class LteFrAreaTestCase : public TestCase
@@ -262,9 +262,9 @@ protected:
   virtual void DoRun (void);
 
   std::string m_schedulerType; ///< the scheduler type
- 
-  uint16_t m_dlBandwidth; ///< the DL bandwidth
-  uint16_t m_ulBandwidth; ///< the UL bandwidth
+
+  uint8_t m_dlBandwidth; ///< the DL bandwidth
+  uint8_t m_ulBandwidth; ///< the UL bandwidth
 
   Time m_teleportTime; ///< the telport time
   Ptr<MobilityModel> m_ueMobility; ///< the UE mobility model

@@ -18,7 +18,7 @@
  * Author: Nicola Baldo <nbaldo@cttc.es> (re-wrote from scratch this helper)
  *         Giuseppe Piro <g.piro@poliba.it> (parts of the PHY & channel  creation & configuration copied from the GSoC 2011 code)
  * Modified by: Danilo Abrignani <danilo.abrignani@unibo.it> (Carrier Aggregation - GSoC 2015)
- *              Biljana Bojovic <biljana.bojovic@cttc.es> (Carrier Aggregation) 
+ *              Biljana Bojovic <biljana.bojovic@cttc.es> (Carrier Aggregation)
  */
 
 #include "lte-helper.h"
@@ -85,7 +85,7 @@ LteHelper::LteHelper (void)
   m_channelFactory.SetTypeId (MultiModelSpectrumChannel::GetTypeId ());
 }
 
-void 
+void
 LteHelper::DoInitialize (void)
 {
   NS_LOG_FUNCTION (this);
@@ -152,7 +152,7 @@ TypeId LteHelper::GetTypeId (void)
     .AddAttribute ("UseIdealRrc",
                    "If true, LteRrcProtocolIdeal will be used for RRC signaling. "
                    "If false, LteRrcProtocolReal will be used.",
-                   BooleanValue (true), 
+                   BooleanValue (true),
                    MakeBooleanAccessor (&LteHelper::m_useIdealRrc),
                    MakeBooleanChecker ())
     .AddAttribute ("AnrEnabled",
@@ -261,22 +261,22 @@ LteHelper::ChannelModelInitialization (void)
     }
   if (!m_fadingModelType.empty ())
     {
-      m_fadingModel = m_fadingModelFactory.Create<SpectrumPropagationLossModel> ();
-      m_fadingModel->Initialize ();
-      m_downlinkChannel->AddSpectrumPropagationLossModel (m_fadingModel);
-      m_uplinkChannel->AddSpectrumPropagationLossModel (m_fadingModel);
+      m_fadingModule = m_fadingModelFactory.Create<SpectrumPropagationLossModel> ();
+      m_fadingModule->Initialize ();
+      m_downlinkChannel->AddSpectrumPropagationLossModel (m_fadingModule);
+      m_uplinkChannel->AddSpectrumPropagationLossModel (m_fadingModule);
     }
 }
 
-void 
+void
 LteHelper::SetEpcHelper (Ptr<EpcHelper> h)
 {
   NS_LOG_FUNCTION (this << h);
   m_epcHelper = h;
 }
 
-void 
-LteHelper::SetSchedulerType (std::string type) 
+void
+LteHelper::SetSchedulerType (std::string type)
 {
   NS_LOG_FUNCTION (this << type);
   m_schedulerFactory = ObjectFactory ();
@@ -287,9 +287,9 @@ std::string
 LteHelper::GetSchedulerType () const
 {
   return m_schedulerFactory.GetTypeId ().GetName ();
-} 
+}
 
-void 
+void
 LteHelper::SetSchedulerAttribute (std::string n, const AttributeValue &v)
 {
   NS_LOG_FUNCTION (this << n);
@@ -389,7 +389,7 @@ LteHelper::SetPathlossModelType (TypeId type)
   m_pathlossModelFactory.SetTypeId (type);
 }
 
-void 
+void
 LteHelper::SetPathlossModelAttribute (std::string n, const AttributeValue &v)
 {
   NS_LOG_FUNCTION (this << n);
@@ -404,14 +404,14 @@ LteHelper::SetEnbDeviceAttribute (std::string n, const AttributeValue &v)
 }
 
 
-void 
+void
 LteHelper::SetEnbAntennaModelType (std::string type)
 {
   NS_LOG_FUNCTION (this);
   m_enbAntennaModelFactory.SetTypeId (type);
 }
 
-void 
+void
 LteHelper::SetEnbAntennaModelAttribute (std::string n, const AttributeValue &v)
 {
   NS_LOG_FUNCTION (this);
@@ -425,22 +425,22 @@ LteHelper::SetUeDeviceAttribute (std::string n, const AttributeValue &v)
   m_ueNetDeviceFactory.Set (n, v);
 }
 
-void 
+void
 LteHelper::SetUeAntennaModelType (std::string type)
 {
   NS_LOG_FUNCTION (this);
   m_ueAntennaModelFactory.SetTypeId (type);
 }
 
-void 
+void
 LteHelper::SetUeAntennaModelAttribute (std::string n, const AttributeValue &v)
 {
   NS_LOG_FUNCTION (this);
   m_ueAntennaModelFactory.Set (n, v);
 }
 
-void 
-LteHelper::SetFadingModel (std::string type) 
+void
+LteHelper::SetFadingModel (std::string type)
 {
   NS_LOG_FUNCTION (this << type);
   m_fadingModelType = type;
@@ -451,20 +451,20 @@ LteHelper::SetFadingModel (std::string type)
     }
 }
 
-void 
+void
 LteHelper::SetFadingModelAttribute (std::string n, const AttributeValue &v)
 {
   m_fadingModelFactory.Set (n, v);
 }
 
-void 
-LteHelper::SetSpectrumChannelType (std::string type) 
+void
+LteHelper::SetSpectrumChannelType (std::string type)
 {
   NS_LOG_FUNCTION (this << type);
   m_channelFactory.SetTypeId (type);
 }
 
-void 
+void
 LteHelper::SetSpectrumChannelAttribute (std::string n, const AttributeValue &v)
 {
   m_channelFactory.Set (n, v);
@@ -518,7 +518,7 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
                    m_noOfCcs << ")");
 
   // create component carrier map for this eNb device
-  std::map<uint8_t,Ptr<ComponentCarrierBaseStation> > ccMap;
+  std::map<uint8_t,Ptr<ComponentCarrierEnb> > ccMap;
   for (std::map<uint8_t, ComponentCarrier >::iterator it = m_componentCarrierPhyParams.begin ();
        it != m_componentCarrierPhyParams.end ();
        ++it)
@@ -539,7 +539,7 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
   NS_ABORT_MSG_IF (m_useCa && ccMap.size()<2, "You have to either specify carriers or disable carrier aggregation");
   NS_ASSERT (ccMap.size () == m_noOfCcs);
 
-  for (auto it = ccMap.begin (); it != ccMap.end (); ++it)
+  for (std::map<uint8_t,Ptr<ComponentCarrierEnb> >::iterator it = ccMap.begin (); it != ccMap.end (); ++it)
     {
       NS_LOG_DEBUG (this << "component carrier map size " << (uint16_t) ccMap.size ());
       Ptr<LteSpectrumPhy> dlPhy = CreateObject<LteSpectrumPhy> ();
@@ -580,15 +580,17 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
       Ptr<LteEnbMac> mac = CreateObject<LteEnbMac> ();
       Ptr<FfMacScheduler> sched = m_schedulerFactory.Create<FfMacScheduler> ();
       Ptr<LteFfrAlgorithm> ffrAlgorithm = m_ffrAlgorithmFactory.Create<LteFfrAlgorithm> ();
-      DynamicCast<ComponentCarrierEnb> (it->second)->SetMac (mac);
-      DynamicCast<ComponentCarrierEnb> (it->second)->SetFfMacScheduler (sched);
-      DynamicCast<ComponentCarrierEnb> (it->second)->SetFfrAlgorithm (ffrAlgorithm);
-      DynamicCast<ComponentCarrierEnb> (it->second)->SetPhy (phy);
+      it->second->SetMac (mac);
+      it->second->SetFfMacScheduler (sched);
+      it->second->SetFfrAlgorithm (ffrAlgorithm);
+
+      it->second->SetPhy (phy);
+
     }
 
   Ptr<LteEnbRrc> rrc = CreateObject<LteEnbRrc> ();
   Ptr<LteEnbComponentCarrierManager> ccmEnbManager = m_enbComponentCarrierManagerFactory.Create<LteEnbComponentCarrierManager> ();
-  
+
   //ComponentCarrierManager SAP
   rrc->SetLteCcmRrcSapProvider (ccmEnbManager->GetLteCcmRrcSapProvider ());
   ccmEnbManager->SetLteCcmRrcSapUser (rrc->GetLteCcmRrcSapUser ());
@@ -628,7 +630,7 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
 
   rrc->SetLteHandoverManagementSapProvider (handoverAlgorithm->GetLteHandoverManagementSapProvider ());
   handoverAlgorithm->SetLteHandoverManagementSapUser (rrc->GetLteHandoverManagementSapUser ());
- 
+
   // This RRC attribute is used to connect each new RLC instance with the MAC layer
   // (for function such as TransmitPdu, ReportBufferStatusReport).
   // Since in this new architecture, the component carrier manager acts a proxy, it
@@ -640,41 +642,41 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
   rrc->SetLteMacSapProvider (ccmEnbManager->GetLteMacSapProvider ());
 
   bool ccmTest;
-  for (auto it = ccMap.begin (); it != ccMap.end (); ++it)
+  for (std::map<uint8_t,Ptr<ComponentCarrierEnb> >::iterator it = ccMap.begin (); it != ccMap.end (); ++it)
     {
-      DynamicCast<ComponentCarrierEnb> (it->second)->GetPhy ()->SetLteEnbCphySapUser (rrc->GetLteEnbCphySapUser (it->first));
-      rrc->SetLteEnbCphySapProvider (DynamicCast<ComponentCarrierEnb> (it->second)->GetPhy ()->GetLteEnbCphySapProvider (), it->first);
+      it->second->GetPhy ()->SetLteEnbCphySapUser (rrc->GetLteEnbCphySapUser (it->first));
+      rrc->SetLteEnbCphySapProvider (it->second->GetPhy ()->GetLteEnbCphySapProvider (), it->first);
 
-      rrc->SetLteEnbCmacSapProvider (DynamicCast<ComponentCarrierEnb> (it->second)->GetMac ()->GetLteEnbCmacSapProvider (),it->first );
-      DynamicCast<ComponentCarrierEnb> (it->second)->GetMac ()->SetLteEnbCmacSapUser (rrc->GetLteEnbCmacSapUser (it->first));
+      rrc->SetLteEnbCmacSapProvider (it->second->GetMac ()->GetLteEnbCmacSapProvider (),it->first );
+      it->second->GetMac ()->SetLteEnbCmacSapUser (rrc->GetLteEnbCmacSapUser (it->first));
 
-      DynamicCast<ComponentCarrierEnb> (it->second)->GetPhy ()->SetComponentCarrierId (it->first);
-      DynamicCast<ComponentCarrierEnb> (it->second)->GetMac ()->SetComponentCarrierId (it->first);
+      it->second->GetPhy ()->SetComponentCarrierId (it->first);
+      it->second->GetMac ()->SetComponentCarrierId (it->first);
       //FFR SAP
-      DynamicCast<ComponentCarrierEnb> (it->second)->GetFfMacScheduler ()->SetLteFfrSapProvider (DynamicCast<ComponentCarrierEnb> (it->second)->GetFfrAlgorithm ()->GetLteFfrSapProvider ());
-      DynamicCast<ComponentCarrierEnb> (it->second)->GetFfrAlgorithm ()->SetLteFfrSapUser (DynamicCast<ComponentCarrierEnb> (it->second)->GetFfMacScheduler ()->GetLteFfrSapUser ());
-      rrc->SetLteFfrRrcSapProvider (DynamicCast<ComponentCarrierEnb> (it->second)->GetFfrAlgorithm ()->GetLteFfrRrcSapProvider (), it->first);
-      DynamicCast<ComponentCarrierEnb> (it->second)->GetFfrAlgorithm ()->SetLteFfrRrcSapUser (rrc->GetLteFfrRrcSapUser (it->first));
+      it->second->GetFfMacScheduler ()->SetLteFfrSapProvider (it->second->GetFfrAlgorithm ()->GetLteFfrSapProvider ());
+      it->second->GetFfrAlgorithm ()->SetLteFfrSapUser (it->second->GetFfMacScheduler ()->GetLteFfrSapUser ());
+      rrc->SetLteFfrRrcSapProvider (it->second->GetFfrAlgorithm ()->GetLteFfrRrcSapProvider (), it->first);
+      it->second->GetFfrAlgorithm ()->SetLteFfrRrcSapUser (rrc->GetLteFfrRrcSapUser (it->first));
       //FFR SAP END
 
       // PHY <--> MAC SAP
-      DynamicCast<ComponentCarrierEnb> (it->second)->GetPhy ()->SetLteEnbPhySapUser (DynamicCast<ComponentCarrierEnb> (it->second)->GetMac ()->GetLteEnbPhySapUser ());
-      DynamicCast<ComponentCarrierEnb> (it->second)->GetMac ()->SetLteEnbPhySapProvider (DynamicCast<ComponentCarrierEnb> (it->second)->GetPhy ()->GetLteEnbPhySapProvider ());
+      it->second->GetPhy ()->SetLteEnbPhySapUser (it->second->GetMac ()->GetLteEnbPhySapUser ());
+      it->second->GetMac ()->SetLteEnbPhySapProvider (it->second->GetPhy ()->GetLteEnbPhySapProvider ());
       // PHY <--> MAC SAP END
 
       //Scheduler SAP
-      DynamicCast<ComponentCarrierEnb> (it->second)->GetMac ()->SetFfMacSchedSapProvider (DynamicCast<ComponentCarrierEnb> (it->second)->GetFfMacScheduler ()->GetFfMacSchedSapProvider ());
-      DynamicCast<ComponentCarrierEnb> (it->second)->GetMac ()->SetFfMacCschedSapProvider (DynamicCast<ComponentCarrierEnb> (it->second)->GetFfMacScheduler ()->GetFfMacCschedSapProvider ());
+      it->second->GetMac ()->SetFfMacSchedSapProvider (it->second->GetFfMacScheduler ()->GetFfMacSchedSapProvider ());
+      it->second->GetMac ()->SetFfMacCschedSapProvider (it->second->GetFfMacScheduler ()->GetFfMacCschedSapProvider ());
 
-      DynamicCast<ComponentCarrierEnb> (it->second)->GetFfMacScheduler ()->SetFfMacSchedSapUser (DynamicCast<ComponentCarrierEnb> (it->second)->GetMac ()->GetFfMacSchedSapUser ());
-      DynamicCast<ComponentCarrierEnb> (it->second)->GetFfMacScheduler ()->SetFfMacCschedSapUser (DynamicCast<ComponentCarrierEnb> (it->second)->GetMac ()->GetFfMacCschedSapUser ());
+      it->second->GetFfMacScheduler ()->SetFfMacSchedSapUser (it->second->GetMac ()->GetFfMacSchedSapUser ());
+      it->second->GetFfMacScheduler ()->SetFfMacCschedSapUser (it->second->GetMac ()->GetFfMacCschedSapUser ());
       // Scheduler SAP END
 
-      DynamicCast<ComponentCarrierEnb> (it->second)->GetMac ()->SetLteCcmMacSapUser (ccmEnbManager->GetLteCcmMacSapUser ());
-      ccmEnbManager->SetCcmMacSapProviders (it->first, DynamicCast<ComponentCarrierEnb> (it->second)->GetMac ()->GetLteCcmMacSapProvider ());
+      it->second->GetMac ()->SetLteCcmMacSapUser (ccmEnbManager->GetLteCcmMacSapUser ());
+      ccmEnbManager->SetCcmMacSapProviders (it->first, it->second->GetMac ()->GetLteCcmMacSapProvider ());
 
       // insert the pointer to the LteMacSapProvider interface of the MAC layer of the specific component carrier
-      ccmTest = ccmEnbManager->SetMacSapProvider (it->first, DynamicCast<ComponentCarrierEnb> (it->second)->GetMac ()->GetLteMacSapProvider());
+      ccmTest = ccmEnbManager->SetMacSapProvider (it->first, it->second->GetMac ()->GetLteMacSapProvider());
 
       if (ccmTest == false)
         {
@@ -688,10 +690,10 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
   dev->SetAttribute ("CellId", UintegerValue (cellId));
   dev->SetAttribute ("LteEnbComponentCarrierManager", PointerValue (ccmEnbManager));
   dev->SetCcMap (ccMap);
-  std::map<uint8_t,Ptr<ComponentCarrierBaseStation> >::iterator it = ccMap.begin ();
-  dev->SetAttribute ("LteEnbRrc", PointerValue (rrc)); 
+  std::map<uint8_t,Ptr<ComponentCarrierEnb> >::iterator it = ccMap.begin ();
+  dev->SetAttribute ("LteEnbRrc", PointerValue (rrc));
   dev->SetAttribute ("LteHandoverAlgorithm", PointerValue (handoverAlgorithm));
-  dev->SetAttribute ("LteFfrAlgorithm", PointerValue (DynamicCast<ComponentCarrierEnb> (it->second)->GetFfrAlgorithm ()));
+  dev->SetAttribute ("LteFfrAlgorithm", PointerValue (it->second->GetFfrAlgorithm ()));
 
   if (m_isAnrEnabled)
     {
@@ -703,15 +705,15 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
 
   for (it = ccMap.begin (); it != ccMap.end (); ++it)
     {
-      Ptr<LteEnbPhy> ccPhy = DynamicCast<ComponentCarrierEnb> (it->second)->GetPhy ();
+      Ptr<LteEnbPhy> ccPhy = it->second->GetPhy ();
       ccPhy->SetDevice (dev);
       ccPhy->GetUlSpectrumPhy ()->SetDevice (dev);
       ccPhy->GetDlSpectrumPhy ()->SetDevice (dev);
       ccPhy->GetUlSpectrumPhy ()->SetLtePhyRxDataEndOkCallback (MakeCallback (&LteEnbPhy::PhyPduReceived, ccPhy));
       ccPhy->GetUlSpectrumPhy ()->SetLtePhyRxCtrlEndOkCallback (MakeCallback (&LteEnbPhy::ReceiveLteControlMessageList, ccPhy));
-      ccPhy->GetUlSpectrumPhy ()->SetLtePhyUlHarqFeedbackCallback (MakeCallback (&LteEnbPhy::ReportUlHarqFeedback, ccPhy));
+      ccPhy->GetUlSpectrumPhy ()->SetLtePhyUlHarqFeedbackCallback (MakeCallback (&LteEnbPhy::ReceiveLteUlHarqFeedback, ccPhy));
       NS_LOG_LOGIC ("set the propagation model frequencies");
-      double dlFreq = LteSpectrumValueHelper::GetCarrierFrequency (it->second->GetDlEarfcn ());
+      double dlFreq = LteSpectrumValueHelper::GetCarrierFrequency (it->second->m_dlEarfcn);
       NS_LOG_LOGIC ("DL freq: " << dlFreq);
       bool dlFreqOk = m_downlinkPathlossModel->SetAttributeFailSafe ("Frequency", DoubleValue (dlFreq));
       if (!dlFreqOk)
@@ -719,7 +721,7 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
           NS_LOG_WARN ("DL propagation model does not have a Frequency attribute");
         }
 
-      double ulFreq = LteSpectrumValueHelper::GetCarrierFrequency (it->second->GetUlEarfcn ());
+      double ulFreq = LteSpectrumValueHelper::GetCarrierFrequency (it->second->m_ulEarfcn);
 
       NS_LOG_LOGIC ("UL freq: " << ulFreq);
       bool ulFreqOk = m_uplinkPathlossModel->SetAttributeFailSafe ("Frequency", DoubleValue (ulFreq));
@@ -734,7 +736,7 @@ LteHelper::InstallSingleEnbDevice (Ptr<Node> n)
 
   for (it = ccMap.begin (); it != ccMap.end (); ++it)
     {
-      m_uplinkChannel->AddRx (DynamicCast<ComponentCarrierEnb>(it->second)->GetPhy ()->GetUlSpectrumPhy ());
+      m_uplinkChannel->AddRx (it->second->GetPhy ()->GetUlSpectrumPhy ());
     }
 
   if (m_epcHelper != 0)
@@ -826,8 +828,6 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
       if (m_usePdschForCqiGeneration)
         {
           // CQI calculation based on PDCCH for signal and PDSCH for interference
-          //NOTE: Change in pCtrl chunk processor could impact the RLF detection
-          //since it is based on CTRL SINR.
           pCtrl->AddCallback (MakeCallback (&LteUePhy::GenerateMixedCqiReport, phy));
           Ptr<LteChunkProcessor> pDataInterf = Create<LteChunkProcessor> ();
           pDataInterf->AddCallback (MakeCallback (&LteUePhy::ReportDataInterference, phy));
@@ -890,7 +890,7 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
       rrc->SetUseRlcSm (false);
     }
   Ptr<EpcUeNas> nas = CreateObject<EpcUeNas> ();
- 
+
   nas->SetAsSapProvider (rrc->GetAsSapProvider ());
   rrc->SetAsSapUser (nas->GetAsSapUser ());
 
@@ -937,7 +937,7 @@ LteHelper::InstallSingleUeDevice (Ptr<Node> n)
       ccPhy->GetDlSpectrumPhy ()->SetLtePhyRxDataEndOkCallback (MakeCallback (&LteUePhy::PhyPduReceived, ccPhy));
       ccPhy->GetDlSpectrumPhy ()->SetLtePhyRxCtrlEndOkCallback (MakeCallback (&LteUePhy::ReceiveLteControlMessageList, ccPhy));
       ccPhy->GetDlSpectrumPhy ()->SetLtePhyRxPssCallback (MakeCallback (&LteUePhy::ReceivePss, ccPhy));
-      ccPhy->GetDlSpectrumPhy ()->SetLtePhyDlHarqFeedbackCallback (MakeCallback (&LteUePhy::EnqueueDlHarqFeedback, ccPhy));
+      ccPhy->GetDlSpectrumPhy ()->SetLtePhyDlHarqFeedbackCallback (MakeCallback (&LteUePhy::ReceiveLteDlHarqFeedback, ccPhy));
     }
 
   nas->SetDevice (dev);
@@ -1026,7 +1026,7 @@ LteHelper::Attach (Ptr<NetDevice> ueDevice, Ptr<NetDevice> enbDevice)
       m_epcHelper->ActivateEpsBearer (ueDevice, ueLteDevice->GetImsi (), EpcTft::Default (), EpsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT));
     }
 
-  // tricks needed for the simplified LTE-only simulations 
+  // tricks needed for the simplified LTE-only simulations
   if (m_epcHelper == 0)
     {
       ueDevice->GetObject<LteUeNetDevice> ()->SetTargetEnb (enbDevice->GetObject<LteEnbNetDevice> ());
@@ -1095,7 +1095,7 @@ LteHelper::ActivateDedicatedEpsBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer
  *
  * DrbActivatior allows user to activate bearers for UEs
  * when EPC is not used. Activation function is hooked to
- * the Enb RRC Connection Established trace source. When
+ * the Enb RRC Connection Estabilished trace source. When
  * UE change its RRC state to CONNECTED_NORMALLY, activation
  * function is called and bearer is activated.
 */
@@ -1171,7 +1171,7 @@ DrbActivator::ActivateCallback (Ptr<DrbActivator> a, std::string context, uint64
 
 void
 DrbActivator::ActivateDrb (uint64_t imsi, uint16_t cellId, uint16_t rnti)
-{ 
+{
   NS_LOG_FUNCTION (this << imsi << cellId << rnti << m_active);
   if ((!m_active) && (imsi == m_imsi))
     {
@@ -1195,7 +1195,7 @@ DrbActivator::ActivateDrb (uint64_t imsi, uint16_t cellId, uint16_t rnti)
 }
 
 
-void 
+void
 LteHelper::ActivateDataRadioBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer)
 {
   NS_LOG_FUNCTION (this << ueDevice);
@@ -1210,7 +1210,7 @@ LteHelper::ActivateDataRadioBearer (Ptr<NetDevice> ueDevice, EpsBearer bearer)
   Ptr<LteEnbNetDevice> enbLteDevice = ueDevice->GetObject<LteUeNetDevice> ()->GetTargetEnb ();
 
   std::ostringstream path;
-  path << "/NodeList/" << enbLteDevice->GetNode ()->GetId () 
+  path << "/NodeList/" << enbLteDevice->GetNode ()->GetId ()
        << "/DeviceList/" << enbLteDevice->GetIfIndex ()
        << "/LteEnbRrc/ConnectionEstablished";
   Ptr<DrbActivator> arg = Create<DrbActivator> (ueDevice, bearer);
@@ -1295,7 +1295,7 @@ LteHelper::DoDeActivateDedicatedEpsBearer (Ptr<NetDevice> ueDevice, Ptr<NetDevic
 }
 
 void
-LteHelper::DoComponentCarrierConfigure (uint32_t ulEarfcn, uint32_t dlEarfcn, uint16_t ulbw, uint16_t dlbw)
+LteHelper::DoComponentCarrierConfigure (uint32_t ulEarfcn, uint32_t dlEarfcn, uint8_t ulbw, uint8_t dlbw)
 {
   NS_LOG_FUNCTION (this << ulEarfcn << dlEarfcn << ulbw << dlbw);
 
@@ -1310,7 +1310,7 @@ LteHelper::DoComponentCarrierConfigure (uint32_t ulEarfcn, uint32_t dlEarfcn, ui
   m_componentCarrierPhyParams.at (0).SetAsPrimary (true);
 }
 
-void 
+void
 LteHelper::ActivateDataRadioBearer (NetDeviceContainer ueDevices, EpsBearer bearer)
 {
   NS_LOG_FUNCTION (this);
@@ -1335,9 +1335,8 @@ LteHelper::EnableLogComponents (void)
   LogComponentEnable ("ComponentCarrierUe", LOG_LEVEL_ALL);
   LogComponentEnable ("CqaFfMacScheduler", LOG_LEVEL_ALL);
   LogComponentEnable ("EpcEnbApplication", LOG_LEVEL_ALL);
-  LogComponentEnable ("EpcMmeApplication", LOG_LEVEL_ALL);
-  LogComponentEnable ("EpcPgwApplication", LOG_LEVEL_ALL);
-  LogComponentEnable ("EpcSgwApplication", LOG_LEVEL_ALL);
+  LogComponentEnable ("EpcMme", LOG_LEVEL_ALL);
+  LogComponentEnable ("EpcSgwPgwApplication", LOG_LEVEL_ALL);
   LogComponentEnable ("EpcTft", LOG_LEVEL_ALL);
   LogComponentEnable ("EpcTftClassifier", LOG_LEVEL_ALL);
   LogComponentEnable ("EpcUeNas", LOG_LEVEL_ALL);
@@ -1444,9 +1443,9 @@ int64_t
 LteHelper::AssignStreams (NetDeviceContainer c, int64_t stream)
 {
   int64_t currentStream = stream;
-  if ((m_fadingModel != 0) && (m_fadingStreamsAssigned == false))
+  if ((m_fadingModule != 0) && (m_fadingStreamsAssigned == false))
     {
-      Ptr<TraceFadingLossModel> tflm = m_fadingModel->GetObject<TraceFadingLossModel> ();
+      Ptr<TraceFadingLossModel> tflm = m_fadingModule->GetObject<TraceFadingLossModel> ();
       if (tflm != 0)
         {
           currentStream += tflm->AssignStreams (currentStream);
@@ -1460,11 +1459,11 @@ LteHelper::AssignStreams (NetDeviceContainer c, int64_t stream)
       Ptr<LteEnbNetDevice> lteEnb = DynamicCast<LteEnbNetDevice> (netDevice);
       if (lteEnb)
         {
-          std::map< uint8_t, Ptr <ComponentCarrierBaseStation> > tmpMap = lteEnb->GetCcMap ();
-          std::map< uint8_t, Ptr <ComponentCarrierBaseStation> >::iterator it;
+          std::map< uint8_t, Ptr <ComponentCarrierEnb> > tmpMap = lteEnb->GetCcMap ();
+          std::map< uint8_t, Ptr <ComponentCarrierEnb> >::iterator it;
           it = tmpMap.begin ();
-          Ptr<LteSpectrumPhy> dlPhy = DynamicCast<ComponentCarrierEnb> (it->second)->GetPhy ()->GetDownlinkSpectrumPhy ();
-          Ptr<LteSpectrumPhy> ulPhy = DynamicCast<ComponentCarrierEnb> (it->second)->GetPhy ()->GetUplinkSpectrumPhy ();
+          Ptr<LteSpectrumPhy> dlPhy = it->second->GetPhy ()->GetDownlinkSpectrumPhy ();
+          Ptr<LteSpectrumPhy> ulPhy = it->second->GetPhy ()->GetUplinkSpectrumPhy ();
           currentStream += dlPhy->AssignStreams (currentStream);
           currentStream += ulPhy->AssignStreams (currentStream);
         }
@@ -1500,28 +1499,28 @@ LteHelper::EnablePhyTraces (void)
 void
 LteHelper::EnableDlTxPhyTraces (void)
 {
-  Config::Connect ("/NodeList/*/DeviceList/*/ComponentCarrierMap/*/LteEnbPhy/DlPhyTransmission",
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/ComponentCarrierMap/*/LteEnbPhy/DlPhyTransmission",
                    MakeBoundCallback (&PhyTxStatsCalculator::DlPhyTransmissionCallback, m_phyTxStats));
 }
 
 void
 LteHelper::EnableUlTxPhyTraces (void)
 {
-  Config::Connect ("/NodeList/*/DeviceList/*/ComponentCarrierMapUe/*/LteUePhy/UlPhyTransmission",
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/ComponentCarrierMapUe/*/LteUePhy/UlPhyTransmission",
                    MakeBoundCallback (&PhyTxStatsCalculator::UlPhyTransmissionCallback, m_phyTxStats));
 }
 
 void
 LteHelper::EnableDlRxPhyTraces (void)
 {
-  Config::Connect ("/NodeList/*/DeviceList/*/ComponentCarrierMapUe/*/LteUePhy/DlSpectrumPhy/DlPhyReception",
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/ComponentCarrierMapUe/*/LteUePhy/DlSpectrumPhy/DlPhyReception",
                    MakeBoundCallback (&PhyRxStatsCalculator::DlPhyReceptionCallback, m_phyRxStats));
 }
 
 void
 LteHelper::EnableUlRxPhyTraces (void)
 {
-  Config::Connect ("/NodeList/*/DeviceList/*/ComponentCarrierMap/*/LteEnbPhy/UlSpectrumPhy/UlPhyReception",
+  Config::ConnectFailSafe("/NodeList/*/DeviceList/*/ComponentCarrierMap/*/LteEnbPhy/UlSpectrumPhy/UlPhyReception",
                    MakeBoundCallback (&PhyRxStatsCalculator::UlPhyReceptionCallback, m_phyRxStats));
 }
 
@@ -1538,7 +1537,7 @@ void
 LteHelper::EnableDlMacTraces (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  Config::Connect ("/NodeList/*/DeviceList/*/ComponentCarrierMap/*/LteEnbMac/DlScheduling",
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/ComponentCarrierMap/*/LteEnbMac/DlScheduling",
                    MakeBoundCallback (&MacStatsCalculator::DlSchedulingCallback, m_macStats));
 }
 
@@ -1546,7 +1545,7 @@ void
 LteHelper::EnableUlMacTraces (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  Config::Connect ("/NodeList/*/DeviceList/*/ComponentCarrierMap/*/LteEnbMac/UlScheduling",
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/ComponentCarrierMap/*/LteEnbMac/UlScheduling",
                    MakeBoundCallback (&MacStatsCalculator::UlSchedulingCallback, m_macStats));
 }
 
@@ -1554,7 +1553,7 @@ void
 LteHelper::EnableDlPhyTraces (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  Config::Connect ("/NodeList/*/DeviceList/*/ComponentCarrierMapUe/*/LteUePhy/ReportCurrentCellRsrpSinr",
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/ComponentCarrierMapUe/*/LteUePhy/ReportCurrentCellRsrpSinr",
                    MakeBoundCallback (&PhyStatsCalculator::ReportCurrentCellRsrpSinrCallback, m_phyStats));
 }
 
@@ -1562,9 +1561,9 @@ void
 LteHelper::EnableUlPhyTraces (void)
 {
   NS_LOG_FUNCTION_NOARGS ();
-  Config::Connect ("/NodeList/*/DeviceList/*/ComponentCarrierMap/*/LteEnbPhy/ReportUeSinr",
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/ComponentCarrierMap/*/LteEnbPhy/ReportUeSinr",
                    MakeBoundCallback (&PhyStatsCalculator::ReportUeSinr, m_phyStats));
-  Config::Connect ("/NodeList/*/DeviceList/*/ComponentCarrierMap/*/LteEnbPhy/ReportInterference",
+  Config::ConnectFailSafe ("/NodeList/*/DeviceList/*/ComponentCarrierMap/*/LteEnbPhy/ReportInterference",
                    MakeBoundCallback (&PhyStatsCalculator::ReportInterference, m_phyStats));
 
 }

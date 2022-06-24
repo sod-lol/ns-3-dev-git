@@ -29,7 +29,7 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("NoOpComponentCarrierManager");
 NS_OBJECT_ENSURE_REGISTERED (NoOpComponentCarrierManager);
-  
+
 NoOpComponentCarrierManager::NoOpComponentCarrierManager ()
 {
   NS_LOG_FUNCTION (this);
@@ -83,7 +83,7 @@ NoOpComponentCarrierManager::DoTransmitPdu (LteMacSapProvider::TransmitPduParame
 {
   NS_LOG_FUNCTION (this);
   std::map <uint8_t, LteMacSapProvider*>::iterator it =  m_macSapProvidersMap.find (params.componentCarrierId);
-  NS_ASSERT_MSG (it != m_macSapProvidersMap.end (), "could not find Sap for ComponentCarrier " << params.componentCarrierId);
+  NS_ASSERT_MSG (it != m_macSapProvidersMap.end (), "could not find Sap for ComponentCarrier " << (uint32_t)params.componentCarrierId);
   // with this algorithm all traffic is on Primary Carrier
   it->second->TransmitPdu (params);
 }
@@ -210,18 +210,6 @@ NoOpComponentCarrierManager::DoRemoveUe (uint16_t rnti)
   NS_ASSERT_MSG (stateIt != m_ueState.end (), "request to remove UE info with unknown rnti ");
   NS_ASSERT_MSG (eccIt != m_enabledComponentCarrier.end (), "request to remove UE info with unknown rnti ");
 
-  //std::map <uint16_t, std::map<uint8_t, LteEnbCmacSapProvider::LcInfo> >::iterator lcsIt;
-  auto rlcLcIt = m_rlcLcInstantiated.find (rnti);
-  NS_ASSERT_MSG (rlcLcIt != m_rlcLcInstantiated.end (), "request to Release Data Radio Bearer on UE without Logical Channels enabled");
-
-  auto rntiIt = m_ueAttached.find (rnti);
-
-  NS_ASSERT_MSG (rntiIt != m_ueAttached.end (), "request to Release Data Radio Bearer on unattached UE");
-
-  m_ueState.erase (rnti);
-  m_enabledComponentCarrier.erase (rnti);
-  m_rlcLcInstantiated.erase (rnti);
-  m_ueAttached.erase (rnti);
 }
 
 std::vector<LteCcmRrcSapProvider::LcsConfig>
@@ -423,18 +411,6 @@ NoOpComponentCarrierManager::DoUlReceiveMacCe (MacCeListElement_s bsr, uint8_t c
     }
 }
 
-void
-NoOpComponentCarrierManager::DoUlReceiveSr (uint16_t rnti, uint8_t componentCarrierId)
-{
-  NS_LOG_FUNCTION (this);
-
-  auto sapIt = m_ccmMacSapProviderMap.find (componentCarrierId);
-  NS_ABORT_MSG_IF (sapIt == m_ccmMacSapProviderMap.end (),
-                   "Sap not found in the CcmMacSapProviderMap");
-
-  sapIt->second->ReportSrToScheduler (rnti);
-}
-
 
 //////////////////////////////////////////
 
@@ -484,7 +460,17 @@ RrComponentCarrierManager::DoReportBufferStatus (LteMacSapProvider::ReportBuffer
       for ( uint16_t i = 0;  i < numberOfCarriersForUe ; i++)
         {
           NS_ASSERT_MSG (m_macSapProvidersMap.find(i)!=m_macSapProvidersMap.end(), "Mac sap provider does not exist.");
-          m_macSapProvidersMap.find(i)->second->ReportBufferStatus(params);
+          if ( i==0 )
+          {
+            // only the PCC sends STATUS PDUs
+            m_macSapProvidersMap.find(i)->second->ReportBufferStatus(params);
+          }
+          else
+          {
+            LteMacSapProvider::ReportBufferStatusParameters newParams = params;
+            newParams.statusPduSize = 0;
+            m_macSapProvidersMap.find(i)->second->ReportBufferStatus(newParams);
+          }
         }
     }
 }
@@ -536,23 +522,6 @@ RrComponentCarrierManager::DoUlReceiveMacCe (MacCeListElement_s bsr, uint8_t com
     {
       auto ueManager = m_ccmRrcSapUser->GetUeManager (bsr.m_rnti);
       m_ccmMacSapProviderMap.at (ueManager->GetComponentCarrierId ())->ReportMacCeToScheduler (bsr);
-    }
-}
-
-void
-RrComponentCarrierManager::DoUlReceiveSr(uint16_t rnti, uint8_t componentCarrierId)
-{
-  NS_LOG_FUNCTION (this);
-  NS_UNUSED (componentCarrierId);
-  // split traffic in uplink equally among carriers
-  uint32_t numberOfCarriersForUe = m_enabledComponentCarrier.find (rnti)->second;
-
-  m_ccmMacSapProviderMap.find (m_lastCcIdForSr)->second->ReportSrToScheduler (rnti);
-
-  m_lastCcIdForSr++;
-  if (m_lastCcIdForSr > numberOfCarriersForUe - 1)
-    {
-      m_lastCcIdForSr = 0;
     }
 }
 

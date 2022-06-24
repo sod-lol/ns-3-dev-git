@@ -83,8 +83,8 @@ LenaTestPfFfMacSchedulerSuite::LenaTestPfFfMacSchedulerSuite ()
   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (6,0,366000,373000,errorModel), TestCase::EXTENSIVE);
   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (12,0,183000,184670,errorModel), TestCase::EXTENSIVE);
   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (15,0,146400,147730,errorModel), TestCase::EXTENSIVE);
-  
- 
+
+
   // DOWNLINK - DISTANCE 4800 -> MCS 22 -> Itbs 20 (from table 7.1.7.2.1-1 of 36.213)
   // 1 user -> 24 PRB at Itbs 15 -> 1383 -> 1383000 bytes/sec
   // 3 users -> 1383000 among 3 users -> 461000 bytes/sec
@@ -103,7 +103,7 @@ LenaTestPfFfMacSchedulerSuite::LenaTestPfFfMacSchedulerSuite ()
   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (6,4800,230500,125000,errorModel), TestCase::EXTENSIVE);
   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (12,4800,115250,62000,errorModel), TestCase::EXTENSIVE);
   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (15,4800,92200,49600,errorModel), TestCase::EXTENSIVE);
-  
+
   // DOWNLINK - DISTANCE 6000 -> MCS 20 -> Itbs 18 (from table 7.1.7.2.1-1 of 36.213)
   // 1 user -> 24 PRB at Itbs 20 -> 1191 -> 1191000 bytes/sec
   // 3 users -> 1191000 among 3 users -> 397000 bytes/sec
@@ -141,7 +141,7 @@ LenaTestPfFfMacSchedulerSuite::LenaTestPfFfMacSchedulerSuite ()
   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (6,10000,129167,67000,errorModel), TestCase::EXTENSIVE);
   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (12,10000,64583,32667,errorModel), TestCase::EXTENSIVE);
   AddTestCase (new LenaPfFfMacSchedulerTestCase1 (15,10000,51667,26133,errorModel), TestCase::EXTENSIVE);
- 
+
   // DONWLINK - DISTANCE 20000 -> MCS 8 -> Itbs 8 (from table 7.1.7.2.1-1 of 36.213)
   // 1 user -> 24 PRB at Itbs 8 -> 421 -> 421000 bytes/sec
   // 3 users -> 421000 among 3 users -> 140333 bytes/sec
@@ -197,7 +197,7 @@ static LenaTestPfFfMacSchedulerSuite lenaTestPfFfMacSchedulerSuite;
 // --------------- T E S T - C A S E   # 1 ------------------------------
 
 
-std::string 
+std::string
 LenaPfFfMacSchedulerTestCase1::BuildNameString (uint16_t nUser, double dist)
 {
   std::ostringstream oss;
@@ -230,10 +230,7 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
       Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));
     }
   Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue (true));
-  Config::SetDefault ("ns3::MacStatsCalculator::DlOutputFilename", StringValue (CreateTempDirFilename ("DlMacStats.txt")));
-  Config::SetDefault ("ns3::MacStatsCalculator::UlOutputFilename", StringValue (CreateTempDirFilename ("UlMacStats.txt")));
-  Config::SetDefault ("ns3::RadioBearerStatsCalculator::DlRlcOutputFilename", StringValue (CreateTempDirFilename ("DlRlcStats.txt")));
-  Config::SetDefault ("ns3::RadioBearerStatsCalculator::UlRlcOutputFilename", StringValue (CreateTempDirFilename ("UlRlcStats.txt")));
+  Config::SetDefault ("ns3::LteEnbRrc::SrsPeriodicity", UintegerValue (40));
 
   /**
    * Initialize Simulation Scenario: 1 eNB and m_nUser UEs
@@ -242,6 +239,10 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
 
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
   lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
+
+  // set DL and UL bandwidth
+  lteHelper->SetEnbDeviceAttribute ("DlBandwidth", UintegerValue (25));
+  lteHelper->SetEnbDeviceAttribute ("UlBandwidth", UintegerValue (25));
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
@@ -271,8 +272,8 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
   lteHelper->ActivateDataRadioBearer (ueDevs, bearer);
-  
- 
+
+
   Ptr<LteEnbNetDevice> lteEnbDev = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ();
   Ptr<LteEnbPhy> enbPhy = lteEnbDev->GetPhy ();
   enbPhy->SetAttribute ("TxPower", DoubleValue (30.0));
@@ -305,7 +306,7 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
   Simulator::Run ();
 
   /**
-   * Check that the downlink assignment is done in a "proportional fair" manner
+   * Check that the downlink assignation is done in a "proportional fair" manner
    */
   NS_LOG_INFO ("DL - Test with " << m_nUser << " user(s) at distance " << m_dist);
   std::vector <uint64_t> dlDataRxed;
@@ -318,9 +319,9 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
       NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " bytes rxed " << (double)dlDataRxed.at (i) << "  thr " << (double)dlDataRxed.at (i) / statsDuration << " ref " << m_thrRefDl);
     }
   /**
-  * Check that the assignment is done in a "proportional fair" manner among users
-  * with equal SINRs: the bandwidth should be distributed according to the 
-  * ratio of the estimated throughput per TTI of each user; therefore equally 
+  * Check that the assignation is done in a "proportional fair" manner among users
+  * with equal SINRs: the bandwidth should be distributed according to the
+  * ratio of the estimated throughput per TTI of each user; therefore equally
   * partitioning the whole bandwidth achievable from a single users in a TTI
   */
   for (int i = 0; i < m_nUser; i++)
@@ -329,7 +330,7 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
     }
 
   /**
-  * Check that the uplink assignment is done in a "proportional fair" manner
+  * Check that the uplink assignation is done in a "proportional fair" manner
   */
   NS_LOG_INFO ("UL - Test with " << m_nUser << " user(s) at distance " << m_dist);
   std::vector <uint64_t> ulDataRxed;
@@ -343,9 +344,9 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
       NS_LOG_INFO ("\tUser " << i << " imsi " << imsi << " bytes rxed " << (double)ulDataRxed.at (i) << "  thr " << (double)ulDataRxed.at (i) / statsDuration << " ref " << m_thrRefUl);
     }
   /**
-  * Check that the assignment is done in a "proportional fair" manner among users
-  * with equal SINRs: the bandwidth should be distributed according to the 
-  * ratio of the estimated throughput per TTI of each user; therefore equally 
+  * Check that the assignation is done in a "proportional fair" manner among users
+  * with equal SINRs: the bandwidth should be distributed according to the
+  * ratio of the estimated throughput per TTI of each user; therefore equally
   * partitioning the whole bandwidth achievable from a single users in a TTI
   */
   for (int i = 0; i < m_nUser; i++)
@@ -361,7 +362,7 @@ LenaPfFfMacSchedulerTestCase1::DoRun (void)
 // --------------- T E S T - C A S E   # 2 ------------------------------
 
 
-std::string 
+std::string
 LenaPfFfMacSchedulerTestCase2::BuildNameString (uint16_t nUser, std::vector<double> dist)
 {
   std::ostringstream oss;
@@ -399,18 +400,18 @@ LenaPfFfMacSchedulerTestCase2::DoRun (void)
       Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));
     }
   Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue (false));
-  Config::SetDefault ("ns3::MacStatsCalculator::DlOutputFilename", StringValue (CreateTempDirFilename ("DlMacStats.txt")));
-  Config::SetDefault ("ns3::MacStatsCalculator::UlOutputFilename", StringValue (CreateTempDirFilename ("UlMacStats.txt")));
-  Config::SetDefault ("ns3::RadioBearerStatsCalculator::DlRlcOutputFilename", StringValue (CreateTempDirFilename ("DlRlcStats.txt")));
-  Config::SetDefault ("ns3::RadioBearerStatsCalculator::UlRlcOutputFilename", StringValue (CreateTempDirFilename ("UlRlcStats.txt")));
 
   /**
   * Initialize Simulation Scenario: 1 eNB and m_nUser UEs
   */
 
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
-  
+
   lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
+
+  // set DL and UL bandwidth
+  lteHelper->SetEnbDeviceAttribute ("DlBandwidth", UintegerValue (25));
+  lteHelper->SetEnbDeviceAttribute ("UlBandwidth", UintegerValue (25));
 
   // Create Nodes: eNodeB and UE
   NodeContainer enbNodes;
@@ -457,7 +458,7 @@ LenaPfFfMacSchedulerTestCase2::DoRun (void)
       uePhy->SetAttribute ("NoiseFigure", DoubleValue (9.0));
     }
 
-  double statsStartTime = 0.300; // need to allow for RRC connection establishment + SRS
+  double statsStartTime = 0.600; // need to allow for RRC connection establishment + SRS
   double statsDuration = 0.4;
   double tolerance = 0.1;
   Simulator::Stop (Seconds (statsStartTime + statsDuration - 0.000001));
@@ -487,8 +488,8 @@ LenaPfFfMacSchedulerTestCase2::DoRun (void)
     }
 
   /**
-  * Check that the assignment is done in a "proportional fair" manner among users
-  * with different SINRs: the bandwidth should be distributed according to the 
+  * Check that the assignation is done in a "proportional fair" manner among users
+  * with different SINRs: the bandwidth should be distributed according to the
   * ratio of the estimated throughput per TTI of each user.
   */
   for (int i = 0; i < m_nUser; i++)
@@ -500,7 +501,7 @@ LenaPfFfMacSchedulerTestCase2::DoRun (void)
     }
 
   /**
-  * Check that the assignment in uplink is done in a round robin manner.
+  * Check that the assignation in uplink is done in a round robin manner.
   */
 
   NS_LOG_INFO ("UL - Test with " << m_nUser);

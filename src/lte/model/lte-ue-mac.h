@@ -34,7 +34,6 @@
 #include <vector>
 #include <ns3/packet.h>
 #include <ns3/packet-burst.h>
-#include <ns3/traced-callback.h>
 
 
 namespace ns3 {
@@ -62,19 +61,6 @@ public:
   virtual void DoDispose (void);
 
   /**
-   * \brief TracedCallback signature for RA response timeout events
-   * exporting IMSI, contention flag, preamble transmission counter
-   * and the max limit of preamble transmission
-   *
-   * \param [in] imsi
-   * \param [in] contention
-   * \param [in] preambleTxCounter
-   * \param [in] maxPreambleTxLimit
-   */
-  typedef void (* RaResponseTimeoutTracedCallback)
-    (uint64_t imsi, bool contention, uint8_t preambleTxCounter, uint8_t maxPreambleTxLimit);
-
-  /**
   * \brief Get the LTE MAC SAP provider
   * \return a pointer to the LTE MAC SAP provider
   */
@@ -89,7 +75,7 @@ public:
   * \return a pointer to the LTE CMAC SAP provider
   */
   LteUeCmacSapProvider*  GetLteUeCmacSapProvider (void);
-  
+
   /**
   * \brief Set the component carried ID
   * \param index the component carrier ID
@@ -107,7 +93,7 @@ public:
   * \param s a pointer to the PHY SAP Provider
   */
   void SetLteUePhySapProvider (LteUePhySapProvider* s);
-  
+
   /**
   * \brief Forwarded from LteUePhySapUser: trigger the start from a new frame
   *
@@ -152,12 +138,12 @@ private:
   * Start contention based random access procedure function
   */
   void DoStartContentionBasedRandomAccessProcedure ();
- /**
-  * Set RNTI
-  *
-  * \param rnti the RNTI
-  */
-  void DoSetRnti (uint16_t rnti);
+  /**
+   * Set RNTI
+   *
+   * \param rnti the RNTI
+   */
+   void DoSetRnti (uint16_t rnti);
  /**
   * Start non contention based random access procedure function
   *
@@ -180,21 +166,8 @@ private:
   * \param lcId the LCID
   */
   void DoRemoveLc (uint8_t lcId);
-  /**
-   * \brief Reset function
-   */
+  /// Reset function
   void DoReset ();
-  /**
-   * \brief Notify MAC about the successful RRC connection
-   * establishment.
-   */
-  void DoNotifyConnectionSuccessful ();
-  /**
-   * Set IMSI
-   *
-   * \param imsi the IMSI of the UE
-   */
-  void DoSetImsi (uint64_t imsi);
 
   // forwarded from PHY SAP
  /**
@@ -209,9 +182,9 @@ private:
   * \param msg the LTE control message
   */
   void DoReceiveLteControlMessage (Ptr<LteControlMessage> msg);
-  
+
   // internal methods
-  /// Randomly select and send RA preamble function
+  /// Randomly sleect and send RA preamble function
   void RandomlySelectAndSendRaPreamble ();
  /**
   * Send RA preamble function
@@ -259,13 +232,13 @@ private:
 
   LteUePhySapProvider* m_uePhySapProvider; ///< UE Phy SAP provider
   LteUePhySapUser* m_uePhySapUser; ///< UE Phy SAP user
-  
+
   std::map <uint8_t, LteMacSapProvider::ReportBufferStatusParameters> m_ulBsrReceived; ///< BSR received from RLC (the last one)
-  
-  
+
+
   Time m_bsrPeriodicity; ///< BSR periodicity
   Time m_bsrLast; ///< BSR last
-  
+
   bool m_freshUlBsr; ///< true when a BSR has been received in the last TTI
 
   uint8_t m_harqProcessId; ///< HARQ process ID
@@ -273,7 +246,6 @@ private:
   std::vector < uint8_t > m_miUlHarqProcessesPacketTimer; ///< timer for packet life in the buffer
 
   uint16_t m_rnti; ///< RNTI
-  uint16_t m_imsi; ///< IMSI
 
   bool m_rachConfigured; ///< is RACH configured?
   LteUeCmacSapProvider::RachConfig m_rachConfig; ///< RACH configuration
@@ -287,13 +259,6 @@ private:
   uint32_t m_subframeNo; ///< subframe number
   uint8_t m_raRnti; ///< RA RNTI
   bool m_waitingForRaResponse; ///< waiting for RA response
-
-  /**
-   * \brief The `RaResponseTimeout` trace source. Fired RA response timeout.
-   * Exporting IMSI, contention flag, preamble transmission counter
-   * and the max limit of preamble transmission.
-   */
-  TracedCallback<uint64_t, bool, uint8_t, uint8_t> m_raResponseTimeoutTrace;
 };
 
 } // namespace ns3

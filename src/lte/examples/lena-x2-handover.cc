@@ -37,7 +37,7 @@ NotifyConnectionEstablishedUe (std::string context,
                                uint16_t cellid,
                                uint16_t rnti)
 {
-  std::cout << Simulator::Now ().As (Time::S) << " " << context
+  std::cout << Simulator::Now ().GetSeconds () << " " << context
             << " UE IMSI " << imsi
             << ": connected to CellId " << cellid
             << " with RNTI " << rnti
@@ -51,7 +51,7 @@ NotifyHandoverStartUe (std::string context,
                        uint16_t rnti,
                        uint16_t targetCellId)
 {
-  std::cout << Simulator::Now ().As (Time::S) << " " << context
+  std::cout << Simulator::Now ().GetSeconds () << " " << context
             << " UE IMSI " << imsi
             << ": previously connected to CellId " << cellid
             << " with RNTI " << rnti
@@ -65,7 +65,7 @@ NotifyHandoverEndOkUe (std::string context,
                        uint16_t cellid,
                        uint16_t rnti)
 {
-  std::cout << Simulator::Now ().As (Time::S) << " " << context
+  std::cout << Simulator::Now ().GetSeconds () << " " << context
             << " UE IMSI " << imsi
             << ": successful handover to CellId " << cellid
             << " with RNTI " << rnti
@@ -78,7 +78,7 @@ NotifyConnectionEstablishedEnb (std::string context,
                                 uint16_t cellid,
                                 uint16_t rnti)
 {
-  std::cout << Simulator::Now ().As (Time::S) << " " << context
+  std::cout << Simulator::Now ().GetSeconds () << " " << context
             << " eNB CellId " << cellid
             << ": successful connection of UE with IMSI " << imsi
             << " RNTI " << rnti
@@ -92,7 +92,7 @@ NotifyHandoverStartEnb (std::string context,
                         uint16_t rnti,
                         uint16_t targetCellId)
 {
-  std::cout << Simulator::Now ().As (Time::S) << " " << context
+  std::cout << Simulator::Now ().GetSeconds () << " " << context
             << " eNB CellId " << cellid
             << ": start handover of UE with IMSI " << imsi
             << " RNTI " << rnti
@@ -106,7 +106,7 @@ NotifyHandoverEndOkEnb (std::string context,
                         uint16_t cellid,
                         uint16_t rnti)
 {
-  std::cout << Simulator::Now ().As (Time::S) << " " << context
+  std::cout << Simulator::Now ().GetSeconds () << " " << context
             << " eNB CellId " << cellid
             << ": completed handover of UE with IMSI " << imsi
             << " RNTI " << rnti
@@ -127,10 +127,8 @@ main (int argc, char *argv[])
   // LogComponentEnable ("LteHelper", logLevel);
   // LogComponentEnable ("EpcHelper", logLevel);
   // LogComponentEnable ("EpcEnbApplication", logLevel);
-  // LogComponentEnable ("EpcMmeApplication", logLevel);
-  // LogComponentEnable ("EpcPgwApplication", logLevel);
-  // LogComponentEnable ("EpcSgwApplication", logLevel);
   // LogComponentEnable ("EpcX2", logLevel);
+  // LogComponentEnable ("EpcSgwPgwApplication", logLevel);
 
   // LogComponentEnable ("LteEnbRrc", logLevel);
   // LogComponentEnable ("LteEnbNetDevice", logLevel);
@@ -153,7 +151,7 @@ main (int argc, char *argv[])
   Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue (false));
 
   // Command line arguments
-  CommandLine cmd (__FILE__);
+  CommandLine cmd;
   cmd.AddValue ("numberOfUes", "Number of UEs", numberOfUes);
   cmd.AddValue ("numberOfEnbs", "Number of eNodeBs", numberOfEnbs);
   cmd.AddValue ("simTime", "Total duration of the simulation", simTime);

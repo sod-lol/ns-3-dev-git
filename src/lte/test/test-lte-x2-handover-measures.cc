@@ -60,7 +60,8 @@ struct CheckPointEvent
       checkInterval (interval),
       ueDeviceIndex (ueIndex),
       enbDeviceIndex (enbIndex)
-  {}
+  {
+  }
 };
 
 
@@ -236,7 +237,8 @@ LteX2HandoverMeasuresTestCase::LteX2HandoverMeasuresTestCase (uint32_t nEnbs, ui
     m_statsDuration (Seconds (0.5)),
     m_udpClientInterval (Seconds (0.01)),
     m_udpClientPktSize (100)
-{}
+{
+}
 
 void
 LteX2HandoverMeasuresTestCase::DoRun ()
@@ -253,6 +255,7 @@ LteX2HandoverMeasuresTestCase::DoRun ()
   Config::SetDefault ("ns3::UdpClient::PacketSize", UintegerValue (m_udpClientPktSize));
   Config::SetDefault ("ns3::LteEnbRrc::HandoverJoiningTimeoutDuration", TimeValue (MilliSeconds (200)));
   Config::SetDefault ("ns3::LteEnbPhy::TxPower", DoubleValue (20));
+  Config::SetDefault ("ns3::PointToPointEpcHelper::S1apLinkDelay", TimeValue(Seconds(0)));
 
   //Disable Uplink Power Control
   Config::SetDefault ("ns3::LteUePhy::EnableUplinkPowerControl", BooleanValue (false));
@@ -671,7 +674,7 @@ LteX2HandoverMeasuresTestCase::CheckStats (uint32_t ueIndex)
         {
           ulRx = it->ulSink->GetTotalRx () - it->ulOldTotalRx;
         }
-      double expectedBytes = m_udpClientPktSize * (m_statsDuration / m_udpClientInterval).GetDouble ();
+      double expectedBytes = m_udpClientPktSize * (m_statsDuration.GetSeconds () / m_udpClientInterval.GetSeconds ());
 
       NS_LOG_LOGIC ("expBytes " << expectedBytes << " dlRx " << dlRx << " ulRx " << ulRx);
 

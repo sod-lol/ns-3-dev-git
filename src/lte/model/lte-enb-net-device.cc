@@ -19,6 +19,9 @@
  * Author: Marco Miozzo <mmiozzo@cttc.es> : Update to FF API Architecture
  * Author: Nicola Baldo <nbaldo@cttc.es>  : Integrated with new RRC and MAC architecture
  * Author: Danilo Abrignani <danilo.abrignani@unibo.it> : Integrated with new architecture - GSoC 2015 - Carrier Aggregation
+ *
+ * Modified by: Michele Polese <michele.polese@gmail.com>
+ *          Dual Connectivity functionalities
  */
 
 #include <ns3/llc-snap-header.h>
@@ -94,14 +97,14 @@ TypeId LteEnbNetDevice::GetTypeId (void)
                    MakeObjectMapChecker<ComponentCarrierEnb> ())
     .AddAttribute ("UlBandwidth",
                    "Uplink Transmission Bandwidth Configuration in number of Resource Blocks",
-                   UintegerValue (25),
-                   MakeUintegerAccessor (&LteEnbNetDevice::SetUlBandwidth, 
+                   UintegerValue (100),
+                   MakeUintegerAccessor (&LteEnbNetDevice::SetUlBandwidth,
                                          &LteEnbNetDevice::GetUlBandwidth),
                    MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("DlBandwidth",
                    "Downlink Transmission Bandwidth Configuration in number of Resource Blocks",
-                   UintegerValue (25),
-                   MakeUintegerAccessor (&LteEnbNetDevice::SetDlBandwidth, 
+                   UintegerValue (100),
+                   MakeUintegerAccessor (&LteEnbNetDevice::SetDlBandwidth,
                                          &LteEnbNetDevice::GetDlBandwidth),
                    MakeUintegerChecker<uint8_t> ())
     .AddAttribute ("CellId",
@@ -178,7 +181,7 @@ LteEnbNetDevice::DoDispose ()
       m_ccMap.at (i)->Dispose ();
       m_ccMap.at (i) = 0;
     }
-   
+
   LteNetDevice::DoDispose ();
 }
 
@@ -187,25 +190,25 @@ LteEnbNetDevice::DoDispose ()
 Ptr<LteEnbMac>
 LteEnbNetDevice::GetMac () const
 {
-  return GetMac (0);
+  return m_ccMap.at (0)->GetMac ();
 }
 
 Ptr<LteEnbPhy>
 LteEnbNetDevice::GetPhy () const
 {
-  return GetPhy (0);
+  return m_ccMap.at (0)->GetPhy ();
 }
 
 Ptr<LteEnbMac>
-LteEnbNetDevice::GetMac (uint8_t index) const
+LteEnbNetDevice::GetMac (uint8_t index)
 {
-  return DynamicCast<ComponentCarrierEnb> (m_ccMap.at (index))->GetMac ();
+  return m_ccMap.at (index)->GetMac ();
 }
 
 Ptr<LteEnbPhy>
-LteEnbNetDevice::GetPhy(uint8_t index) const
+LteEnbNetDevice::GetPhy(uint8_t index)
 {
-  return DynamicCast<ComponentCarrierEnb> (m_ccMap.at (index))->GetPhy ();
+  return m_ccMap.at (index)->GetPhy ();
 }
 
 Ptr<LteEnbRrc>
@@ -239,18 +242,18 @@ LteEnbNetDevice::HasCellId (uint16_t cellId) const
   return false;
 }
 
-uint16_t
+uint8_t
 LteEnbNetDevice::GetUlBandwidth () const
 {
   return m_ulBandwidth;
 }
 
-void 
-LteEnbNetDevice::SetUlBandwidth (uint16_t bw)
-{ 
-  NS_LOG_FUNCTION (this << bw);
+void
+LteEnbNetDevice::SetUlBandwidth (uint8_t bw)
+{
+  NS_LOG_FUNCTION (this << uint16_t (bw));
   switch (bw)
-    { 
+    {
     case 6:
     case 15:
     case 25:
@@ -261,23 +264,23 @@ LteEnbNetDevice::SetUlBandwidth (uint16_t bw)
       break;
 
     default:
-      NS_FATAL_ERROR ("invalid bandwidth value " << bw);
+      NS_FATAL_ERROR ("invalid bandwidth value " << (uint16_t) bw);
       break;
     }
 }
 
-uint16_t
+uint8_t
 LteEnbNetDevice::GetDlBandwidth () const
 {
   return m_dlBandwidth;
 }
 
-void 
-LteEnbNetDevice::SetDlBandwidth (uint16_t bw)
+void
+LteEnbNetDevice::SetDlBandwidth (uint8_t bw)
 {
   NS_LOG_FUNCTION (this << uint16_t (bw));
   switch (bw)
-    { 
+    {
     case 6:
     case 15:
     case 25:
@@ -288,33 +291,33 @@ LteEnbNetDevice::SetDlBandwidth (uint16_t bw)
       break;
 
     default:
-      NS_FATAL_ERROR ("invalid bandwidth value " << bw);
+      NS_FATAL_ERROR ("invalid bandwidth value " << (uint16_t) bw);
       break;
     }
 }
 
-uint32_t 
+uint32_t
 LteEnbNetDevice::GetDlEarfcn () const
 {
   return m_dlEarfcn;
 }
 
-void 
+void
 LteEnbNetDevice::SetDlEarfcn (uint32_t earfcn)
-{ 
+{
   NS_LOG_FUNCTION (this << earfcn);
   m_dlEarfcn = earfcn;
 }
 
-uint32_t 
+uint32_t
 LteEnbNetDevice::GetUlEarfcn () const
 {
   return m_ulEarfcn;
 }
 
-void 
+void
 LteEnbNetDevice::SetUlEarfcn (uint32_t earfcn)
-{ 
+{
   NS_LOG_FUNCTION (this << earfcn);
   m_ulEarfcn = earfcn;
 }
@@ -347,26 +350,27 @@ LteEnbNetDevice::SetCsgIndication (bool csgIndication)
   UpdateConfig (); // propagate the change to RRC level
 }
 
-std::map < uint8_t, Ptr<ComponentCarrierBaseStation> >
-LteEnbNetDevice::GetCcMap () const
+std::map < uint8_t, Ptr<ComponentCarrierEnb> >
+LteEnbNetDevice::GetCcMap ()
 {
   return m_ccMap;
 }
 
 void
-LteEnbNetDevice::SetCcMap (std::map< uint8_t, Ptr<ComponentCarrierBaseStation> > ccm)
+LteEnbNetDevice::SetCcMap (std::map< uint8_t, Ptr<ComponentCarrierEnb> > ccm)
 {
   NS_ASSERT_MSG (!m_isConfigured, "attempt to set CC map after configuration");
   m_ccMap = ccm;
 }
 
-void 
+void
 LteEnbNetDevice::DoInitialize (void)
 {
   NS_LOG_FUNCTION (this);
   m_isConstructed = true;
   UpdateConfig ();
-  for (auto it = m_ccMap.begin (); it != m_ccMap.end (); ++it)
+  std::map< uint8_t, Ptr<ComponentCarrierEnb> >::iterator it;
+  for (it = m_ccMap.begin (); it != m_ccMap.end (); ++it)
     {
        it->second->Initialize ();
     }

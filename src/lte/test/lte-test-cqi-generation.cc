@@ -138,7 +138,7 @@ LteCqiGenerationTestCase::UlScheduling (uint32_t frameNo, uint32_t subframeNo, u
   // need to allow for RRC connection establishment + SRS transmission
   if (Simulator::Now () > MilliSeconds (50))
     {
-//	  NS_LOG_UNCOND("UL MSC: " << (uint32_t)mcs << " expected UL MCS: " << (uint32_t)m_ulMcs);
+//    NS_LOG_UNCOND("UL MSC: " << (uint32_t)mcs << " expected UL MCS: " << (uint32_t)m_ulMcs);
       NS_TEST_ASSERT_MSG_EQ ((uint32_t)mcs, (uint32_t)m_ulMcs, "Wrong UL MCS");
     }
 }
@@ -391,4 +391,3 @@ LteCqiGenerationDlPowerControlTestCase::DoRun (void)
 
   Simulator::Destroy ();
 }
-

@@ -96,6 +96,7 @@ protected:
   virtual void DoDispose (void);
 
 private:
+
   virtual void StartApplication (void);
   virtual void StopApplication (void);
 
@@ -139,11 +140,12 @@ EpsBearerTagUdpClient::GetTypeId (void)
                    "The time to wait between packets", TimeValue (Seconds (1.0)),
                    MakeTimeAccessor (&EpsBearerTagUdpClient::m_interval),
                    MakeTimeChecker ())
-    .AddAttribute ("RemoteAddress",
-                   "The destination Ipv4Address of the outbound packets",
-                   Ipv4AddressValue (),
-                   MakeIpv4AddressAccessor (&EpsBearerTagUdpClient::m_peerAddress),
-                   MakeIpv4AddressChecker ())
+    .AddAttribute (
+      "RemoteAddress",
+      "The destination Ipv4Address of the outbound packets",
+      Ipv4AddressValue (),
+      MakeIpv4AddressAccessor (&EpsBearerTagUdpClient::m_peerAddress),
+      MakeIpv4AddressChecker ())
     .AddAttribute ("RemotePort", "The destination port of the outbound packets",
                    UintegerValue (100),
                    MakeUintegerAccessor (&EpsBearerTagUdpClient::m_peerPort),
@@ -227,7 +229,7 @@ EpsBearerTagUdpClient::Send (void)
   NS_ASSERT (m_sendEvent.IsExpired ());
   SeqTsHeader seqTs;
   seqTs.SetSeq (m_sent);
-  Ptr<Packet> p = Create<Packet> (m_size - (8 + 4)); // 8+4 : the size of the seqTs header
+  Ptr<Packet> p = Create<Packet> (m_size-(8+4)); // 8+4 : the size of the seqTs header
   p->AddHeader (seqTs);
 
   EpsBearerTag tag (m_rnti, m_bid);
@@ -238,7 +240,7 @@ EpsBearerTagUdpClient::Send (void)
       ++m_sent;
       NS_LOG_INFO ("TraceDelay TX " << m_size << " bytes to "
                                     << m_peerAddress << " Uid: " << p->GetUid ()
-                                    << " Time: " << (Simulator::Now ()).As (Time::S));
+                                    << " Time: " << (Simulator::Now ()).GetSeconds ());
 
     }
   else
@@ -282,12 +284,13 @@ struct UeUlTestData
   Ptr<Application> clientApp; ///< the client application
 };
 
-UeUlTestData::UeUlTestData (uint32_t n, uint32_t s, uint16_t r, uint8_t l)
+  UeUlTestData::UeUlTestData (uint32_t n, uint32_t s, uint16_t r, uint8_t l)
   : numPkts (n),
     pktSize (s),
     rnti (r),
     bid (l)
-{}
+{
+}
 
 /**
  * \ingroup lte-test
@@ -322,17 +325,28 @@ public:
 
 private:
   virtual void DoRun (void);
+  void InitialMsg (Ptr<EpcEnbApplication> epcApp, uint64_t imsi);
   std::vector<EnbUlTestData> m_enbUlTestData; ///< ENB UL test data
+  std::vector<Ptr<EpcTestRrc>> rrcVector;
 };
 
 
 EpcS1uUlTestCase::EpcS1uUlTestCase (std::string name, std::vector<EnbUlTestData> v)
   : TestCase (name),
     m_enbUlTestData (v)
-{}
+{
+}
 
 EpcS1uUlTestCase::~EpcS1uUlTestCase ()
-{}
+{
+}
+
+void
+EpcS1uUlTestCase::InitialMsg (Ptr<EpcEnbApplication> enbApp, uint64_t imsi)
+{
+
+  enbApp->GetS1SapProvider ()->InitialUeMessage (imsi, (uint16_t) imsi);
+}
 
 void
 EpcS1uUlTestCase::DoRun ()
@@ -373,7 +387,6 @@ EpcS1uUlTestCase::DoRun ()
 
   NodeContainer enbs;
   uint16_t cellIdCounter = 0;
-  uint64_t imsiCounter = 0;
 
   for (std::vector<EnbUlTestData>::iterator enbit = m_enbUlTestData.begin ();
        enbit < m_enbUlTestData.end ();
@@ -404,11 +417,11 @@ EpcS1uUlTestCase::DoRun ()
       // Note that the EpcEnbApplication won't care of the actual NetDevice type
       epcHelper->AddEnb (enb, enbDevice, cellId);
 
-      // Plug test RRC entity
+       // Plug test RRC entity
       Ptr<EpcEnbApplication> enbApp = enb->GetApplication (0)->GetObject<EpcEnbApplication> ();
       NS_ASSERT_MSG (enbApp != 0, "cannot retrieve EpcEnbApplication");
       Ptr<EpcTestRrc> rrc = CreateObject<EpcTestRrc> ();
-      enb->AggregateObject (rrc);
+      rrcVector.push_back(rrc);
       rrc->SetS1SapProvider (enbApp->GetS1SapProvider ());
       enbApp->SetS1SapUser (rrc->GetS1SapUser ());
 
@@ -472,12 +485,12 @@ EpcS1uUlTestCase::DoRun ()
           clientApp.Stop (Seconds (10.0));
           enbit->ues[u].clientApp = client;
 
-          uint64_t imsi = ++imsiCounter;
+          uint64_t imsi = u+1;
           epcHelper->AddUe (ueLteDevice, imsi);
           epcHelper->ActivateEpsBearer (ueLteDevice, imsi, EpcTft::Default (), EpsBearer (EpsBearer::NGBR_VIDEO_TCP_DEFAULT));
-          Simulator::Schedule (MilliSeconds (10),
-                               &EpcEnbS1SapProvider::InitialUeMessage,
-                               enbApp->GetS1SapProvider (), imsi, enbit->ues[u].rnti);
+
+          Simulator::Schedule (Seconds(0.01), &EpcS1uUlTestCase::InitialMsg, this, enbApp, imsi);
+
           // need this since all sinks are installed in the same node
           ++udpSinkPort;
         }

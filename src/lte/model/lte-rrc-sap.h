@@ -1,6 +1,7 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2012 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
+ * Copyright (c) 2016, University of Padova, Dep. of Information Engineering, SIGNET lab
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -17,6 +18,9 @@
  *
  * Authors: Nicola Baldo <nbaldo@cttc.es>
  *          Lluis Parcerisa <lparcerisa@cttc.cat>
+ *
+ * Modified by: Michele Polese <michele.polese@gmail.com>
+ *          Dual Connectivity functionalities
  */
 
 
@@ -88,7 +92,7 @@ public:
   struct FreqInfo
   {
     uint32_t ulCarrierFreq; ///< UL carrier frequency
-    uint16_t ulBandwidth; ///< UL bandwidth
+    uint8_t ulBandwidth; ///< UL bandwidth
   };
 
   /// RlcConfig structure
@@ -100,7 +104,8 @@ public:
       AM,
       UM_BI_DIRECTIONAL,
       UM_UNI_DIRECTIONAL_UL,
-      UM_UNI_DIRECTIONAL_DL
+      UM_UNI_DIRECTIONAL_DL,
+      UM_BI_DIRECTIONAL_LOWLAT
     } choice; ///< direction choice
   };
 
@@ -121,7 +126,7 @@ public:
     {
       SETUP, RESET
     } type; ///< action type
-    uint16_t srsBandwidthConfig; ///< SRS bandwidth config
+    uint8_t srsBandwidthConfig; ///< SRS bandwidth config
     uint8_t srsSubframeConfig; ///< SRS subframe config
   };
 
@@ -133,7 +138,7 @@ public:
     {
       SETUP, RESET
     } type; ///< action type
-    uint16_t srsBandwidth; ///< SRS bandwidth
+    uint8_t srsBandwidth; ///< SRS bandwidth
     uint16_t srsConfigIndex; ///< SRS config index
   };
 
@@ -239,6 +244,7 @@ public:
     RlcConfig rlcConfig; ///< RLC config
     uint8_t logicalChannelIdentity; ///< logical channel identify
     LogicalChannelConfig logicalChannelConfig; ///< logical channel config
+    bool is_mc;
   };
 
   /// PreambleInfo structure
@@ -254,18 +260,11 @@ public:
     uint8_t raResponseWindowSize; ///< RA response window size
   };
 
-  ///TxFailParams structure
-  struct TxFailParam
-  {
-    uint8_t connEstFailCount {0}; ///< Number of times that the UE detects T300 expiry on the same cell
-  };
-
   /// RachConfigCommon structure
   struct RachConfigCommon
   {
     PreambleInfo preambleInfo; ///< preamble info
     RaSupervisionInfo raSupervisionInfo; ///< RA supervision info
-    TxFailParam txFailParam; ///< txFailParams
   };
 
   /// RadioResourceConfigCommon structure
@@ -325,7 +324,7 @@ public:
   struct MeasObjectEutra
   {
     uint32_t carrierFreq; ///< carrier frequency
-    uint16_t allowedMeasBandwidth; ///< allowed measure bandwidth
+    uint8_t allowedMeasBandwidth; ///< allowed measure bandwidth
     bool presenceAntennaPort1; ///< antenna port 1 present?
     uint8_t neighCellConfig; ///< neighbor cell config
     int8_t offsetFreq; ///< offset frequency
@@ -543,8 +542,8 @@ public:
   /// CarrierBandwidthEutra structure
   struct CarrierBandwidthEutra
   {
-    uint16_t dlBandwidth; ///< DL bandwidth
-    uint16_t ulBandwidth; ///< UL bandwidth
+    uint8_t dlBandwidth; ///< DL bandwidth
+    uint8_t ulBandwidth; ///< UL bandwidth
   };
 
   /// RachConfigDedicated structure
@@ -586,8 +585,8 @@ public:
   /// MasterInformationBlock structure
   struct MasterInformationBlock
   {
-    uint16_t dlBandwidth; ///< DL bandwidth
-    uint16_t systemFrameNumber; ///< system frame number
+    uint8_t dlBandwidth; ///< DL bandwidth
+    uint8_t systemFrameNumber; ///< system frame number
   };
 
   /// SystemInformationBlockType1 structure
@@ -692,6 +691,7 @@ public:
   struct RrcConnectionRequest
   {
     uint64_t ueIdentity; ///< UE identity
+    bool isMc;
   };
 
   /// RrcConnectionSetup structure
@@ -726,7 +726,7 @@ public:
   {
     uint16_t alpha; ///< alpha value
   };
-  
+
   /// PrachConfigSCell structure
   struct PrachConfigSCell
   {
@@ -750,10 +750,10 @@ public:
   };
 
   /// UlConfiguration structure
-  struct UlConfiguration 
-  { 
+  struct UlConfiguration
+  {
     FreqInfo ulFreqInfo; ///< UL frequency info
-    UlPowerControlCommonSCell ulPowerControlCommonSCell; ///< 3GPP TS 36.331 v.11.10 R11 pag.223 
+    UlPowerControlCommonSCell ulPowerControlCommonSCell; ///< 3GPP TS 36.331 v.11.10 R11 pag.223
     SoundingRsUlConfigCommon soundingRsUlConfigCommon; ///< sounding RS UL config common
     PrachConfigSCell prachConfigSCell; ///< PRACH config SCell
     //PushConfigCommon pushConfigCommon; //NOT IMPLEMENTED!
@@ -885,6 +885,13 @@ public:
     uint8_t rrcTransactionIdentifier; ///< RRC transaction identifier
   };
 
+  struct RrcConnectionSwitch
+  {
+    uint8_t rrcTransactionIdentifier;
+    std::vector<uint8_t> drbidList;
+    uint16_t useMmWaveConnection;
+  };
+
   /// RrcConnectionReject structure
   struct RrcConnectionReject
   {
@@ -977,16 +984,7 @@ public:
    */
   virtual void SendMeasurementReport (MeasurementReport msg) = 0;
 
-  /**
-   * \brief Send UE context remove request function
-   *
-   * Request eNodeB to remove UE context once radio link failure or
-   * random access failure is detected. It is needed since no RLF
-   * detection mechanism at eNodeB is implemented.
-   *
-   * \param rnti the C-RNTI of the UE
-   */
-   virtual void SendIdealUeContextRemoveRequest (uint16_t rnti) = 0;
+  virtual void SendNotifySecondaryCellConnected (uint16_t mmWaveRnti, uint16_t mmWaveCellId) = 0;
 
 };
 
@@ -1068,6 +1066,22 @@ public:
    * \param msg the message
    */
   virtual void RecvRrcConnectionReject (RrcConnectionReject msg) = 0;
+
+  /**
+   * \brief Receive an _RRCConnectionSwitch_ message from the serving eNodeB
+   *        to switch data connection from LTE to MmWave or viceversa
+   *        (added to support MC functionalities)
+   * \param msg the message
+   */
+  virtual void RecvRrcConnectionSwitch (RrcConnectionSwitch msg) = 0;
+
+  /**
+   * \brief Receive an _RRCConnectToMmWave_ message from the serving eNodeB
+   *        during an RRC connection establishment procedure
+   *        (added to support MC functionalities).
+   * \param msg the message
+   */
+  virtual void RecvRrcConnectToMmWave (uint16_t mmWaveCellId) = 0;
 
 };
 
@@ -1162,6 +1176,23 @@ public:
    * \param msg the message
    */
   virtual void SendRrcConnectionReject (uint16_t rnti, RrcConnectionReject msg) = 0;
+
+  /**
+   * \brief Send an _RRCConnectionSwitch_ message to a UE
+   *        (added to support MC functionalities).
+   * \param rnti the RNTI of the destination UE
+   * \param msg the message
+   */
+  virtual void SendRrcConnectionSwitch (uint16_t rnti, RrcConnectionSwitch msg) = 0;
+
+  /**
+   * \brief Send an _RRCConnectToMmWave_ message to a UE
+   *        during an RRC connection establishment procedure
+   *        (added to support MC functionalities).
+   * \param rnti the RNTI of the destination UE
+   * \param mmWaveCellId the cellId to which connect
+   */
+  virtual void SendRrcConnectToMmWave (uint16_t rnti, uint16_t mmWaveCellId) = 0;
 
   /**
    * \brief Encode handover prepration information
@@ -1273,17 +1304,7 @@ public:
    */
   virtual void RecvMeasurementReport (uint16_t rnti, MeasurementReport msg) = 0;
 
-  /**
-   * \brief Receive ideal UE context remove request from the UE RRC.
-   *
-   * Receive the notification from UE to remove the UE context
-   * once radio link failure or random access failure is detected.
-   * It is needed since no RLF detection mechanism at eNodeB is implemented.
-   *
-   * \param rnti the C-RNTI of the UE
-   */
-  virtual void RecvIdealUeContextRemoveRequest (uint16_t rnti) = 0;
-
+  virtual void RecvRrcSecondaryCellInitialAccessSuccessful (uint16_t rnti, uint16_t mmWaveRnti, uint16_t mmWaveCellId) = 0;
 };
 
 
@@ -1320,7 +1341,7 @@ public:
   virtual void SendRrcConnectionReestablishmentRequest (RrcConnectionReestablishmentRequest msg);
   virtual void SendRrcConnectionReestablishmentComplete (RrcConnectionReestablishmentComplete msg);
   virtual void SendMeasurementReport (MeasurementReport msg);
-  virtual void SendIdealUeContextRemoveRequest (uint16_t rnti);
+  virtual void SendNotifySecondaryCellConnected (uint16_t mmWaveRnti, uint16_t mmWaveCellId);
 
 private:
   MemberLteUeRrcSapUser ();
@@ -1389,9 +1410,9 @@ MemberLteUeRrcSapUser<C>::SendMeasurementReport (MeasurementReport msg)
 
 template <class C>
 void
-MemberLteUeRrcSapUser<C>::SendIdealUeContextRemoveRequest (uint16_t rnti)
+MemberLteUeRrcSapUser<C>::SendNotifySecondaryCellConnected (uint16_t mmWaveRnti, uint16_t mmWaveCellId)
 {
-  m_owner->DoSendIdealUeContextRemoveRequest (rnti);
+  m_owner->DoSendNotifySecondaryCellConnected (mmWaveRnti, mmWaveCellId);
 }
 
 /**
@@ -1419,6 +1440,8 @@ public:
   virtual void RecvRrcConnectionReestablishmentReject (RrcConnectionReestablishmentReject msg);
   virtual void RecvRrcConnectionRelease (RrcConnectionRelease msg);
   virtual void RecvRrcConnectionReject (RrcConnectionReject msg);
+  virtual void RecvRrcConnectToMmWave (uint16_t mmWaveCellId);
+  virtual void RecvRrcConnectionSwitch (RrcConnectionSwitch msg);
 
 private:
   MemberLteUeRrcSapProvider ();
@@ -1492,6 +1515,19 @@ MemberLteUeRrcSapProvider<C>::RecvRrcConnectionReject (RrcConnectionReject msg)
   Simulator::ScheduleNow (&C::DoRecvRrcConnectionReject, m_owner, msg);
 }
 
+template <class C>
+void
+MemberLteUeRrcSapProvider<C>::RecvRrcConnectToMmWave (uint16_t mmWaveCellId)
+{
+  Simulator::ScheduleNow (&C::DoRecvRrcConnectToMmWave, m_owner, mmWaveCellId);
+}
+
+template <class C>
+void
+MemberLteUeRrcSapProvider<C>::RecvRrcConnectionSwitch (RrcConnectionSwitch msg)
+{
+  Simulator::ScheduleNow (&C::DoRecvRrcConnectionSwitch, m_owner, msg);
+}
 
 /**
  * Template for the implementation of the LteEnbRrcSapUser as a member
@@ -1513,6 +1549,8 @@ public:
 
   virtual void SetupUe (uint16_t rnti, SetupUeParameters params);
   virtual void RemoveUe (uint16_t rnti);
+  //TODO remove the following declaration
+  //virtual void SendSystemInformation (SystemInformation msg);
   virtual void SendSystemInformation (uint16_t cellId, SystemInformation msg);
   virtual void SendRrcConnectionSetup (uint16_t rnti, RrcConnectionSetup msg);
   virtual void SendRrcConnectionReconfiguration (uint16_t rnti, RrcConnectionReconfiguration msg);
@@ -1520,6 +1558,8 @@ public:
   virtual void SendRrcConnectionReestablishmentReject (uint16_t rnti, RrcConnectionReestablishmentReject msg);
   virtual void SendRrcConnectionRelease (uint16_t rnti, RrcConnectionRelease msg);
   virtual void SendRrcConnectionReject (uint16_t rnti, RrcConnectionReject msg);
+  virtual void SendRrcConnectionSwitch (uint16_t rnti, RrcConnectionSwitch msg);
+  virtual void SendRrcConnectToMmWave (uint16_t rnti, uint16_t mmWaveCellId);
   virtual Ptr<Packet> EncodeHandoverPreparationInformation (HandoverPreparationInfo msg);
   virtual HandoverPreparationInfo DecodeHandoverPreparationInformation (Ptr<Packet> p);
   virtual Ptr<Packet> EncodeHandoverCommand (RrcConnectionReconfiguration msg);
@@ -1554,6 +1594,15 @@ MemberLteEnbRrcSapUser<C>::RemoveUe (uint16_t rnti)
 {
   m_owner->DoRemoveUe (rnti);
 }
+
+//TODO REMOVE THIS FUNCTION
+/*
+template <class C>
+void
+MemberLteEnbRrcSapUser<C>::SendSystemInformation (SystemInformation msg)
+{
+  m_owner->DoSendSystemInformation (msg);
+}*/
 
 template <class C>
 void
@@ -1602,6 +1651,20 @@ void
 MemberLteEnbRrcSapUser<C>::SendRrcConnectionReject (uint16_t rnti, RrcConnectionReject msg)
 {
   m_owner->DoSendRrcConnectionReject (rnti, msg);
+}
+
+template <class C>
+void
+MemberLteEnbRrcSapUser<C>::SendRrcConnectionSwitch (uint16_t rnti, RrcConnectionSwitch msg)
+{
+  m_owner->DoSendRrcConnectionSwitch (rnti, msg);
+}
+
+template <class C>
+void
+MemberLteEnbRrcSapUser<C>::SendRrcConnectToMmWave (uint16_t rnti, uint16_t mmWaveCellId)
+{
+  m_owner->DoSendRrcConnectToMmWave (rnti, mmWaveCellId);
 }
 
 template <class C>
@@ -1658,7 +1721,7 @@ public:
   virtual void RecvRrcConnectionReestablishmentRequest (uint16_t rnti, RrcConnectionReestablishmentRequest msg);
   virtual void RecvRrcConnectionReestablishmentComplete (uint16_t rnti, RrcConnectionReestablishmentComplete msg);
   virtual void RecvMeasurementReport (uint16_t rnti, MeasurementReport msg);
-  virtual void RecvIdealUeContextRemoveRequest (uint16_t rnti);
+  virtual void RecvRrcSecondaryCellInitialAccessSuccessful (uint16_t rnti, uint16_t mmWaveRnti, uint16_t mmWaveCellId);
 
 private:
   MemberLteEnbRrcSapProvider ();
@@ -1726,11 +1789,11 @@ MemberLteEnbRrcSapProvider<C>::RecvMeasurementReport (uint16_t rnti, Measurement
 }
 
 template <class C>
-void MemberLteEnbRrcSapProvider<C>::RecvIdealUeContextRemoveRequest (uint16_t rnti)
+void
+MemberLteEnbRrcSapProvider<C>::RecvRrcSecondaryCellInitialAccessSuccessful (uint16_t rnti, uint16_t mmWaveRnti, uint16_t mmWaveCellId)
 {
-  Simulator::ScheduleNow (&C::DoRecvIdealUeContextRemoveRequest, m_owner, rnti);
+  Simulator::ScheduleNow (&C::DoRecvRrcSecondaryCellInitialAccessSuccessful, m_owner, rnti, mmWaveRnti, mmWaveCellId);
 }
-
 
 
 
@@ -1748,7 +1811,3 @@ void MemberLteEnbRrcSapProvider<C>::RecvIdealUeContextRemoveRequest (uint16_t rn
 
 
 #endif // LTE_RRC_SAP_H
-
-
-
-

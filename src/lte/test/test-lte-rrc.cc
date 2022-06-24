@@ -35,13 +35,13 @@ NS_LOG_COMPONENT_DEFINE ("LteRrcTest");
  * \ingroup tests
  *
  * \brief Test rrc connection establishment.
- */ 
+ */
 class LteRrcConnectionEstablishmentTestCase : public TestCase
 {
 public:
   /**
    *
-   * 
+   *
    * \param nUes number of UEs in the test
    * \param nBearers number of bearers to be setup in each connection
    * \param tConnBase connection time base value for all UEs in ms
@@ -69,7 +69,7 @@ protected:
 
   /**
    * Build name string function
-   * 
+   *
    * \param nUes number of UEs in the test
    * \param nBearers number of bearers to be setup in each connection
    * \param tConnBase connection time base value for all UEs in ms
@@ -121,11 +121,9 @@ protected:
    * \param imsi the IMSI
    * \param cellId the cell ID
    * \param rnti the RNTI
-   * \param connEstFailCount the T300 timer expiration counter value
    */
   void ConnectionTimeoutCallback (std::string context, uint64_t imsi,
-                                  uint16_t cellId, uint16_t rnti,
-                                  uint8_t connEstFailCount);
+                                  uint16_t cellId, uint16_t rnti);
 
   uint32_t m_nBearers; ///< number of bearers to be setup in each connection
   uint32_t m_tConnBase;  ///< connection time base value for all UEs in ms
@@ -138,7 +136,7 @@ protected:
   Ptr<LteHelper> m_lteHelper; ///< LTE helper
 
   /// key: IMSI
-  std::map<uint64_t, bool> m_isConnectionEstablished; 
+  std::map<uint64_t, bool> m_isConnectionEstablished;
 };
 
 
@@ -536,8 +534,7 @@ LteRrcConnectionEstablishmentTestCase::ConnectionEstablishedCallback (
 
 void
 LteRrcConnectionEstablishmentTestCase::ConnectionTimeoutCallback (
-    std::string context, uint64_t imsi, uint16_t cellId, uint16_t rnti,
-    uint8_t connEstFailCount)
+    std::string context, uint64_t imsi, uint16_t cellId, uint16_t rnti)
 {
   NS_LOG_FUNCTION (this << imsi << cellId);
 }
@@ -549,7 +546,7 @@ LteRrcConnectionEstablishmentTestCase::ConnectionTimeoutCallback (
  * \ingroup tests
  *
  * \brief Lte Rrc Connection Establishment Error Test Case
- */ 
+ */
 class LteRrcConnectionEstablishmentErrorTestCase
   : public LteRrcConnectionEstablishmentTestCase
 {
@@ -676,6 +673,8 @@ LteRrcConnectionEstablishmentErrorTestCase::DoRun ()
       //Simulator::Schedule (MilliSeconds (tc), overloadedAttachFunctionPointer, lteHelper, *it, enbDevice);
       Simulator::Schedule (MilliSeconds (tc), &LteRrcConnectionEstablishmentErrorTestCase::Connect, this, ueDevice, enbDevice);
 
+      Simulator::Schedule (MilliSeconds (tcc), &LteRrcConnectionEstablishmentErrorTestCase::CheckConnected, this, *it, enbDevice);
+
       // disconnection not supported yet
 
       uint64_t imsi = ueLteDevice->GetImsi ();
@@ -734,7 +733,7 @@ LteRrcConnectionEstablishmentErrorTestCase::JumpBack ()
  * \ingroup tests
  *
  * \brief Lte Rrc Test Suite
- */ 
+ */
 class LteRrcTestSuite : public TestSuite
 {
 public:
@@ -799,13 +798,13 @@ LteRrcTestSuite::LteRrcTestSuite ()
                    "failure at RRC Connection Setup"),
                TestCase::QUICK);
   /*
-   * With RLF implementation we now do support the Idle mode,
-   * thus it solve Bug 1762 Comment #25.
+   * The following test case is related to the Idle mode, which is an
+   * unsupported feature at the moment. See also Bug 1762 Comment #25.
    */
-   AddTestCase (new LteRrcConnectionEstablishmentErrorTestCase (
-                    Seconds (0.030),
-                    "failure at RRC Connection Setup Complete"),
-                TestCase::QUICK);
+  // AddTestCase (new LteRrcConnectionEstablishmentErrorTestCase (
+  //                  Seconds (0.030),
+  //                  "failure at RRC Connection Setup Complete"),
+  //              TestCase::QUICK);
 
 }
 

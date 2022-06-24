@@ -1,6 +1,7 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
 * Copyright (c) 2015 Danilo Abrignani
+* Copyright (c) 2016, 2018, University of Padova, Dep. of Information Engineering, SIGNET lab
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License version 2 as
@@ -17,6 +18,8 @@
 *
 * Author: Danilo Abrignani <danilo.abrignani@unibo.it>
 *
+* Modified by: Tommaso Zugno <tommasozugno@gmail.com>
+*                 Integration of Carrier Aggregation for the mmWave module
 */
 
 #include "simple-ue-component-carrier-manager.h"
@@ -39,7 +42,7 @@ NS_OBJECT_ENSURE_REGISTERED (SimpleUeComponentCarrierManager);
 
 /// SimpleUeCcmMacSapProvider class
 class SimpleUeCcmMacSapProvider : public LteMacSapProvider
-{ 
+{
 public:
   /**
    * Constructor
@@ -80,7 +83,7 @@ SimpleUeCcmMacSapProvider::ReportBufferStatus (ReportBufferStatusParameters para
 
 /// SimpleUeCcmMacSapUser class
 class SimpleUeCcmMacSapUser : public LteMacSapUser
-{ 
+{
 public:
   /**
    * Constructor
@@ -147,9 +150,9 @@ void
 SimpleUeComponentCarrierManager::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
-  delete m_ccmRrcSapProvider;
   delete m_ccmMacSapUser;
   delete m_ccmMacSapProvider;
+  delete m_ccmRrcSapProvider;
 }
 
 
@@ -203,31 +206,31 @@ SimpleUeComponentCarrierManager::DoReportBufferStatus (LteMacSapProvider::Report
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_DEBUG ("BSR from RLC for LCID = " << (uint16_t)params.lcid);
-  std::map <uint8_t, LteMacSapProvider*>::iterator it =  m_macSapProvidersMap.find (0);
-  NS_ABORT_MSG_IF (it == m_macSapProvidersMap.end (), "could not find Sap for ComponentCarrier");
-
-  NS_LOG_DEBUG ("Size of component carrier LC map "<< m_componentCarrierLcMap.size());
-
-  for (std::map <uint8_t, std::map<uint8_t, LteMacSapProvider*> >::iterator ccLcMapIt = m_componentCarrierLcMap.begin();
-                                                                   ccLcMapIt != m_componentCarrierLcMap.end(); ccLcMapIt++)
+  for(std::map <uint8_t, LteMacSapProvider*>::iterator it = m_macSapProvidersMap.begin(); it != m_macSapProvidersMap.end(); it++)
+  {
+    if (it->first == 0)
     {
-      NS_LOG_DEBUG ("BSR from RLC for CC id = "<< (uint16_t)ccLcMapIt->first);
-      std::map <uint8_t, LteMacSapProvider*>::iterator it = ccLcMapIt->second.find (params.lcid);
-      if (it !=ccLcMapIt->second.end())
-        {
-          it->second->ReportBufferStatus (params);
-        }
+      // report the BSR to the primary CC
+      it->second->ReportBufferStatus (params);
     }
+    else
+    {
+      // report the BSR to other CCs. Only the PCC sends status PDUs.
+      LteMacSapProvider::ReportBufferStatusParameters newParams = params;
+      newParams.statusPduSize = 0;
+      it->second->ReportBufferStatus (newParams);
+    }
+  }
 }
 
-void 
+void
 SimpleUeComponentCarrierManager::DoNotifyHarqDeliveryFailure ()
 {
  NS_LOG_FUNCTION (this);
 }
 
 
-void 
+void
 SimpleUeComponentCarrierManager::DoNotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpParams)
 {
   NS_LOG_FUNCTION (this);
@@ -276,7 +279,7 @@ SimpleUeComponentCarrierManager::DoRemoveLc (uint8_t lcid)
     }
   NS_ABORT_MSG_IF (res.size () == 0, "LCID " << lcid << " not found in the ComponentCarrierManager map");
 
-  return res; 
+  return res;
 
 }
 
@@ -317,7 +320,7 @@ SimpleUeComponentCarrierManager::DoAddLc (uint8_t lcId,  LteUeCmacSapProvider::L
       elem.lcConfig = lcConfig;
       elem.msu = m_ccmMacSapUser;
       res.insert (res.end (), elem);
-      
+
       ccLcMapIt = m_componentCarrierLcMap.find (ncc);
       if (ccLcMapIt != m_componentCarrierLcMap.end ())
         {
@@ -333,8 +336,8 @@ SimpleUeComponentCarrierManager::DoAddLc (uint8_t lcId,  LteUeCmacSapProvider::L
           ccLcMapIt->second.insert (std::pair <uint8_t, LteMacSapProvider*> (lcId, m_macSapProvidersMap.at (ncc)));
         }
     }
-  
-  return res;  
+
+  return res;
 }
 
 LteMacSapUser*
@@ -369,6 +372,6 @@ SimpleUeComponentCarrierManager::DoConfigureSignalBearer (uint8_t lcid,  LteUeCm
     }
 
   return m_ccmMacSapUser;
- } 
+ }
 
 } // end of namespace ns3

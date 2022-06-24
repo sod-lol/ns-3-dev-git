@@ -199,6 +199,10 @@ LenaDataPhyErrorModelTestCase::DoRun (void)
   lena->SetPathlossModelAttribute ("ShadowSigmaIndoor", DoubleValue (0.0));
   lena->SetPathlossModelAttribute ("ShadowSigmaExtWalls", DoubleValue (0.0));
 
+  // set DL and UL bandwidth
+  lena->SetEnbDeviceAttribute ("DlBandwidth", UintegerValue (25));
+  lena->SetEnbDeviceAttribute ("UlBandwidth", UintegerValue (25));
+
   // Create Devices and install them in the Nodes (eNB and UE)
   NetDeviceContainer enbDevs;
   NetDeviceContainer ueDevs;
@@ -324,9 +328,6 @@ LenaDlCtrlPhyErrorModelTestCase::DoRun (void)
   Config::SetDefault ("ns3::RrFfMacScheduler::HarqEnabled", BooleanValue (false));
   Config::SetGlobal ("RngRun", UintegerValue (m_rngRun));
 
-  Config::SetDefault ("ns3::RadioBearerStatsCalculator::DlRlcOutputFilename", StringValue (CreateTempDirFilename ("DlRlcStats.txt")));
-  Config::SetDefault ("ns3::RadioBearerStatsCalculator::UlRlcOutputFilename", StringValue (CreateTempDirFilename ("UlRlcStats.txt")));
-
   //Disable Uplink Power Control
   Config::SetDefault ("ns3::LteUePhy::EnableUplinkPowerControl", BooleanValue (false));
 
@@ -357,6 +358,10 @@ LenaDlCtrlPhyErrorModelTestCase::DoRun (void)
   lena->SetPathlossModelAttribute ("ShadowSigmaOutdoor", DoubleValue (0.0));
   lena->SetPathlossModelAttribute ("ShadowSigmaIndoor", DoubleValue (0.0));
   lena->SetPathlossModelAttribute ("ShadowSigmaExtWalls", DoubleValue (0.0));
+
+  // set DL and UL bandwidth
+  lena->SetEnbDeviceAttribute ("DlBandwidth", UintegerValue (25));
+  lena->SetEnbDeviceAttribute ("UlBandwidth", UintegerValue (25));
   
   // Create Devices and install them in the Nodes (eNB and UE)
   NetDeviceContainer enbDevs;

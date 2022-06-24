@@ -33,7 +33,7 @@ namespace ns3 {
 /**
  * \ingroup lte
  *
- * \brief Service Access Point (SAP) offered by the component carrier manager (CCM) 
+ * \brief Service Access Point (SAP) offered by the component carrier manager (CCM)
  *  by MAC to CCM.
  *
  * This is the *Component Carrier Manager SAP Provider*, i.e., the part of the SAP
@@ -42,7 +42,7 @@ namespace ns3 {
  */
 class LteCcmMacSapProvider
 {
- 
+
 public:
   virtual ~LteCcmMacSapProvider ();
 
@@ -53,26 +53,18 @@ public:
    */
   virtual void ReportMacCeToScheduler (MacCeListElement_s bsr) = 0;
 
-  /**
-   * \brief Report SR to the right scheduler
-   * \param rnti RNTI of the user that requested the SR
-   *
-   * \see LteCcmMacSapUser::UlReceiveSr
-   */
-  virtual void ReportSrToScheduler (uint16_t rnti) = 0;
-
 }; // end of class LteCcmMacSapProvider
 
 
 /**
  * \ingroup lte
  *
- * \brief Service Access Point (SAP) offered by MAC to the 
+ * \brief Service Access Point (SAP) offered by MAC to the
  *        component carrier manager (CCM).
- *  
+ *
  *
  * This is the *CCM MAC SAP User*, i.e., the part of the SAP
- * that contains the component carrier manager methods called 
+ * that contains the component carrier manager methods called
  * by the eNodeB MAC instance.
  */
 class LteCcmMacSapUser : public LteMacSapUser
@@ -80,26 +72,12 @@ class LteCcmMacSapUser : public LteMacSapUser
 public:
   virtual ~LteCcmMacSapUser ();
   /**
-   * \brief When the Primary Component carrier receive a buffer status report 
+   * \brief When the Primary Component carrier receive a buffer status report
    *  it is sent to the CCM.
    * \param bsr Buffer Status Report received from a Ue
    * \param componentCarrierId
    */
   virtual void UlReceiveMacCe (MacCeListElement_s bsr, uint8_t componentCarrierId) = 0;
-
-  /**
-   * \brief The MAC received a SR
-   * \param rnti RNTI of the UE that requested a SR
-   * \param componentCarrierId CC that received the SR
-   *
-   * NOTE: Not implemented in the LTE module. The FemtoForum API requires
-   * that this function gets as parameter a struct  SchedUlSrInfoReqParameters.
-   * However, that struct has the SfnSf as a member: since it differs from
-   * LTE to mmwave/NR, and we don't have an effective strategy to deal with
-   * that, we limit the function to the only thing that the module have in
-   * common: the RNTI.
-   */
-  virtual void UlReceiveSr (uint16_t rnti, uint8_t componentCarrierId) = 0;
 
   /**
    * \brief Notifies component carrier manager about physical resource block occupancy
@@ -122,8 +100,7 @@ public:
    */
   MemberLteCcmMacSapProvider (C* owner);
   // inherited from LteCcmRrcSapProvider
-  virtual void ReportMacCeToScheduler (MacCeListElement_s bsr) override;
-  virtual void ReportSrToScheduler (uint16_t rnti) override;
+  virtual void ReportMacCeToScheduler (MacCeListElement_s bsr);
 
 private:
   C* m_owner; ///< the owner class
@@ -134,18 +111,13 @@ MemberLteCcmMacSapProvider<C>::MemberLteCcmMacSapProvider (C* owner)
   : m_owner (owner)
 {
 }
- 
+
 template <class C>
 void MemberLteCcmMacSapProvider<C>::ReportMacCeToScheduler (MacCeListElement_s bsr)
 {
   m_owner->DoReportMacCeToScheduler (bsr);
 }
 
-template <class C>
-void MemberLteCcmMacSapProvider<C>::ReportSrToScheduler (uint16_t rnti)
-{
-  m_owner->DoReportSrToScheduler (rnti);
-}
 
 /// MemberLteCcmMacSapUser class
 template <class C>
@@ -160,7 +132,6 @@ public:
   MemberLteCcmMacSapUser (C* owner);
   // inherited from LteCcmRrcSapUser
   virtual void UlReceiveMacCe (MacCeListElement_s bsr, uint8_t componentCarrierId);
-  virtual void UlReceiveSr (uint16_t rnti, uint8_t componentCarrierId);
   virtual void NotifyPrbOccupancy (double prbOccupancy, uint8_t componentCarrierId);
   // inherited from LteMacSapUser
   virtual void NotifyTxOpportunity (LteMacSapUser::TxOpportunityParameters txOpParams);
@@ -182,12 +153,6 @@ template <class C>
 void MemberLteCcmMacSapUser<C>::UlReceiveMacCe (MacCeListElement_s bsr, uint8_t componentCarrierId)
 {
   m_owner->DoUlReceiveMacCe (bsr, componentCarrierId);
-}
-
-template<class C>
-void MemberLteCcmMacSapUser<C>::UlReceiveSr (uint16_t rnti, uint8_t componentCarrierId)
-{
-  m_owner->DoUlReceiveSr (rnti, componentCarrierId);
 }
 
 template <class C>
@@ -214,9 +179,8 @@ void MemberLteCcmMacSapUser<C>::NotifyHarqDeliveryFailure ()
   m_owner->DoNotifyHarqDeliveryFailure ();
 }
 
-  
+
 } // end of namespace ns3
 
 
 #endif /* LTE_CCM_MAC_SAP_H */
-

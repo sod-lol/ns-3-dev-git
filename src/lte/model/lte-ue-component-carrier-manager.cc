@@ -51,6 +51,8 @@ void
 LteUeComponentCarrierManager::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
+  delete m_ccmRrcSapProvider;
+  delete m_ccmRrcSapUser;
 }
 
 void
@@ -68,7 +70,7 @@ LteUeComponentCarrierManager::GetLteCcmRrcSapProvider ()
 }
 
 
-bool 
+bool
 LteUeComponentCarrierManager::SetComponentCarrierMacSapProviders (uint8_t componentCarrierId, LteMacSapProvider* sap)
 {
   NS_LOG_FUNCTION (this);
@@ -89,7 +91,7 @@ LteUeComponentCarrierManager::SetComponentCarrierMacSapProviders (uint8_t compon
       result = true;
     }
   return result;
-  
+
 }
 
 void

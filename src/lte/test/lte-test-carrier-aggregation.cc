@@ -244,7 +244,7 @@ TestCarrierAggregationSuite::TestCarrierAggregationSuite ()
 
 static TestCarrierAggregationSuite lenaTestRrFfMacSchedulerSuite;
 
-std::string 
+std::string
 CarrierAggregationTestCase::BuildNameString (uint16_t nUser, uint16_t dist, uint32_t dlBandwidth, uint32_t ulBandwidth, uint32_t numberOfComponentCarriers)
 {
   std::ostringstream oss;
@@ -286,26 +286,14 @@ CarrierAggregationTestCase::DoRun (void)
   Config::SetDefault ("ns3::LteSpectrumPhy::DataErrorModelEnabled", BooleanValue (false));
   Config::SetDefault ("ns3::LteHelper::UseIdealRrc", BooleanValue (true));
 
-  Config::SetDefault ("ns3::MacStatsCalculator::DlOutputFilename", StringValue (CreateTempDirFilename ("DlMacStats.txt")));
-  Config::SetDefault ("ns3::MacStatsCalculator::UlOutputFilename", StringValue (CreateTempDirFilename ("UlMacStats.txt")));
-  Config::SetDefault ("ns3::RadioBearerStatsCalculator::DlRlcOutputFilename", StringValue (CreateTempDirFilename ("DlRlcStats.txt")));
-  Config::SetDefault ("ns3::RadioBearerStatsCalculator::UlRlcOutputFilename", StringValue (CreateTempDirFilename ("UlRlcStats.txt")));
-  Config::SetDefault ("ns3::RadioBearerStatsCalculator::DlPdcpOutputFilename", StringValue (CreateTempDirFilename ("DlPdcpStats.txt")));
-  Config::SetDefault ("ns3::RadioBearerStatsCalculator::UlPdcpOutputFilename", StringValue (CreateTempDirFilename ("UlPdcpStats.txt")));
-  Config::SetDefault ("ns3::PhyStatsCalculator::DlRsrpSinrFilename", StringValue (CreateTempDirFilename ("DlRsrpSinrStats.txt")));
-  Config::SetDefault ("ns3::PhyStatsCalculator::UlSinrFilename", StringValue (CreateTempDirFilename ("UlSinrStats.txt")));
-  Config::SetDefault ("ns3::PhyStatsCalculator::UlInterferenceFilename", StringValue (CreateTempDirFilename ("UlInterferenceStats.txt")));
-  Config::SetDefault ("ns3::PhyRxStatsCalculator::DlRxOutputFilename", StringValue (CreateTempDirFilename ("DlRxPhyStats.txt")));
-  Config::SetDefault ("ns3::PhyRxStatsCalculator::UlRxOutputFilename", StringValue (CreateTempDirFilename ("UlRxPhyStats.txt")));
-  Config::SetDefault ("ns3::PhyTxStatsCalculator::DlTxOutputFilename", StringValue (CreateTempDirFilename ("DlTxPhyStats.txt")));
-  Config::SetDefault ("ns3::PhyTxStatsCalculator::UlTxOutputFilename", StringValue (CreateTempDirFilename ("UlTxPhyStats.txt")));
+  Config::SetDefault ("ns3::LteEnbRrc::SrsPeriodicity", UintegerValue (40));
 
   /**
    * Initialize Simulation Scenario: 1 eNB and m_nUser UEs
    */
 
   Ptr<LteHelper> lteHelper = CreateObject<LteHelper> ();
-  
+
   lteHelper->SetAttribute ("PathlossModel", StringValue ("ns3::FriisSpectrumPropagationLossModel"));
 
   // Create Nodes: eNodeB and UE
@@ -336,8 +324,8 @@ CarrierAggregationTestCase::DoRun (void)
   enum EpsBearer::Qci q = EpsBearer::GBR_CONV_VOICE;
   EpsBearer bearer (q);
   lteHelper->ActivateDataRadioBearer (ueDevs, bearer);
-  
- 
+
+
   Ptr<LteEnbNetDevice> lteEnbDev = enbDevs.Get (0)->GetObject<LteEnbNetDevice> ();
   Ptr<LteEnbPhy> enbPhy = lteEnbDev->GetPhy ();
   enbPhy->SetAttribute ("TxPower", DoubleValue (30.0));
@@ -370,7 +358,7 @@ CarrierAggregationTestCase::DoRun (void)
   Simulator::Run ();
 
   /**
-   * Check that the assignment is done in a RR fashion
+   * Check that the assignation is done in a RR fashion
    */
   NS_LOG_INFO ("DL - Test with " << m_nUser << " user(s) at distance " << m_dist);
   std::vector <uint64_t> dlDataRxed;
@@ -495,4 +483,3 @@ CarrierAggregationTestCase::WriteResultToFile ()
   ulOutFile << m_nUser <<" "<<m_numberOfComponentCarriers <<" "<< ((m_ulThroughput*8)/m_statsDuration)/m_nUser<<std::endl;
   ulOutFile.close ();
 }
-

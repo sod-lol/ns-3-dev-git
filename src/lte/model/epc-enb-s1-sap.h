@@ -22,6 +22,7 @@
 #define EPC_ENB_S1_SAP_H
 
 #include <list>
+#include <stdint.h>
 #include <ns3/eps-bearer.h>
 #include <ns3/ipv4-address.h>
 
@@ -56,27 +57,20 @@ public:
    */
   virtual void DoSendReleaseIndication (uint64_t imsi, uint16_t rnti, uint8_t bearerId) = 0;
 
-  /// BearerToBeSwitched structure
   struct BearerToBeSwitched
   {
-    uint8_t epsBearerId; ///< Bearer ID
-    uint32_t teid; ///< TEID
+    uint8_t epsBearerId;
+    uint32_t teid;
   };
   
-  /// PathSwitchRequestParameters structure
   struct PathSwitchRequestParameters
   {
-    uint16_t rnti; ///< RNTI
-    uint16_t cellId; ///< cell ID
-    uint32_t mmeUeS1Id; ///< mmeUeS1Id in practice, we use the IMSI
-    std::list<BearerToBeSwitched> bearersToBeSwitched; ///< list of bearers to be switched 
+    uint16_t rnti;
+    uint16_t cellId;
+    uint32_t mmeUeS1Id;
+    std::list<BearerToBeSwitched> bearersToBeSwitched;
   };
 
-  /** 
-   * Path Switch Request 
-   * 
-   * \param params 
-   */
   virtual void PathSwitchRequest (PathSwitchRequestParameters params) = 0;
 
 
@@ -104,30 +98,17 @@ class EpcEnbS1SapUser
 {
 public:
   virtual ~EpcEnbS1SapUser ();
-
-  /**
-   * Parameters passed to InitialContextSetupRequest ()
-   */
-  struct InitialContextSetupRequestParameters
-  {
-    uint16_t rnti;   /**< the RNTI identifying the UE */
-  };
-
-  /**
-   * Initial context setup request
-   *
-   * \param params
-   */
-  virtual void InitialContextSetupRequest (InitialContextSetupRequestParameters params) = 0;
-
+  
   /**
    * Parameters passed to DataRadioBearerSetupRequest ()
+   * 
    */
   struct DataRadioBearerSetupRequestParameters
   {
     uint16_t rnti;   /**< the RNTI identifying the UE for which the
-                          DataRadioBearer is to be created */
-    EpsBearer bearer; /**< the characteristics of the bearer to be setup */
+			DataRadioBearer is to be created */ 
+    EpsBearer bearer; /**< the characteristics of the bearer to be set
+                         up */
     uint8_t bearerId; /**< the EPS Bearer Identifier */
     uint32_t    gtpTeid; /**< S1-bearer GTP tunnel endpoint identifier, see 36.423 9.2.1 */
     Ipv4Address transportLayerAddress; /**< IP Address of the SGW, see 36.423 9.2.1 */
@@ -136,22 +117,15 @@ public:
   /**
    * request the setup of a DataRadioBearer
    * 
-   *  \param params
    */
   virtual void DataRadioBearerSetupRequest (DataRadioBearerSetupRequestParameters params) = 0;
 
   
-  /// PathSwitchRequestAcknowledgeParameters structure
   struct PathSwitchRequestAcknowledgeParameters
   {
-    uint16_t rnti; ///< RNTI
+    uint16_t rnti;
   };
 
-  /**
-   * request a path switch acknowledge
-   * 
-   *  \param params
-   */
   virtual void PathSwitchRequestAcknowledge (PathSwitchRequestAcknowledgeParameters params) = 0;
   
 };
@@ -168,11 +142,6 @@ template <class C>
 class MemberEpcEnbS1SapProvider : public EpcEnbS1SapProvider
 {
 public:
-  /**
-   * Constructor
-   *
-   * \param owner the owner class
-   */
   MemberEpcEnbS1SapProvider (C* owner);
 
   // inherited from EpcEnbS1SapProvider
@@ -184,7 +153,7 @@ public:
 
 private:
   MemberEpcEnbS1SapProvider ();
-  C* m_owner; ///< owner class
+  C* m_owner;
 };
 
 template <class C>
@@ -232,21 +201,15 @@ template <class C>
 class MemberEpcEnbS1SapUser : public EpcEnbS1SapUser
 {
 public:
-  /**
-   * Constructor
-   *
-   * \param owner the owner class
-   */
   MemberEpcEnbS1SapUser (C* owner);
 
   // inherited from EpcEnbS1SapUser
-  virtual void InitialContextSetupRequest (InitialContextSetupRequestParameters params);
   virtual void DataRadioBearerSetupRequest (DataRadioBearerSetupRequestParameters params);
   virtual void PathSwitchRequestAcknowledge (PathSwitchRequestAcknowledgeParameters params);
 
 private:
   MemberEpcEnbS1SapUser ();
-  C* m_owner; ///< owner class
+  C* m_owner;
 };
 
 template <class C>
@@ -258,12 +221,6 @@ MemberEpcEnbS1SapUser<C>::MemberEpcEnbS1SapUser (C* owner)
 template <class C>
 MemberEpcEnbS1SapUser<C>::MemberEpcEnbS1SapUser ()
 {
-}
-
-template <class C>
-void MemberEpcEnbS1SapUser<C>::InitialContextSetupRequest (InitialContextSetupRequestParameters params)
-{
-  m_owner->DoInitialContextSetupRequest (params);
 }
 
 template <class C>

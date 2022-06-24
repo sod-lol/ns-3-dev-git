@@ -67,6 +67,3 @@ FfMacScheduler::GetTypeId (void)
 
 
 } // namespace ns3
-
-
-

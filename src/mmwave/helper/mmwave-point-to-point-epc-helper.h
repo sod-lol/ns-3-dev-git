@@ -85,6 +85,7 @@ public:
    *  Register this type.
    *  \return The object TypeId.
    */
+  virtual void DoInitialize();
   static TypeId GetTypeId (void);
   virtual void DoDispose ();
 
@@ -232,7 +233,10 @@ private:
    * because of some big X2 messages, you need a big MTU.
    */
   uint16_t m_x2LinkMtu;
-
+std::string m_ueAddressBase;
+std::string m_x2AddressBase;
+std::string m_s1apAddressBase;
+std::string m_s1uAddressBase;
 };
 
 

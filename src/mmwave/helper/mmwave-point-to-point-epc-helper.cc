@@ -92,7 +92,7 @@ m_x2Ipv4AddressHelper.SetBase (address, "255.255.255.252");
 
 std::cout << m_ueAddressBase << "\n";
 address = Ipv4Address(m_ueAddressBase.c_str());
-m_ueAddressHelper.SetBase (address, "255.0.0.0");
+m_uePgwAddressHelper.SetBase (address, "255.0.0.0");
 
   // we use a /64 IPv6 net all UEs
   m_uePgwAddressHelper6.SetBase ("7777:f00d::", Ipv6Prefix (64));

@@ -236,17 +236,17 @@ MmWavePointToPointEpcHelper::GetTypeId (void)
                MakeStringChecker ())
 .AddAttribute ("X2BaseAddress",
                "The network address of the UEs and the PGW",
-               StringValue ("10.0.0.0"),
+               StringValue ("15.0.0.0"),
                MakeStringAccessor (&MmWavePointToPointEpcHelper::m_x2AddressBase),
                MakeStringChecker ())
 .AddAttribute ("S1apBaseAddress",
                "The network address of the UEs and the PGW",
-               StringValue ("11.0.0.0"),
+               StringValue ("16.0.0.0"),
                MakeStringAccessor (&MmWavePointToPointEpcHelper::m_s1apAddressBase),
                MakeStringChecker ())
 .AddAttribute ("S1uBaseAddress",
                "The network address of the UEs and the PGW",
-               StringValue ("12.0.0.0"),
+               StringValue ("17.0.0.0"),
                MakeStringAccessor (&MmWavePointToPointEpcHelper::m_s1uAddressBase),
                MakeStringChecker ())
 	;

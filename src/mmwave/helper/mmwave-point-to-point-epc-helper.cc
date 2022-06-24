@@ -74,16 +74,24 @@ MmWavePointToPointEpcHelper::MmWavePointToPointEpcHelper ()
     m_s1apUdpPort (36412)
 {
   NS_LOG_FUNCTION (this);
+}
 
+void
+MmWavePointToPointEpcHelper::DoInitialize ()
+{
   // since we use point-to-point links for all S1-U and S1-AP links,
   // we use a /30 subnet which can hold exactly two addresses
   // (remember that net broadcast and null address are not valid)
-  m_s1uIpv4AddressHelper.SetBase ("10.0.0.0", "255.255.255.252");
-  m_s1apIpv4AddressHelper.SetBase ("11.0.0.0", "255.255.255.252");
-  m_x2Ipv4AddressHelper.SetBase ("12.0.0.0", "255.255.255.252");
+  Ipv4Address address = Ipv4Address(m_s1uAddressBase.c_str());
+m_s1uIpv4AddressHelper.SetBase (address, "255.255.255.252");
+address = Ipv4Address(m_s1apAddressBase.c_str());
+m_s1apIpv4AddressHelper.SetBase (address, "255.255.255.252");
+address = Ipv4Address(m_x2AddressBase.c_str());
+m_x2Ipv4AddressHelper.SetBase (address, "255.255.255.252");
 
-  // we use a /8 net for all UEs
-  m_uePgwAddressHelper.SetBase ("7.0.0.0", "255.0.0.0");
+  std::cout << m_ueAddressBase << "\n";
+address = Ipv4Address(m_ueAddressBase.c_str());
+ m_uePgwAddressHelper.SetBase (address, "255.0.0.0");
 
   // we use a /64 IPv6 net all UEs
   m_uePgwAddressHelper6.SetBase ("7777:f00d::", Ipv6Prefix (64));
@@ -220,6 +228,26 @@ MmWavePointToPointEpcHelper::GetTypeId (void)
                    UintegerValue (10000),
                    MakeUintegerAccessor (&MmWavePointToPointEpcHelper::m_x2LinkMtu),
                    MakeUintegerChecker<uint16_t> ())
+  .AddAttribute ("UeBaseAddress",
+               "The network address of the UEs and the PGW",
+               StringValue ("7.0.0.0"),
+               MakeStringAccessor (&MmWavePointToPointEpcHelper::m_ueAddressBase),
+               MakeStringChecker ())
+.AddAttribute ("X2BaseAddress",
+               "The network address of the UEs and the PGW",
+               StringValue ("15.0.0.0"),
+               MakeStringAccessor (&MmWavePointToPointEpcHelper::m_x2AddressBase),
+               MakeStringChecker ())
+.AddAttribute ("S1apBaseAddress",
+               "The network address of the UEs and the PGW",
+               StringValue ("16.0.0.0"),
+               MakeStringAccessor (&MmWavePointToPointEpcHelper::m_s1apAddressBase),
+               MakeStringChecker ())
+.AddAttribute ("S1uBaseAddress",
+               "The network address of the UEs and the PGW",
+               StringValue ("17.0.0.0"),
+               MakeStringAccessor (&MmWavePointToPointEpcHelper::m_s1uAddressBase),
+               MakeStringChecker ())
   ;
   return tid;
 }

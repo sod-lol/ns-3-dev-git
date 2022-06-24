@@ -226,6 +226,7 @@ public:
    * Attach mmWave-only ueDevices to the closest enbDevice
    */
   void AttachToClosestEnb (NetDeviceContainer ueDevices, NetDeviceContainer enbDevices);
+  void AttachToClosestEnb (Ptr<NetDevice> ueDevice, NetDeviceContainer enbDevices);
   /**
    * Attach MC ueDevices to the closest LTE enbDevice, register all MmWave eNBs to the MmWaveUePhy
    */
@@ -377,7 +378,6 @@ private:
   Ptr<NetDevice> InstallSingleLteEnbDevice (Ptr<Node> n);
   Ptr<NetDevice> InstallSingleInterRatHoCapableUeDevice (Ptr<Node> n);
 
-  void AttachToClosestEnb (Ptr<NetDevice> ueDevice, NetDeviceContainer enbDevices);
   void AttachMcToClosestEnb (Ptr<NetDevice> ueDevice, NetDeviceContainer mmWaveEnbDevices, NetDeviceContainer lteEnbDevices);
   void AttachIrToClosestEnb (Ptr<NetDevice> ueDevice, NetDeviceContainer mmWaveEnbDevices, NetDeviceContainer lteEnbDevices);
 
